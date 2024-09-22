@@ -1,0 +1,14 @@
+.nav-links > div:hover {
+  cursor: pointer;
+  text-decoration: underline;
+  color: red;
+}
+.nav-links > div {
+  padding: 10px;
+  font-weight: bold;
+  color: #461711;
+}
+.inline-highlight-1 {
+  color: #b78319;
+  font-weight: bold;
+}
