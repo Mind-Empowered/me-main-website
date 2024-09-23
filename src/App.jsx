@@ -402,6 +402,52 @@ function App() {
             </p>
           </div>
         </div>
+        <div className="flex place-items-start justify-center mt-10 w-100">
+          <div className="flex flex-col justify-start place-items-center gap-5">
+            <img
+              src="/jaya.jpg"
+              alt=""
+              className="rounded-full"
+              width={200}
+              height={200}
+            />
+            <h1 classname="text-xl font-bold" >Jayashree Menon</h1>
+            <h2 classname=" font-bold " >Sr. Researcher</h2>
+            <p className="px-10 w-[500px]">
+            An MSc, B.Ed, from MG University, Kerala,Jayshree Menon is a highly skilled and versatile professional. As an excellent researcher, Jayshree conducts in-depth research on a variety of topics for webinars and events. Additionally, she is instrumental in identifying and engaging experts for our Mental Health events, ensuring that we provide the highest quality of information and support to our audience.Beyond her research capabilities, Jayshree also contributes significantly to Social Outreach and Volunteer Management. Her efforts in these areas help to expand our reach, engage with the community, and effectively manage our volunteer programs, all of which are essential to the success of our initiatives.
+            </p>
+          </div>
+          <div className="flex flex-col justify-start place-items-center gap-5">
+            <img
+              src="/anoopa.jpg"
+              alt=""
+              className="rounded-full"
+              width={200}
+              height={200}
+            />
+            <h1 classname="text-xl font-bold" >Anoopa Krishnan</h1>
+            <h2 classname=" font-bold " >Creative Director</h2>
+            <p className="px-10 w-[500px]">
+            An MA in English Literature, Anoopa Krishnan is a creative and enthusiastic digital marketing professional specialising in Search Engine Optimization and Social Media Marketing. At Mind Empowered, Anoopa has been the driving force behind the exponential growth of our digital portfolio, expanding it tenfold. Her expertise in SEO and social media strategies has significantly increased our online presence and engagement. In addition to her digital marketing prowess, Anoopa is also our talented creative designer, responsible for the eye-catching posters that attract and engage our audiences.
+            </p>
+          </div>
+        </div>
+        <div className="flex place-items-start justify-center mt-10 w-100">
+          <div className="flex flex-col justify-start place-items-center gap-5">
+            <img
+              src="/barathi.jpg"
+              alt=""
+              className="rounded-full"
+              width={200}
+              height={200}
+            />
+            <h1 classname="text-xl font-bold" >Bharti Jaravta</h1>
+            <h2 classname=" font-bold " >Art Therapist, Counselling Psychologist</h2>
+            <p className="px-10 w-[500px]">
+            At Mind Empowered, Bharti Jaravta serves as a dedicated Art Therapist, using her expertise to help individuals express themselves through the medium of art. With a B.Ed and an M.Phil in Counselling Psychology, she brings a deep understanding of the therapeutic process to her work. Bharti guides our audience in using art as a powerful form of communication, helping them increase self-awareness and address a wide range of personal challenges. Her approach enables participants to explore their emotions, gain insight into their experiences, and find new ways to cope with and overcome the issues they face.
+            </p>
+          </div>
+        </div>
       </div>
       <div className="bg-gradient-to-tr from-[#f5f0de] to-white">
         <div className="text-3xl font-bold color-[#461711] pb-2 w-100 text-center mt-10">
