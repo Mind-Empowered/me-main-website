@@ -380,22 +380,10 @@ function App() {
               width={200}
               height={200}
             />
+            <h1 classname="text-xl font-bold" >Maya Menon</h1>
+            <h2 classname=" font-bold " >Founder</h2>
             <p className="px-10 w-[500px]">
-              A superb communicator, Maya Menon adorns many hats . A post
-              graduate in IT from Monash University, Australia, she has over a
-              decade's experience as an IT professional both in India and
-              abroad.Having captivating teaching and presentation skills she
-              finds time to take classes for school and college students on a
-              variety of subjects like spoken english,universal human values,
-              cloud computing, wireless networks and artificial intelligence.
-              Her passion for learning is matched by her dedication to mental
-              health. Maya recently earned a certification from NIMHANS on urban
-              mental health initiatives, proving she's as committed to wellbeing
-              as she is to technology. At Mind Empowered, Maya is the mastermind
-              behind visualization, strategy, and fundraising. In short, Maya
-              Menon is not just an IT professional or a teacher; she's a
-              powerhouse of knowledge and positivity, lighting up every room she
-              enters and every project she undertakes.
+            A superb communicator, Maya Devi Menon adorns many hats. A post graduate in IT from Monash University, Australia, she has experience as an IT professional both in India and abroad. Having captivating teaching and presentation skills, she finds time to take classes for school and college students on a variety of subjects like spoken english, cloud computing, wireless networks. At Mind Empowered, Maya is the mastermind behind visualisation, strategy, and fundraising.
             </p>
           </div>
           <div className="flex flex-col justify-start place-items-center gap-5">
@@ -406,17 +394,11 @@ function App() {
               width={200}
               height={200}
             />
+            <h1 classname="text-xl font-bold" >Sreela Menon</h1>
+            <h2 classname=" font-bold " >Co-Founder</h2>
             <p className="px-10 w-[500px]">
-              An excellent human resource manager. Post her MBA from Birla
-              Institute of Management Technology in Delhi, she has worked for 12
-              years in Recruitments as well as Learning and Development centers
-              of corporates like E-lixir Web Solutions and Oracle Financial
-              Software Services. At Mind Empowered, Sreela is responsible for
-              the Finance and operations simultaneously offering freelance
-              training in areas such as Behaviour Training, Softskill
-              Development, Interview Etiquette and Corporate recruitment. She is
-              currently undergoing a certification in Fundamental Legal Literacy
-              with focus on Mental health.
+            An excellent human resource manager. Post her MBA from Birla Institute of Management Technology in Delhi, she has worked for 12 years in Recruitments as well as Learning and Development  centers of corporates like E-lixir Web Solutions and Oracle Financial Software Services. At Mind Empowered, Sreela is responsible for the Finance and operations simultaneously offering freelance training in areas such as Behaviour Training, Softskill Development, Interview Etiquette  and Corporate recruitment. 
+
             </p>
           </div>
         </div>
