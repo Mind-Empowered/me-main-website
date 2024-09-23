@@ -46,7 +46,14 @@ function App() {
       thumbnail: `https://me-website-assets.s3.ap-south-1.amazonaws.com/gallery/2024/Mind+Empowered+Activities-images-${index}.jpg`,
     });
   }
-
+  let trainersGallery = [];
+  for (let index = 1; index < 7; index++) {
+    trainersGallery.push({
+      original: `https://me-website-assets.s3.ap-south-1.amazonaws.com/trainers/Trainer+${index}.jpeg`,
+      thumbnail: `https://me-website-assets.s3.ap-south-1.amazonaws.com/trainers/Trainer+${index}.jpeg`,
+    });
+  }
+  
   const [accordions, setAccordion] = useState([
     {
       key: 0,
@@ -447,6 +454,15 @@ function App() {
             At Mind Empowered, Bharti Jaravta serves as a dedicated Art Therapist, using her expertise to help individuals express themselves through the medium of art. With a B.Ed and an M.Phil in Counselling Psychology, she brings a deep understanding of the therapeutic process to her work. Bharti guides our audience in using art as a powerful form of communication, helping them increase self-awareness and address a wide range of personal challenges. Her approach enables participants to explore their emotions, gain insight into their experiences, and find new ways to cope with and overcome the issues they face.
             </p>
           </div>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-tr from-[#f5f0de] to-white">
+        <div className="text-3xl font-bold color-[#461711] pb-2 w-100 text-center mt-10">
+          Meet our Trainers
+        </div>
+        <div className="mx-28 mt-10">
+          <ImageGallery items={trainersGallery} autoPlay={true} />
         </div>
       </div>
       <div className="bg-gradient-to-tr from-[#f5f0de] to-white">
