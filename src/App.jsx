@@ -5,6 +5,7 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
 import { useState } from "react";
+import Gallery from './components/gallery';
 
 // Accordion.js
 
@@ -53,6 +54,8 @@ function App() {
       thumbnail: `https://me-website-assets.s3.ap-south-1.amazonaws.com/trainers/Trainer+${index}.jpeg`,
     });
   }
+
+  
   
   const [accordions, setAccordion] = useState([
     {
@@ -462,10 +465,7 @@ function App() {
 
       <div className="bg-gradient-to-tr from-[#f5f0de] to-white">
         <div className="text-3xl font-bold color-[#461711] pb-2 w-100 text-center mt-10">
-          Meet our Trainers
-        </div>
-        <div className="mx-28 mt-10">
-          <ImageGallery items={trainersGallery} autoPlay={true} />
+        <Gallery />
         </div>
       </div>
       <div className="bg-gradient-to-tr from-[#f5f0de] to-white">

@@ -1,0 +1,39 @@
+
+.gallery-wrapper {
+    padding: 20px;
+    max-width: 1200px; 
+    margin: 0 auto;  
+  }
+
+  .gallery-title {
+    text-align: center;
+    padding-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+ 
+  .gallery-item {
+    text-align: center;
+    padding: 10px;
+  }
+  
+
+  .gallery-img {
+    width: 100%;          
+    height: 250px;        
+    object-fit: cover;   
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+  }
+  
+  .gallery-img:hover {
+    transform: scale(1.05);
+  }
+  
+  .caption {
+    padding-top: 10px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
