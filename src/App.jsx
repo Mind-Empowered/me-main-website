@@ -193,6 +193,9 @@ function App() {
             <PhotoProvider>
               <div className="italic mb-2">Our previous newsletters</div>
               <div className="flex gap-4">
+                <PhotoView src="/NLJuly2024.jpeg">
+                  <img src="/NLJuly2024.jpeg" alt="" width={100} />
+                </PhotoView>
                 <PhotoView src="/NLJune2024.jpg">
                   <img src="/NLJune2024.jpg" alt="" width={100} />
                 </PhotoView>
@@ -205,8 +208,8 @@ function App() {
         </div>
         <div className="w-100">
           <PhotoProvider>
-            <PhotoView src="/NLJune2024.jpg">
-              <img src="/NLJune2024.jpg" alt="" width={600} />
+            <PhotoView src="/NLAugust2024.jpeg">
+              <img src="/NLAugust2024.jpeg" alt="" width={600} />
             </PhotoView>
           </PhotoProvider>
         </div>
