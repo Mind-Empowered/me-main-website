@@ -86,22 +86,22 @@ const imageFilenames = [
 
   const s3BucketURL = "https://me-website-assets.s3.ap-south-1.amazonaws.com/trainers/";
   const settings = {
-    dots: true,              // Show navigation dots
-    infinite: true,          // Infinite looping
-    speed: 500,              // Speed of transitions
-    slidesToShow: 3,         // Number of slides to show at once
-    slidesToScroll: 1,       // Scroll one slide at a time
-    autoplay: true,          // Automatically start slideshow
-    autoplaySpeed: 3000,     // Delay between slide transitions (3 seconds)
+    dots: true,             
+    infinite: true,         
+    speed: 500,             
+    slidesToShow: 5,         
+    slidesToScroll: 1,       
+    autoplay: true,          
+    autoplaySpeed: 2000,    
   };
   
   const Gallery = () => {
     return (
       <div className="gallery-wrapper">
-        <h1 className="gallery-title">Trainer Gallery</h1>
+        <h1 className="gallery-title">ME Empowerement Coaches</h1>
         <Slider {...settings}>
           {imageFilenames.map((filename, index) => {
-            // Extract the name from the filename (before the last dot)
+            
             const trainerName = filename.substring(0, filename.lastIndexOf('.')).trim();
             
             return (
