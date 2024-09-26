@@ -460,6 +460,20 @@ function App() {
             At Mind Empowered, Bharti Jaravta serves as a dedicated Art Therapist, using her expertise to help individuals express themselves through the medium of art. With a B.Ed and an M.Phil in Counselling Psychology, she brings a deep understanding of the therapeutic process to her work. Bharti guides our audience in using art as a powerful form of communication, helping them increase self-awareness and address a wide range of personal challenges. Her approach enables participants to explore their emotions, gain insight into their experiences, and find new ways to cope with and overcome the issues they face.
             </p>
           </div>
+          <div className="flex flex-col justify-start place-items-center gap-5">
+            <img
+              src="/Jessica.jpeg"
+              alt=""
+              className="rounded-full"
+              width={200}
+              height={200}
+            />
+            <h1 classname="text-xl font-bold" >Jessica</h1>
+            <h2 classname=" font-bold " >Designer</h2>
+            <p className="px-10 w-[500px]">
+            Jessica is a creative self-taught designer with a BCom degree. She has worked on various projects, including designing posters, newsletters, and websites for Mind Empowered. With her passion for design and a background in social volunteering, she brings fresh ideas and enthusiasm to every project she undertakes.
+            </p>
+          </div>
         </div>
       </div>
 
