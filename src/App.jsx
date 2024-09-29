@@ -142,10 +142,11 @@ function App() {
               Our Vision
             </div>
             <div className="mt-2 text-xl">
-              Empowering every{" "}
-              <span className="inline-highlight-1">Individual</span> with{" "}
-              <span className="inline-highlight-1">Emotional Resilience</span>{" "}
-              to navigate life.
+              Empowering {" "}
+              <span className="inline-highlight-1">Individuals</span> {" "}
+              to navigate life with{" "}
+              <span className="inline-highlight-1">Emotional Resilience</span>.{" "}
+              
             </div>
           </div>
         </div>
@@ -468,7 +469,7 @@ function App() {
               width={200}
               height={200}
             />
-            <h1 classname="text-xl font-bold" >Jessica</h1>
+            <h1 classname="text-xl font-bold" >Jessica Susan John</h1>
             <h2 classname=" font-bold " >Designer</h2>
             <p className="px-10 w-[500px]">
             Jessica is a creative self-taught designer with a BCom degree. She has worked on various projects, including designing posters, newsletters, and websites for Mind Empowered. With her passion for design and a background in social volunteering, she brings fresh ideas and enthusiasm to every project she undertakes.
