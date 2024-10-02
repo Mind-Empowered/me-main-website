@@ -98,7 +98,7 @@ const imageFilenames = [
   const Gallery = () => {
     return (
       <div className="gallery-wrapper">
-        <h1 className="gallery-title">ME Empowerement Coaches</h1>
+        <h1 className="gallery-title">ME Empowerment Coaches</h1>
         <Slider {...settings}>
           {imageFilenames.map((filename, index) => {
             
