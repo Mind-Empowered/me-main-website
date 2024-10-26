@@ -6,6 +6,8 @@ import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
 import { useState } from "react";
 import Gallery from './components/gallery';
+import DisplayCalender from "./components/DisplayCalender";
+import Calender from "./components/Calender";
 
 // Accordion.js
 
@@ -13,16 +15,15 @@ function Accordion(props) {
   return (
     <div className="border rounded-md mb-1">
       <button
-        className="w-full p-4 text-left bg-gray-200 
+        className="w-full p-4 text-left bg-gray-200
 						hover:bg-gray-300 transition duration-300"
         onClick={props.toggleAccordion}
       >
         {props.title}
         <span
-          className={`float-right transform ${
-            props.isOpen ? "rotate-180" : "rotate-0"
-          } 
-								transition-transform duration-300`}
+          className={`float-right transform ${props.isOpen ? "rotate-180" : "rotate-0"
+            }
+            transition-transform duration-300`}
         >
           &#9660;
         </span>
@@ -33,6 +34,8 @@ function Accordion(props) {
 }
 
 function App() {
+
+
   let testimonials = [];
   for (let index = 1; index < 8; index++) {
     testimonials.push({
@@ -55,8 +58,8 @@ function App() {
     });
   }
 
-  
-  
+
+
   const [accordions, setAccordion] = useState([
     {
       key: 0,
@@ -96,6 +99,9 @@ function App() {
     setAccordion(updatedAccordions);
   };
 
+
+
+
   return (
     <div>
       <div>
@@ -132,7 +138,8 @@ function App() {
           <img src="/logo192.png" alt="chat" className="w-20" />
         </div>
       </div>
-      <div className="flex mx-32 gap-20 justify-center" id="mission">
+
+      <div className="flex  mx-32 gap-20 justify-center" id="mission">
         <div className="flex w-100 justify-center gap-10 mt-20">
           <div>
             <img src="/vision.png" alt="mission" className="w-80" />
@@ -146,21 +153,22 @@ function App() {
               <span className="inline-highlight-1">Individuals</span> {" "}
               to navigate life with{" "}
               <span className="inline-highlight-1">Emotional Resilience</span>.{" "}
-              
+
             </div>
           </div>
         </div>
-        <div className="flex w-100 justify-center gap-10 mt-20">
+
+        <div className="sm:flex w-100 justify-center gap-10 mt-20">
           <div>
             <img src="/mission.png" alt="mission" className="w-80" />
           </div>
           <div>
-            <div className="text-5xl font-bold italic color-[#461711]">
+            <div className="text-5xl  font-bold italic color-[#461711]">
               Our Mission
             </div>
             <div className="mt-2 text-xl">
               Championing the cause of mental health through{" "}
-              <span className="inline-highlight-1">Awareness</span>,{" "}
+              <span className="inline-highlight-1 ">Awareness</span>,{" "}
               <span className="inline-highlight-1">Education</span>,{" "}
               <span className="inline-highlight-1">Advocacy</span> and Creating
               an empathetic community.
@@ -168,6 +176,11 @@ function App() {
           </div>
         </div>
       </div>
+
+      {/* <div className="text-base md:text-3xl lg:text-7xl">
+          This text will change size on different screen widths.
+        </div> */}
+
 
       <div className="px-28 flex mt-10 justify-center gap-20">
         <div>
@@ -227,7 +240,7 @@ function App() {
           Our Objectives
         </div>
         <div className="mt-10 flex justify-between">
-          <div className="flex gap-4">
+          <div className="flex   gap-4 ">
             <img src="/obj1.png" alt="obj1" width={160} />
             <div>
               <div className="text-xl font-semibold">
@@ -303,75 +316,47 @@ function App() {
           <img src="/mestory.svg" alt="mestory" />
         </div>
       </div>
-      <div className="flex justify-between px-28 py-4 mt-10 bg-gradient-to-tr from-[#f5f0de] to-white">
-        <div className="w-full">
-          <div className="text-3xl font-bold color-[#461711] border-b-4 pb-2 w-full">
-            Calendar
-          </div>
-          <div className="flex mt-5 bg-[#ffdb5b] p-2 gap-2">
-            <div>
-              <select defaultValue={"august"}>
-                <option value="january">January</option>
-                <option value="february">February</option>
-                <option value="march">March</option>
-                <option value="april">April</option>
-                <option value="may">May</option>
-                <option value="june">June</option>
-                <option value="july">July</option>
-                <option value="august">August</option>
-                <option value="september">September</option>
-                <option value="october">October</option>
-                <option value="november">November</option>
-                <option value="december">December</option>
-              </select>
-            </div>
-            <div>
-              <select defaultValue={"2024"}>
-                <option value="2023">2023</option>
-                <option value="2024">2024</option>
-              </select>
-            </div>
-          </div>
-          <div className="flex justify-between mt-2 self-start align-baseline">
-            <img
-              src="/august2024.jpg"
-              alt="august2024"
-              className="self-start"
-              width={600}
-              height={600}
-            />
-            <div className="flex flex-wrap p-4 gap-5">
-              <ImageZoom
-                src="/starlet-hackathon.jpg"
-                alt="starlet-hackathon"
-                className="self-start"
-                width="200"
-                height="200"
-              />
 
-              <ImageZoom
-                src="/sampleevent.png"
-                alt="starlet-hackathon"
-                className="self-start"
-                width="200"
-                height="200"
-              />
-              <ImageZoom
-                src="/starlet-hackathon.jpg"
-                alt="starlet-hackathon"
-                className="self-start"
-                width="200"
-                height="200"
-              />
-              <ImageZoom
-                src="/sampleevent.png"
-                alt="starlet-hackathon"
-                className="self-start"
-                width="200"
-                height="200"
-              />
-            </div>
-          </div>
+      <Calender />
+
+      <div className="flex justify-between mt-2 self-start align-baseline">
+        <img
+          src="/august2024.jpg"
+          alt="august2024"
+          className="self-start"
+          width={600}
+          height={600}
+        />
+        <div className="flex flex-wrap p-4 gap-5">
+          <ImageZoom
+            src="/starlet-hackathon.jpg"
+            alt="starlet-hackathon"
+            className="self-start"
+            width="200"
+            height="200"
+          />
+
+          <ImageZoom
+            src="/sampleevent.png"
+            alt="starlet-hackathon"
+            className="self-start"
+            width="200"
+            height="200"
+          />
+          <ImageZoom
+            src="/starlet-hackathon.jpg"
+            alt="starlet-hackathon"
+            className="self-start"
+            width="200"
+            height="200"
+          />
+          <ImageZoom
+            src="/sampleevent.png"
+            alt="starlet-hackathon"
+            className="self-start"
+            width="200"
+            height="200"
+          />
         </div>
       </div>
 
@@ -397,10 +382,10 @@ function App() {
               width={200}
               height={200}
             />
-            <h1 classname="text-xl font-bold" >Maya Menon</h1>
-            <h2 classname=" font-bold " >Founder</h2>
+            <h1 className="text-xl font-bold" >Maya Menon</h1>
+            <h2 className=" font-bold " >Founder</h2>
             <p className="px-10 w-[500px]">
-            A superb communicator, Maya Devi Menon adorns many hats. A post graduate in IT from Monash University, Australia, she has experience as an IT professional both in India and abroad. Having captivating teaching and presentation skills, she finds time to take classes for school and college students on a variety of subjects like spoken english, cloud computing, wireless networks. At Mind Empowered, Maya is the mastermind behind visualisation, strategy, and fundraising.
+              A superb communicator, Maya Devi Menon adorns many hats. A post graduate in IT from Monash University, Australia, she has experience as an IT professional both in India and abroad. Having captivating teaching and presentation skills, she finds time to take classes for school and college students on a variety of subjects like spoken english, cloud computing, wireless networks. At Mind Empowered, Maya is the mastermind behind visualisation, strategy, and fundraising.
             </p>
           </div>
           <div className="flex flex-col justify-start place-items-center gap-5">
@@ -411,10 +396,10 @@ function App() {
               width={200}
               height={200}
             />
-            <h1 classname="text-xl font-bold" >Sreela Menon</h1>
-            <h2 classname=" font-bold " >Co-Founder</h2>
+            <h1 className="text-xl font-bold" >Sreela Menon</h1>
+            <h2 className=" font-bold " >Co-Founder</h2>
             <p className="px-10 w-[500px]">
-            An excellent human resource manager. Post her MBA from Birla Institute of Management Technology in Delhi, she has worked for 12 years in Recruitments as well as Learning and Development  centers of corporates like E-lixir Web Solutions and Oracle Financial Software Services. At Mind Empowered, Sreela is responsible for the Finance and operations simultaneously offering freelance training in areas such as Behaviour Training, Softskill Development, Interview Etiquette  and Corporate recruitment. 
+              An excellent human resource manager. Post her MBA from Birla Institute of Management Technology in Delhi, she has worked for 12 years in Recruitments as well as Learning and Development  centers of corporates like E-lixir Web Solutions and Oracle Financial Software Services. At Mind Empowered, Sreela is responsible for the Finance and operations simultaneously offering freelance training in areas such as Behaviour Training, Softskill Development, Interview Etiquette  and Corporate recruitment.
 
             </p>
           </div>
@@ -428,10 +413,10 @@ function App() {
               width={200}
               height={200}
             />
-            <h1 classname="text-xl font-bold" >Jayashree Menon</h1>
-            <h2 classname=" font-bold " >Sr. Researcher</h2>
+            <h1 className="text-xl font-bold" >Jayashree Menon</h1>
+            <h2 className=" font-bold " >Sr. Researcher</h2>
             <p className="px-10 w-[500px]">
-            An MSc, B.Ed, from MG University, Kerala,Jayshree Menon is a highly skilled and versatile professional. As an excellent researcher, Jayshree conducts in-depth research on a variety of topics for webinars and events. Additionally, she is instrumental in identifying and engaging experts for our Mental Health events, ensuring that we provide the highest quality of information and support to our audience.Beyond her research capabilities, Jayshree also contributes significantly to Social Outreach and Volunteer Management. Her efforts in these areas help to expand our reach, engage with the community, and effectively manage our volunteer programs, all of which are essential to the success of our initiatives.
+              An MSc, B.Ed, from MG University, Kerala,Jayshree Menon is a highly skilled and versatile professional. As an excellent researcher, Jayshree conducts in-depth research on a variety of topics for webinars and events. Additionally, she is instrumental in identifying and engaging experts for our Mental Health events, ensuring that we provide the highest quality of information and support to our audience.Beyond her research capabilities, Jayshree also contributes significantly to Social Outreach and Volunteer Management. Her efforts in these areas help to expand our reach, engage with the community, and effectively manage our volunteer programs, all of which are essential to the success of our initiatives.
             </p>
           </div>
           <div className="flex flex-col justify-start place-items-center gap-5">
@@ -442,10 +427,10 @@ function App() {
               width={200}
               height={200}
             />
-            <h1 classname="text-xl font-bold" >Anoopa Krishnan</h1>
-            <h2 classname=" font-bold " >Creative Director</h2>
+            <h1 className="text-xl font-bold" >Anoopa Krishnan</h1>
+            <h2 className=" font-bold " >Creative Director</h2>
             <p className="px-10 w-[500px]">
-            An MA in English Literature, Anoopa Krishnan is a creative and enthusiastic digital marketing professional specialising in Search Engine Optimization and Social Media Marketing. At Mind Empowered, Anoopa has been the driving force behind the exponential growth of our digital portfolio, expanding it tenfold. Her expertise in SEO and social media strategies has significantly increased our online presence and engagement. In addition to her digital marketing prowess, Anoopa is also our talented creative designer, responsible for the eye-catching posters that attract and engage our audiences.
+              An MA in English Literature, Anoopa Krishnan is a creative and enthusiastic digital marketing professional specialising in Search Engine Optimization and Social Media Marketing. At Mind Empowered, Anoopa has been the driving force behind the exponential growth of our digital portfolio, expanding it tenfold. Her expertise in SEO and social media strategies has significantly increased our online presence and engagement. In addition to her digital marketing prowess, Anoopa is also our talented creative designer, responsible for the eye-catching posters that attract and engage our audiences.
             </p>
           </div>
         </div>
@@ -458,10 +443,10 @@ function App() {
               width={200}
               height={200}
             />
-            <h1 classname="text-xl font-bold" >Bharti Jaravta</h1>
-            <h2 classname=" font-bold " >Art Therapist, Counselling Psychologist</h2>
+            <h1 className="text-xl font-bold" >Bharti Jaravta</h1>
+            <h2 className=" font-bold " >Art Therapist, Counselling Psychologist</h2>
             <p className="px-10 w-[500px]">
-            At Mind Empowered, Bharti Jaravta serves as a dedicated Art Therapist, using her expertise to help individuals express themselves through the medium of art. With a B.Ed and an M.Phil in Counselling Psychology, she brings a deep understanding of the therapeutic process to her work. Bharti guides our audience in using art as a powerful form of communication, helping them increase self-awareness and address a wide range of personal challenges. Her approach enables participants to explore their emotions, gain insight into their experiences, and find new ways to cope with and overcome the issues they face.
+              At Mind Empowered, Bharti Jaravta serves as a dedicated Art Therapist, using her expertise to help individuals express themselves through the medium of art. With a B.Ed and an M.Phil in Counselling Psychology, she brings a deep understanding of the therapeutic process to her work. Bharti guides our audience in using art as a powerful form of communication, helping them increase self-awareness and address a wide range of personal challenges. Her approach enables participants to explore their emotions, gain insight into their experiences, and find new ways to cope with and overcome the issues they face.
             </p>
           </div>
           <div className="flex flex-col justify-start place-items-center gap-5">
@@ -472,10 +457,10 @@ function App() {
               width={200}
               height={200}
             />
-            <h1 classname="text-xl font-bold" >Jessica Susan John</h1>
-            <h2 classname=" font-bold " >Designer</h2>
+            <h1 className="text-xl font-bold" >Jessica Susan John</h1>
+            <h2 className=" font-bold " >Designer</h2>
             <p className="px-10 w-[500px]">
-            Jessica is a creative self-taught designer with a BCom degree. She has worked on various projects, including designing posters, newsletters, and websites for Mind Empowered. With her passion for design and a background in social volunteering, she brings fresh ideas and enthusiasm to every project she undertakes.
+              Jessica is a creative self-taught designer with a BCom degree. She has worked on various projects, including designing posters, newsletters, and websites for Mind Empowered. With her passion for design and a background in social volunteering, she brings fresh ideas and enthusiasm to every project she undertakes.
             </p>
           </div>
         </div>
@@ -483,7 +468,7 @@ function App() {
 
       <div className="bg-gradient-to-tr from-[#f5f0de] to-white">
         <div className="text-3xl font-bold color-[#461711] pb-2 w-100 text-center mt-10">
-        <Gallery />
+          <Gallery />
         </div>
       </div>
       <div className="bg-gradient-to-tr from-[#f5f0de] to-white">
@@ -515,7 +500,7 @@ function App() {
       <div className="bg-[#461711] text-white p-10 mt-10 text-center">
         Mind Empowered © 2024
       </div>
-    </div>
+    </div >
   );
 }
 
