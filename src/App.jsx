@@ -4,10 +4,12 @@ import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Gallery from './components/gallery';
 import DisplayCalender from "./components/DisplayCalender";
 import Calender from "./components/Calender";
+import { navItems } from "../data";
+import { Link } from "react-router-dom";
 
 // Accordion.js
 
@@ -99,6 +101,19 @@ function App() {
     setAccordion(updatedAccordions);
   };
 
+  //Scroll Navigation
+
+  const missionRef = useRef(null);
+  const faqsRef = useRef(null);
+  const calendarRef = useRef(null);
+  const storyRef = useRef(null);
+  const teamRef = useRef(null);
+
+  // Scroll to a section
+  const scrollToSection = (ref) => {
+    ref.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
 
 
 
@@ -112,13 +127,12 @@ function App() {
           <div>
             <img src="/logo192.png" alt="logo192" className="h-12" />
           </div>
-          <div className="flex gap-4 nav-links">
-            <div>Mission</div>
-            <div>FAQs</div>
-            <div>Calendar</div>
-            <div>Story</div>
-            <div>Team</div>
-            <div>Mission</div>
+          <div className="flex gap-4 cursor-pointer font-semibold">
+            <div onClick={() => scrollToSection(missionRef)}>Mission</div>
+            <div onClick={() => scrollToSection(faqsRef)}>FAQs</div>
+            <div onClick={() => scrollToSection(calendarRef)}>Calendar</div>
+            <div onClick={() => scrollToSection(storyRef)}>Story</div>
+            <div onClick={() => scrollToSection(teamRef)}>Team</div>
           </div>
         </nav>
         <div className="grid place-items-center pt-28">
@@ -163,7 +177,7 @@ function App() {
             <img src="/mission.png" alt="mission" className="w-80" />
           </div>
           <div>
-            <div className="text-5xl  font-bold italic color-[#461711]">
+            <div  ref={missionRef} className="text-5xl  font-bold italic color-[#461711]">
               Our Mission
             </div>
             <div className="mt-2 text-xl">
@@ -182,7 +196,7 @@ function App() {
         </div> */}
 
 
-      <div className="px-28 flex mt-10 justify-center gap-20">
+      <div  ref={faqsRef} className="px-28 flex mt-10 justify-center gap-20">
         <div>
           <div className="text-3xl font-semibold text-[#461711] mt-10">
             Stay Informed with Our Newsletter
@@ -210,7 +224,7 @@ function App() {
             <PhotoProvider>
               <div className="italic mb-2">Our previous newsletters</div>
               <div className="flex gap-4">
-              <PhotoView src="/NLAugust2024.jpeg">
+                <PhotoView src="/NLAugust2024.jpeg">
                   <img src="/NLAugust2024.jpeg" alt="" width={100} />
                 </PhotoView>
                 <PhotoView src="/NLJuly2024.jpeg">
@@ -281,7 +295,7 @@ function App() {
           </div>
         </div>
       </div>
-      <div className="px-28 mt-10">
+      <div ref={storyRef} className="px-28 mt-10">
         <div className="text-3xl font-bold color-[#461711] w-full">
           ME Story
         </div>
@@ -317,7 +331,9 @@ function App() {
         </div>
       </div>
 
+      <div ref={calendarRef}>
       <Calender />
+      </div>
 
       <div className="flex justify-between mt-2 self-start align-baseline">
         <img
@@ -370,7 +386,7 @@ function App() {
       </div>
 
       <div>
-        <div className="text-3xl font-bold color-[#461711] pb-2 w-100 text-center mt-10">
+        <div ref={teamRef} className="text-3xl font-bold color-[#461711] pb-2 w-100 text-center mt-10">
           Meet Our Team
         </div>
         <div className="flex place-items-start justify-center mt-10 w-100">
