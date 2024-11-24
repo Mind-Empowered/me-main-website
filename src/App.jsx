@@ -4,13 +4,10 @@ import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Gallery from './components/gallery';
-import DisplayCalender from "./components/DisplayCalender";
 import Calender from "./components/Calender";
-import { navItems } from "../data";
-import { Link } from "react-router-dom";
-
+import axios from "axios";
 // Accordion.js
 
 function Accordion(props) {
@@ -114,6 +111,25 @@ function App() {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // const [data, setData] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get('https://8yboiwp3ec.execute-api.ap-south-1.amazonaws.com/prod/fetch');
+  //       setData(response.data);
+  //       console.log("Fetch date :", data)
+  //     } catch (error) {
+  //       setError(error.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
 
 
@@ -123,11 +139,11 @@ function App() {
         <img src="/landing-bg.gif" alt="landing-bg" className="w-full" />
       </div>
       <div className="absolute top-0 w-full">
-        <nav className="bg-[#ffdb5b] flex w-full justify-between place-items-center px-20">
+        <nav className="fixed z-100 bg-glass-white backdrop-blur border border-white/30 rounded-b-xl shadow-glass flex w-full justify-between place-items-center px-20">
           <div>
-            <img src="/logo192.png" alt="logo192" className="h-12" />
+            <img src="/newLogo.png" alt="logo192" className="h-24 w-40" />
           </div>
-          <div className="flex gap-4 cursor-pointer font-semibold">
+          <div className="flex gap-4 cursor-pointer font-medium text-[#461711]">
             <div onClick={() => scrollToSection(missionRef)}>Mission</div>
             <div onClick={() => scrollToSection(faqsRef)}>FAQs</div>
             <div onClick={() => scrollToSection(calendarRef)}>Calendar</div>
@@ -135,6 +151,7 @@ function App() {
             <div onClick={() => scrollToSection(teamRef)}>Team</div>
           </div>
         </nav>
+
         <div className="grid place-items-center pt-28">
           <div className="uppercase text-7xl font-bold tracking-widest text-center text-[#461711]">
             Mind <br /> Empowered
@@ -177,7 +194,7 @@ function App() {
             <img src="/mission.png" alt="mission" className="w-80" />
           </div>
           <div>
-            <div  ref={missionRef} className="text-5xl  font-bold italic color-[#461711]">
+            <div ref={missionRef} className="text-5xl  font-bold italic color-[#461711]">
               Our Mission
             </div>
             <div className="mt-2 text-xl">
@@ -196,7 +213,7 @@ function App() {
         </div> */}
 
 
-      <div  ref={faqsRef} className="px-28 flex mt-10 justify-center gap-20">
+      <div ref={faqsRef} className="px-28 flex mt-10 justify-center gap-20">
         <div>
           <div className="text-3xl font-semibold text-[#461711] mt-10">
             Stay Informed with Our Newsletter
@@ -332,18 +349,18 @@ function App() {
       </div>
 
       <div ref={calendarRef}>
-      <Calender />
+        {/* <Calender /> */}
       </div>
 
-      <div className="flex justify-between mt-2 self-start align-baseline">
+      <div className="flex justify-center my-3">
         <img
-          src="/august2024.jpg"
+          src="/novEvent.jpg"
           alt="august2024"
           className="self-start"
           width={600}
           height={600}
         />
-        <div className="flex flex-wrap p-4 gap-5">
+        {/* <div className="flex flex-wrap p-4 gap-5">
           <ImageZoom
             src="/starlet-hackathon.jpg"
             alt="starlet-hackathon"
@@ -352,28 +369,28 @@ function App() {
             height="200"
           />
 
-          <ImageZoom
+          {/* <ImageZoom
             src="/sampleevent.png"
             alt="starlet-hackathon"
             className="self-start"
             width="200"
             height="200"
-          />
-          <ImageZoom
+          /> */}
+          {/* <ImageZoom
             src="/starlet-hackathon.jpg"
             alt="starlet-hackathon"
             className="self-start"
             width="200"
             height="200"
-          />
-          <ImageZoom
+          /> */}
+          {/* <ImageZoom
             src="/sampleevent.png"
             alt="starlet-hackathon"
             className="self-start"
             width="200"
             height="200"
-          />
-        </div>
+          /> */}
+        {/* </div>  */}
       </div>
 
       <div>
