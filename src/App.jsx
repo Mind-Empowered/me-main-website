@@ -141,7 +141,7 @@ function App() {
       <div className="absolute top-0 w-full">
         <nav className="fixed z-100 bg-glass-white backdrop-blur border border-white/30 rounded-b-xl shadow-glass flex w-full justify-between place-items-center px-20">
           <div>
-            <img src="/newLogo.png" alt="logo192" className="h-24 w-40" />
+            <img src="/logo192.png" alt="logo192" className="h-24 w-40" />
           </div>
           <div className="flex gap-4 cursor-pointer font-medium text-[#461711]">
             <div onClick={() => scrollToSection(missionRef)}>Mission</div>
