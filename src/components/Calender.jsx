@@ -1,127 +1,159 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+// import "@fullcalendar/core/main.css";
+// import "@fullcalendar/daygrid/main.css";
+// import "@fullcalendar/list/main.css";
 
-const getDaysInMonth = (month, year) => {
-  return new Date(year, month, 0).getDate(); // returns the last day of the selected month
-};
+const Calendar = () => {
+  const [events, setEvents] = useState([]); // State to hold all events
+  const [selectedEvent, setSelectedEvent] = useState(null); // State to hold selected event for the day view
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // Current month
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Current year
+  const [yearRange, setYearRange] = useState([]); // Range of available years
 
-const getFirstDayOfMonth = (month, year) => {
-  return new Date(year, month - 1, 1).getDay(); // returns the first day of the month (0: Sunday, 6: Saturday)
-};
+  useEffect(() => {
+    // Fetch events data from JSON file
+    fetch("./events.json")
+      .then((response) => response.json())
+      .then((data) => setEvents(data))
+      .catch((error) => console.error("Error fetching events:", error));
 
-function Calendar() {
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [days, setDays] = useState([]);
+    // Generate a range of years (e.g., from 2020 to current year)
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = currentYear - 5; year <= currentYear + 5; year++) {
+      years.push(year);
+    }
+    setYearRange(years);
+  }, []);
 
-  const months = [
-    { name: 'January', value: 1 },
-    { name: 'February', value: 2 },
-    { name: 'March', value: 3 },
-    { name: 'April', value: 4 },
-    { name: 'May', value: 5 },
-    { name: 'June', value: 6 },
-    { name: 'July', value: 7 },
-    { name: 'August', value: 8 },
-    { name: 'September', value: 9 },
-    { name: 'October', value: 10 },
-    { name: 'November', value: 11 },
-    { name: 'December', value: 12 },
-  ];
-
-  const years = Array.from(new Array(50), (v, i) => new Date().getFullYear() - 25 + i); // Generate a range of 50 years
-
-  const handleMonthChange = (e) => {
-    const month = e.target.value;
+  const handleMonthChange = (event) => {
+    const month = event.target.value;
     setSelectedMonth(month);
-    updateCalendar(month, selectedYear);
   };
 
-  const handleYearChange = (e) => {
-    const year = e.target.value;
+  const handleYearChange = (event) => {
+    const year = event.target.value;
     setSelectedYear(year);
-    updateCalendar(selectedMonth, year);
   };
 
-  const updateCalendar = (month, year) => {
-    if (month && year) {
-      const daysInMonth = getDaysInMonth(month, year);
-      const firstDayOfMonth = getFirstDayOfMonth(month, year);
+  const handleGoToDate = () => {
+    const date = new Date(selectedYear, selectedMonth, 1);
+    calendarRef.current.getApi().gotoDate(date);
+  };
 
-      // Create array of days with empty slots for days before the 1st of the month
-      const daysArray = Array.from({ length: firstDayOfMonth }).concat(
-        Array.from({ length: daysInMonth }, (_, i) => i + 1)
-      );
+  const handleDayClick = (date) => {
+    const selectedDate = date.format();
+    const eventForDay = events.filter((event) => event.date === selectedDate);
 
-      setDays(daysArray);
+    if (eventForDay.length > 0) {
+      setSelectedEvent(eventForDay[0]);
+    } else {
+      setSelectedEvent(null);
     }
   };
 
-  const renderCalendar = () => {
-    const weeks = [];
-    for (let i = 0; i < days.length; i += 7) {
-      weeks.push(days.slice(i, i + 7));
-    }
-
-    return (
-      <table className='mt-4'>
-        <thead>
-          <tr className=''>
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <th className='p-2' key={day}>{day}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {weeks.map((week, index) => (
-            <tr key={index}>
-              {week.map((day, i) => (
-                <td className='p-2 text-center' key={i}>{day ? day : ''}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table >
-    );
-  };
+  const calendarRef = React.createRef(); // Reference to the FullCalendar instance
 
   return (
-    <div className='px-28 mt-10'>
-      <h1 className='font-bold'>Month and Year Selection with Calendar</h1>
+    <div>
+      {/* Month and Year Selectors */}
+      <div style={{ marginBottom: "20px", textAlign: "center" }}>
+        <select onChange={handleMonthChange} value={selectedMonth}>
+          {Array.from({ length: 12 }, (_, index) => (
+            <option key={index} value={index}>
+              {new Date(selectedYear, index).toLocaleString("default", { month: "long" })}
+            </option>
+          ))}
+        </select>
 
-      <div className='flex gap-8 my-3'>
-        <div>
-          <label className='font-semibold'>Select Month: </label>
-          <select onChange={handleMonthChange} value={selectedMonth}>
-            <option value="">--Select Month--</option>
-            {months.map((month) => (
-              <option key={month.value} value={month.value} defaultValue={month.name[0]}>
-                {month.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <select onChange={handleYearChange} value={selectedYear}>
+          {yearRange.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
 
-        <div>
-          <label className='font-semibold'>Select Year: </label>
-          <select onChange={handleYearChange} value={selectedYear}>
-            <option value="">--Select Year--</option>
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
+        <button onClick={handleGoToDate} style={{ marginLeft: "10px" }}>
+          View
+        </button>
       </div>
 
-      {days.length > 0 && (
-        <div className=''>
-          <h3>Calendar for {months[selectedMonth - 1]?.name}, {selectedYear}</h3>
-          {renderCalendar()}
+      {/* FullCalendar Section */}
+      <div style={{ maxWidth: "600px", margin: "20px auto" }}>
+        <FullCalendar
+          ref={calendarRef}
+          plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
+          initialView="dayGridMonth"
+          events={events}
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,dayGridWeek,dayGridDay",
+          }}
+          eventContent={(eventInfo) => {
+            return (
+              <div style={{ fontSize: "10px", color: "black", textAlign: "center" }}>
+                {eventInfo.event.title}
+              </div>
+            );
+          }}
+          dayCellContent={(dateInfo) => {
+            const eventForDay = events.find(
+              (event) => event.date === dateInfo.dateStr
+            );
+
+            if (eventForDay) {
+              return (
+                <div style={{ textAlign: "center", position: "relative" }}>
+                  <div style={{ fontSize: "10px", color: "#007bff" }}>
+                    {eventForDay.title}
+                  </div>
+                  <img
+                    src={eventForDay.poster}
+                    alt={`Poster for ${eventForDay.title}`}
+                    style={{
+                      maxWidth: "60%",
+                      maxHeight: "60px",
+                      objectFit: "cover",
+                      borderRadius: "5px",
+                      marginTop: "5px",
+                    }}
+                  />
+                </div>
+              );
+            } else {
+              return null; // No event for this day
+            }
+          }}
+          dateClick={handleDayClick}
+        />
+      </div>
+
+      {/* Day View with Event Poster */}
+      {selectedEvent && (
+        <div style={{ maxWidth: "600px", margin: "20px auto", padding: "10px", border: "1px solid #ddd", borderRadius: "8px" }}>
+          <h3>{selectedEvent.title}</h3>
+          <p>{new Date(selectedEvent.date).toLocaleDateString()}</p>
+          <img
+            src={selectedEvent.poster}
+            alt={`Poster for ${selectedEvent.title}`}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "250px",
+              marginBottom: "10px",
+              borderRadius: "5px",
+            }}
+          />
         </div>
       )}
+
     </div>
   );
-}
+};
 
 export default Calendar;
