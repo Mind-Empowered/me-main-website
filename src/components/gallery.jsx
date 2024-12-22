@@ -1,5 +1,5 @@
 import React from 'react';
-import '../gallery.css';
+import '../App.css';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css"; 
@@ -30,7 +30,7 @@ const imageFilenames = [
 "Dr. Vishal Indla,Hyderabad .jpeg",
 "Dr.Bino Mary Chacko,Kerala.jpeg",
 "Dr.Femi Abdulla, Kerala.jpeg",
-"Dr.Pramod Chandran, Kerala.png",
+"Dr.Pramod Chandran,Kerala.png",
 "Dr.Pritesh Goutam, Bhopal.png",
 "Dr.Priya Nair, Hyderabad.jpeg",
 "Dr.Priya Puri, Kolkatta.jpeg",
@@ -39,9 +39,9 @@ const imageFilenames = [
 "Eeshani Chakraverty, Mumbai.png",
 "Gajalakshmi K, Tamilnadu .JPG",
 "Gayathri,Kerala.jpeg",
-"Himaja A, Bengaluru.jpeg",
+"Himaja A,Bengaluru.jpeg",
 "Jaya Nila,Bengaluru.jpeg",
-"Jennifer Tavares, Bengaluru.jpeg",
+"Jennifer Tavares,Bengaluru.jpeg",
 "Jereesh Elias,UAE .jpeg",
 "Katherine David,Chennai.jpeg",
 "Kavya EcoFeminist, Kerala.jpeg",
@@ -67,9 +67,25 @@ const imageFilenames = [
     slidesToScroll: 1,       
     autoplay: true,          
     autoplaySpeed: 2000,    
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      }
+    ]
   };
   
-  const Gallery = () => {
+  const TrainersGallery = () => {
     return (
       <div className="gallery-wrapper">
         <h1 className="gallery-title">ME Empowerment Coaches</h1>
@@ -94,4 +110,4 @@ const imageFilenames = [
     );
   };
   
-  export default Gallery;
+  export default TrainersGallery;

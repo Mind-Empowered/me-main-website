@@ -1,3 +1,44 @@
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease-out;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 1s ease-out 0.5s both;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 1s ease-out 1s both;
+}
+
+/* Add smooth scrolling to the whole page */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px; /* Increased padding to ensure content isn't hidden under navbar */
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ff7612;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #461711;
+} 
+
 .nav-links > div:hover {
   cursor: pointer;
   text-decoration: underline;
@@ -11,4 +52,322 @@
 .inline-highlight-1 {
   color: #b78319;
   font-weight: bold;
+}
+
+.scrollbar-thin {
+  position: relative;
+  background: #fff;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+  margin: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #ffdb5b, #ff7612);
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
+}
+
+.scrollbar-thin:hover {
+  background: #f8f8f8;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #ff7612, #461711);
+  border: 2px solid transparent;
+}
+
+/* For Firefox */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #ffdb5b transparent;
+} 
+
+/* Navbar styles */
+nav {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Smooth scroll behavior for the whole page */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* height of navbar + some padding */
+}
+
+/* Active nav item styles */
+.nav-item-active {
+  color: #ff7612;
+  position: relative;
+}
+
+.nav-item-active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #ff7612;
+  border-radius: 2px;
+}
+
+.gallery-wrapper {
+  padding: 20px;
+  max-width: 1200px; 
+  margin: 0 auto;  
+}
+
+ .gallery-title {
+  text-align: center;
+  padding-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+ }
+
+ .slick-slide {
+  padding: 0 10px;
+ }
+
+ .gallery-item {
+  text-align: center;
+  display: flex !important;  /* Added to ensure proper layout */
+  flex-direction: column;
+  align-items: center;
+ }
+
+ .gallery-img {
+  width: 100%;          
+  height: 250px;        
+  object-fit: cover;   
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  margin: 0 auto;
+ }
+
+ .gallery-img:hover {
+  transform: scale(1.05);
+ }
+
+ .caption {
+  margin-top: 10px;  /* Changed from padding to margin */
+  font-size: 16px;
+  font-weight: 600;
+  display: block;  /* Ensure it's always visible */
+  width: 100%;
+  text-align: center;
+ }
+
+ .slick-prev, .slick-next {
+  z-index: 1;
+ }
+
+ .slick-prev {
+  left: 25px;
+ }
+
+ .slick-next {
+  right: 25px;
+ }
+/* ... existing styles ... */
+/* Simple, clean bar navigation */
+.slick-dots {
+  position: absolute !important;
+  bottom: -10px !important;
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+  z-index: 999 !important;
+  padding: 5px 0 !important;
+}
+
+.slick-dots li {
+  position: relative !important;
+  display: inline-block !important;
+  width: 8px !important;
+  height: 8px !important;
+  margin: 0 5px !important;
+  padding: 0 !important;
+}
+
+.slick-dots li button {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  display: block !important;
+  width: 8px !important;
+  height: 8px !important;
+  padding: 0 !important;
+  border: none !important;
+  outline: none !important;
+  background: #000000 !important;
+  border-radius: 50% !important;
+}
+
+.slick-dots li.slick-active button {
+  background: #ff7612 !important;
+  transform: scale(1.2) !important;
+}
+
+.slick-dots li button:before,
+.slick-dots li button:after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Add container styles */
+.slick-slider {
+  position: relative;
+  width: 100%;
+  overflow-x: visible;  /* Hide horizontal overflow */
+  overflow-y: visible; /* Keep vertical overflow visible for dots */
+  margin-bottom: 30px;
+}
+
+/* Testimonial Styles */
+.testimonial-section {
+  padding: 4rem 2rem;
+  background: linear-gradient(to bottom, #f8f8f8, #fff);
+}
+
+.testimonial-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.testimonial-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.testimonial-card::before {
+  content: '"';
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  font-size: 4rem;
+  color: #ff7612;
+  opacity: 0.2;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-content {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.author-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ff7612;
+}
+
+.author-details {
+  flex: 1;
+}
+
+.author-name {
+  font-weight: bold;
+  color: #461711;
+  font-size: 1.1rem;
+}
+
+.author-title {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .gallery-img {
+    height: 250px;
+  }
+  
+  .caption {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .testimonial-card {
+    padding: 1.5rem;
+  }
+}
+
+/* Optional: Add a masonry-like layout for gallery */
+@media (min-width: 768px) {
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+}
+
+/* Add these new styles */
+.mission-vision-card {
+  min-height: 400px;  /* Set a fixed minimum height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  flex: 1;  /* Make cards take equal space */
+  max-width: 500px; /* Maximum width to maintain readability */
+}
+
+.mission-vision-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  transition: all 0.3s ease;
+}
+
+.mission-vision-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  margin: 1rem auto;
+  padding: 0 2rem;
+  max-width: 1200px;
+}
+
+@media (min-width: 768px) {
+  .mission-vision-container {
+    flex-direction: row;
+    align-items: stretch;
+  }
 }

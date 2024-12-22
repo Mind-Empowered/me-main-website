@@ -1,0 +1,16 @@
+/* Add or update these styles */
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+#__next {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+* {
+    outline: 1px solid red;
+} 
