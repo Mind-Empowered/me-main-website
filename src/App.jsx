@@ -1,26 +1,22 @@
 import "./App.css";
+import { useRef, useState } from "react";
 
-import { ImageZoom } from "./ImageZoom";
-import ImageGallery from "react-image-gallery";
-import "react-image-gallery/styles/css/image-gallery.css";
-import "react-photo-view/dist/react-photo-view.css";
-import { useEffect, useRef, useState } from "react";
+import {
+  Hero,
+  VisionMission,
+  Newsletter,
+  Objectives,
+  Story,
+  EventCalendar,
+  Testimonials,
+  Team,
+  TrainersGallery,
+  Photogallery,
+  FAQ,
+} from "./components";
 
-import TrainersGallery from './components/gallery';
-import EventCalendar from "./components/Calender";
-import Newsletter from "./components/Newsletter";
-import Team from "./components/team";
-import Objectives from "./components/objectives";
-import VisionMission from "./components/visionmission";
-import Story from "./components/story"
-import Hero from "./components/hero"
-import Testimonials from "./components/testimonials";
-import FAQ from "./components/faq";
-import Photogallery from "./components/photogallery";
 
 function App() {
-  
-
   const missionRef = useRef(null);
   const faqsRef = useRef(null);
   const calendarRef = useRef(null);
@@ -41,7 +37,6 @@ function App() {
     setIsMobileMenuOpen(false); 
   };
 
-
   return (
     <div className="min-h-screen">
       <div className="relative">
@@ -49,6 +44,7 @@ function App() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
       </div>
 
+      {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#ffdb5b]/95 backdrop-blur-sm shadow-lg transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -155,6 +151,7 @@ function App() {
 
       <Hero />
 
+      {/* Chatbot Icon */}
       <div className="z-2 bottom-6 right-6 fixed transition-transform hover:scale-110 cursor-pointer">
         <div className="bg-gradient-to-br from-[#ff7612] to-[#ffdb5b] rounded-full shadow-lg">
           <img src="/logo192.png" alt="chat" className="w-20" />
@@ -190,10 +187,8 @@ function App() {
         <Team />
       </div>     
 
-      <div className="bg-gradient-to-tr from-[#f5f0de] to-white">
-        <div className="text-3xl font-bold color-[#461711] pb-2 w-100 text-center mt-10">
+      <div className="bg-gradient-to-tr from-[#f5f0de] to-white text-3xl font-bold color-[#461711] pb-2 w-100 text-center mt-10">
           <TrainersGallery />
-        </div>
       </div>
 
       <div className="bg-gradient-to-tr from-[#f5f0de] to-white">
