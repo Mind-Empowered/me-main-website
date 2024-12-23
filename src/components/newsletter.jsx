@@ -1,5 +1,3 @@
-import React from 'react';
-import '../App.css';
 import { PhotoProvider, PhotoView } from "react-photo-view";
 
 const Newsletter = () => {
