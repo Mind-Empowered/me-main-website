@@ -15,13 +15,12 @@
   animation: fadeIn 1s ease-out 1s both;
 }
 
-/* Add smooth scrolling to the whole page */
+
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 100px; /* Increased padding to ensure content isn't hidden under navbar */
+  scroll-padding-top: 100px; 
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -89,25 +88,21 @@ html {
   border: 2px solid transparent;
 }
 
-/* For Firefox */
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: #ffdb5b transparent;
 } 
 
-/* Navbar styles */
 nav {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
 
-/* Smooth scroll behavior for the whole page */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 80px; /* height of navbar + some padding */
+  scroll-padding-top: 80px; 
 }
 
-/* Active nav item styles */
 .nav-item-active {
   color: #ff7612;
   position: relative;
@@ -143,7 +138,7 @@ html {
 
  .gallery-item {
   text-align: center;
-  display: flex !important;  /* Added to ensure proper layout */
+  display: flex !important;  
   flex-direction: column;
   align-items: center;
  }
@@ -163,10 +158,10 @@ html {
  }
 
  .caption {
-  margin-top: 10px;  /* Changed from padding to margin */
+  margin-top: 10px;  
   font-size: 16px;
   font-weight: 600;
-  display: block;  /* Ensure it's always visible */
+  display: block;  
   width: 100%;
   text-align: center;
  }
@@ -182,8 +177,7 @@ html {
  .slick-next {
   right: 25px;
  }
-/* ... existing styles ... */
-/* Simple, clean bar navigation */
+
 .slick-dots {
   position: absolute !important;
   bottom: -10px !important;
@@ -230,16 +224,14 @@ html {
   content: none !important;
 }
 
-/* Add container styles */
 .slick-slider {
   position: relative;
   width: 100%;
-  overflow-x: visible;  /* Hide horizontal overflow */
-  overflow-y: visible; /* Keep vertical overflow visible for dots */
+  overflow-x: visible;  
+  overflow-y: visible; 
   margin-bottom: 30px;
 }
 
-/* Testimonial Styles */
 .testimonial-section {
   padding: 4rem 2rem;
   background: linear-gradient(to bottom, #f8f8f8, #fff);
@@ -311,7 +303,6 @@ html {
   font-size: 0.9rem;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .gallery-img {
     height: 250px;
@@ -327,7 +318,6 @@ html {
   }
 }
 
-/* Optional: Add a masonry-like layout for gallery */
 @media (min-width: 768px) {
   .gallery-grid {
     display: grid;
@@ -336,9 +326,8 @@ html {
   }
 }
 
-/* Add these new styles */
 .mission-vision-card {
-  min-height: 400px;  /* Set a fixed minimum height */
+  min-height: 400px;  
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -346,8 +335,8 @@ html {
   border-radius: 0.75rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   padding: 2rem;
-  flex: 1;  /* Make cards take equal space */
-  max-width: 500px; /* Maximum width to maintain readability */
+  flex: 1;  
+  max-width: 500px; 
 }
 
 .mission-vision-card:hover {
@@ -370,4 +359,89 @@ html {
     flex-direction: row;
     align-items: stretch;
   }
+}
+
+body {
+  overflow-x: hidden; 
+}
+
+.calendarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.calendar {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.eventsContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.eventGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.eventCard {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.eventCard:hover {
+  transform: translateY(-4px);
+}
+
+.eventPoster {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.eventCard h3 {
+  padding: 1rem;
+  margin: 0;
+  font-size: 1.1rem;
+}
+.event-posters {
+  padding: 20px;
+}
+
+.poster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.poster-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.poster-item img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.poster-item p {
+  padding: 10px;
+  margin: 0;
 }
