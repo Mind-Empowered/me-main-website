@@ -1,8 +1,8 @@
 
 const Team = () => {
     return (
-        <div className="bg-gradient-to-tr from-[#f5f0de] to-white py-20">
-            <div className="text-3xl font-bold color-[#461711] w-full text-center mb-16">
+        <div className="bg-gradient-to-tr from-[#f5f0de] to-white py-10">
+            <div className="text-[#461711] text-3xl font-bold color-[#461711] w-full text-center mb-10">
             Meet Our Team
             </div>
             
@@ -57,7 +57,7 @@ const Team = () => {
                     </div>
                     
                     <h1 className="text-2xl font-bold text-[#461711] mb-1">{member.name}</h1>
-                    <h2 className="font-semibold text-[#ff7612] mb-4">{member.role}</h2>
+                    <h2 className="font-semibold text-center text-[#ff7612] mb-4">{member.role}</h2>
                     
                     <div className="relative">
                     <p className="text-center px-4 max-w-lg h-32 overflow-y-auto scrollbar-thin hover:shadow-inner rounded-lg p-2 transition-all duration-300 hover:bg-gradient-to-r hover:from-white hover:to-[#f5f0de]/20">

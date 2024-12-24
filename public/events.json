@@ -47,7 +47,7 @@
     {
         "title": "Mind Empowered Event",
         "date": "2024-03-08",
-        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/03/8.png"
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/03/8.jpeg"
     },
     {
         "title": "Learn How to Say No",
@@ -87,17 +87,17 @@
     {
         "title": "Mother's Day Special",
         "date": "2024-05-12",
-        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/05/12.png"
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/05/12.jpeg"
     },
     {
         "title": "Transform with ME",
         "date": "2024-05-18",
-        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/05/18.png"
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/05/18.jpeg"
     },
     {
         "title": "ME Workshop",
         "date": "2024-05-25",
-        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/05/25.png"
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/05/25.jpeg"
     },
     {
         "title": "Tell ME Your Story",
@@ -107,11 +107,66 @@
     {
         "title": "Express with ME",
         "date": "2024-06-07",
-        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/06/7.png"
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/06/7.jpg"
     },
     {
         "title": "Art Therapy",
         "date": "2024-06-15",
         "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/06/15.png"
+    },
+    {
+        "title": "Smile with ME",
+        "date": "2024-06-20",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/06/20.jpeg"
+    },
+    {
+        "title": "Every-Body is Beautiful",
+        "date": "2024-06-29",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/06/29.png"
+    },
+    {
+        "title": "Career Opportunities in IT",
+        "date": "2024-07-13",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/07/13.jpeg"
+    },
+    {
+        "title": "Tell ME Your Story",
+        "date": "2024-07-13",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/07/13.png"
+    },
+    {
+        "title": "ME Warriors",
+        "date": "2024-07-26",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/07/26.png"
+    },
+    {
+        "title": "Overcoming Social Media Addiction",
+        "date": "2024-08-03",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/08/3.jpeg"
+    },
+    {
+        "title": "Starlet 3.0",
+        "date": "2024-08-10",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/08/10.jpeg"
+    },
+    {
+        "title": "Starlet 3.0",
+        "date": "2024-08-11",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/08/11.jpeg"
+    },
+    {
+        "title": "Tell ME Your Story",
+        "date": "2024-08-17",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/08/17.png"
+    },
+    {
+        "title": "Laughter Yoga",
+        "date": "2024-08-24",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/08/24.png"
+    },
+    {
+        "title": "Voice Your Worries",
+        "date": "2024-08-31",
+        "poster": "https://eventposters.s3.ap-south-1.amazonaws.com/2024/08/31.jpg"
     }
 ]
