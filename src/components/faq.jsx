@@ -66,7 +66,7 @@ const FAQ = () => {
 
   return (
     <div className="p-4">
-      <div className="text-3xl font-bold color-[#461711] pb-2 w-100 mt-10">
+      <div className="text-3xl font-bold text-[#461711] pb-2 w-100 mt-10">
           FAQs
         </div>
         <div className="mt-5">

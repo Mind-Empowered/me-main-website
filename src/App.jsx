@@ -173,7 +173,7 @@ function App() {
       </div>
 
       <div ref={calendarRef} className="px-4 md:px-28 py-10">
-        <div className="text-3xl font-bold color-[#461711] mb-8">
+        <div className="text-3xl text-[#461711] font-bold color-[#461711] mb-8">
           Events
         </div>
         <EventCalendar />

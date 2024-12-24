@@ -60,13 +60,13 @@ const imageFilenames = [
 
   const s3BucketURL = "https://me-website-assets.s3.ap-south-1.amazonaws.com/trainers/";
   const settings = {
-    dots: true,             
-    infinite: true,         
-    speed: 500,             
-    slidesToShow: 5,         
-    slidesToScroll: 1,       
-    autoplay: true,          
-    autoplaySpeed: 2000,    
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 2000,
     responsive: [
       {
         breakpoint: 1024,
@@ -87,21 +87,20 @@ const imageFilenames = [
   
   const TrainersGallery = () => {
     return (
-      <div className="gallery-wrapper">
-        <h1 className="gallery-title">ME Empowerment Coaches</h1>
+      <div className="p-5 max-w-5xl mx-auto">
+        <h1 className="text-center text-[#461711] pb-5 text-3xl font-bold">ME Empowerment Coaches</h1>
         <Slider {...settings}>
           {imageFilenames.map((filename, index) => {
-            
             const trainerName = filename.substring(0, filename.lastIndexOf('.')).trim();
             
             return (
-              <div key={index} className="gallery-item">
+              <div key={index} className="text-center flex flex-col items-center p-2">
                 <img
                   src={`${s3BucketURL}${filename}`} 
                   alt={trainerName} 
-                  className="gallery-img"
+                  className="w-full h-64 object-cover rounded-lg shadow-md transition-transform duration-300 ease-in-out hover:scale-105 mx-auto"
                 />
-                <div className="caption">{trainerName}</div>
+                <div className="mt-2 text-base font-semibold w-full text-center">{trainerName}</div>
               </div>
             );
           })}

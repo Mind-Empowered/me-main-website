@@ -35,7 +35,7 @@ const Photogallery = () => {
     return (
         <div className="p-4">
             <div className="gallery-wrapper">
-          <div className="gallery-title">
+          <div className="text-3xl text-[#461711] font-bold color-[#461711] w-full text-center">
             Photo Gallery
           </div>
           <div className="mx-28 mt-10">

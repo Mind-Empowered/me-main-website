@@ -3,7 +3,6 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import '../App.css';
 
 const Calendar = () => {
   const [events, setEvents] = useState([]);
@@ -58,25 +57,35 @@ const Calendar = () => {
   const monthPosters = getMonthPosters();
 
   return (
-    <div style={{ display: "flex", gap: "20px", margin: "20px" }}>
+    <div className="flex gap-5 m-5">
       {/* Left Side: Calendar */}
-      <div style={{ flex: "1" }}>
-        <div style={{ marginBottom: "20px", textAlign: "center" }}>
-          <select onChange={handleMonthChange} value={selectedMonth}>
+      <div className="flex-1">
+        <div className="mb-5 text-center">
+          <select 
+            onChange={handleMonthChange} 
+            value={selectedMonth}
+            className="border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-300 transition duration-150 ease-in-out mr-2"
+          >
             {Array.from({ length: 12 }, (_, index) => (
               <option key={index} value={index}>
                 {new Date(selectedYear, index).toLocaleString("default", { month: "long" })}
               </option>
             ))}
           </select>
-          <select onChange={handleYearChange} value={selectedYear}>
+          <select 
+            onChange={handleYearChange} 
+            value={selectedYear}
+            className="border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-300 transition duration-150 ease-in-out"
+          >
             {yearRange.map((year) => (
               <option key={year} value={year}>
                 {year}
               </option>
             ))}
           </select>
-          <button onClick={handleGoToDate} style={{ marginLeft: "10px" }}>
+          <button 
+            onClick={handleGoToDate} 
+            className="ml-2.5 px-4 py-1.5 bg-yellow-300 border-none rounded text-[#461711] font-semibold cursor-pointer transition-all duration-200 ease-in-out shadow-md hover:bg-yellow-400">
             View
           </button>
         </div>
@@ -95,70 +104,38 @@ const Calendar = () => {
       </div>
 
       {/* Right Side: Posters and Event Details */}
-      <div style={{ flex: "1", border: "1px solid #ddd", borderRadius: "8px", padding: "20px" }}>
+      <div className="flex-1 border border-gray-300 rounded p-5">
         {monthPosters.length > 0 ? (
-          <>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "center",
-                gap: "20px",
-              }}
-            >
-              {monthPosters.map((event, index) => (
-                <img
-                  key={index}
-                  src={event.poster}
-                  alt={`Poster for ${event.title}`}
-                  style={{
-                    maxWidth: "150px",
-                    maxHeight: "150px",
-                    objectFit: "cover",
-                    borderRadius: "5px",
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    cursor: "pointer", // Make posters clickable
-                  }}
-                  onClick={() => handlePosterClick(event)} // Handle poster click
-                />
-              ))}
-            </div>
-          </>
+          <div className="flex flex-wrap justify-center gap-5">
+            {monthPosters.map((event, index) => (
+              <img
+                key={index}
+                src={event.poster}
+                alt={`Poster for ${event.title}`}
+                className="max-w-[150px] max-h-[150px] object-cover rounded shadow cursor-pointer"
+                onClick={() => handlePosterClick(event)}
+              />
+            ))}
+          </div>
         ) : (
-          <p style={{ textAlign: "center", color: "#999" }}>
+          <p className="text-center text-gray-500">
             Click on a date or month to view event details.
           </p>
         )}
 
         {selectedEvent && (
-          <div style={{ marginTop: "20px" }}>
-            <h3
-              style={{
-                fontSize: "24px",
-                fontWeight: "bold",
-                textAlign: "center",
-                color: "#007bff",
-                marginBottom: "10px",
-              }}
-            >
+          <div className="mt-5">
+            <h3 className="text-2xl font-bold text-center text-blue-500 mb-2">
               {selectedEvent.title}
             </h3>
-            <p style={{ fontSize: "16px", color: "#555", textAlign: "center" }}>
+            <p className="text-lg text-center text-gray-700">
               <strong>Date:</strong> {new Date(selectedEvent.date).toLocaleDateString("en-CA")}
             </p>
-            <div style={{ textAlign: "center" }}>
+            <div className="text-center">
               <img
                 src={selectedEvent.poster}
                 alt={`Poster for ${selectedEvent.title}`}
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: "300px",
-                  objectFit: "contain",
-                  margin: "0 auto",
-                  display: "block",
-                  borderRadius: "5px",
-                }}
-                // onError={(e) => (e.target.src = "/fallback-poster.jpg")}
+                className="max-w-full max-h-[300px] object-contain mx-auto rounded"
               />
             </div>
           </div>

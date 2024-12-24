@@ -2,7 +2,7 @@
 const Story = () => {
     return (
 <div>
-<div className="text-3xl font-bold color-[#461711] w-full">
+<div className="text-3xl font-bold text-[#461711] w-full">
           ME Story
         </div>
         <div className="flex gap-10 mt-5">
