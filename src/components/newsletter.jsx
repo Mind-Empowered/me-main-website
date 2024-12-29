@@ -29,6 +29,12 @@ const Newsletter = () => {
             <PhotoProvider>
               <div className="italic mb-2">Our previous newsletters</div>
               <div className="flex gap-4">
+              <PhotoView src="/NL/NLOct2024.jpg">
+                  <img src="/NL/NLOct2024.jpg" alt="" width={100} />
+                </PhotoView>
+                <PhotoView src="/NL/NLSept2024.jpeg">
+                  <img src="/NL/NLSept2024.jpeg" alt="" width={100} />
+                </PhotoView>
                 <PhotoView src="/NL/NLAugust2024.jpeg">
                   <img src="/NL/NLAugust2024.jpeg" alt="" width={100} />
                 </PhotoView>
@@ -47,8 +53,8 @@ const Newsletter = () => {
         </div>
         <div className="w-100">
           <PhotoProvider>
-            <PhotoView src="/NL/NLSept2024.jpeg">
-              <img src="/NL/NLSept2024.jpeg" alt="" width={600} />
+            <PhotoView src="/NL/NLnov2024.jpg">
+              <img src="/NL/NLnov2024.jpg" alt="" width={600} />
             </PhotoView>
           </PhotoProvider>
         </div>
