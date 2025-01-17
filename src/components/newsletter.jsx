@@ -1,4 +1,5 @@
 import { PhotoProvider, PhotoView } from "react-photo-view";
+import 'react-photo-view/dist/react-photo-view.css';
 
 const Newsletter = () => {
     return (
@@ -26,11 +27,11 @@ const Newsletter = () => {
           </div>
           <img src="/newsletter-gh.png" alt="" className="w-80" />
           <div>
-            <PhotoProvider>
+            <PhotoProvider maskOpacity={0.8}>
               <div className="italic mb-2">Our previous newsletters</div>
               <div className="flex gap-4">
-              <PhotoView src="/NL/NLOct2024.jpg">
-                  <img src="/NL/NLOct2024.jpg" alt="" width={100} />
+                <PhotoView src="/NL/NLOct2024.jpg">
+                  <img src="/NL/NLOct2024.jpg" alt="October Newsletter" className="cursor-pointer" width={100} />
                 </PhotoView>
                 <PhotoView src="/NL/NLSept2024.jpeg">
                   <img src="/NL/NLSept2024.jpeg" alt="" width={100} />
@@ -52,9 +53,9 @@ const Newsletter = () => {
           </div>
         </div>
         <div className="w-100">
-          <PhotoProvider>
+          <PhotoProvider maskOpacity={0.8}>
             <PhotoView src="/NL/NLnov2024.jpg">
-              <img src="/NL/NLnov2024.jpg" alt="" width={600} />
+              <img src="/NL/NLnov2024.jpg" alt="November Newsletter" className="cursor-pointer" width={600} />
             </PhotoView>
           </PhotoProvider>
         </div>
