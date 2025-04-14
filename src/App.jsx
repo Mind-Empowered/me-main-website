@@ -13,6 +13,7 @@ import {
   TrainersGallery,
   Photogallery,
   FAQ,
+  Ytp
 } from "./components";
 
 
