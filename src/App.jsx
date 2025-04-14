@@ -170,6 +170,9 @@ function App() {
 
       <div ref={storyRef} className="px-28 mt-10">
         <Story />
+        <div className="mt-10">
+         <Ytp />
+        </div>
       </div>
 
       <div ref={calendarRef} className="px-4 md:px-28 py-10">
