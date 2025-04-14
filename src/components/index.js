@@ -10,3 +10,4 @@ export { default as Team } from "./team";
 export { default as TrainersGallery } from "./gallery";
 export { default as Photogallery } from "./photogallery";
 export { default as FAQ } from "./faq";
+export { default as Ytp } from "./ytp";
