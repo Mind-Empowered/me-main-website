@@ -30,8 +30,19 @@ const Newsletter = () => {
             <PhotoProvider maskOpacity={0.8}>
               <div className="italic mb-2">Our previous newsletters</div>
               <div className="flex gap-4">
+                {/*
+                <PhotoView src="/NL/NLmarch2025.jpeg">
+                  <img src="/NL/NLmarch2025.jpeg" alt="March Newsletter" className="cursor-pointer" width={100} />
+                </PhotoView>*/}
+              
+                <PhotoView src="/NL/NLfeb2025.jpeg">
+                  <img src="/NL/NLfeb2025.jpeg" alt="" width={100} />
+                </PhotoView>
+                <PhotoView src="/NL/NLnov2024.jpg">
+                  <img src="/NL/NLnov2024.jpg" alt="" width={100} />
+                </PhotoView>
                 <PhotoView src="/NL/NLOct2024.jpg">
-                  <img src="/NL/NLOct2024.jpg" alt="October Newsletter" className="cursor-pointer" width={100} />
+                  <img src="/NL/NLOct2024.jpg" alt="" width={100} />
                 </PhotoView>
                 <PhotoView src="/NL/NLSept2024.jpeg">
                   <img src="/NL/NLSept2024.jpeg" alt="" width={100} />
@@ -39,23 +50,14 @@ const Newsletter = () => {
                 <PhotoView src="/NL/NLAugust2024.jpeg">
                   <img src="/NL/NLAugust2024.jpeg" alt="" width={100} />
                 </PhotoView>
-                <PhotoView src="/NL/NLJuly2024.jpeg">
-                  <img src="/NL/NLJuly2024.jpeg" alt="" width={100} />
-                </PhotoView>
-                <PhotoView src="/NL/NLJune2024.jpg">
-                  <img src="/NL/NLJune2024.jpg" alt="" width={100} />
-                </PhotoView>
-                <PhotoView src="/NL/NLMay2024.jpg">
-                  <img src="/NL/NLMay2024.jpg" alt="" width={100} />
-                </PhotoView>
               </div>
             </PhotoProvider>
           </div>
         </div>
         <div className="w-100">
           <PhotoProvider maskOpacity={0.8}>
-            <PhotoView src="/NL/NLnov2024.jpg">
-              <img src="/NL/NLnov2024.jpg" alt="November Newsletter" className="cursor-pointer" width={600} />
+            <PhotoView src="/NL/NLmarch2025.jpeg">
+              <img src="/NL/NLmarch2025.jpeg" alt="November Newsletter" className="cursor-pointer" width={600} />
             </PhotoView>
           </PhotoProvider>
         </div>
