@@ -55,7 +55,7 @@ const Calendar = () => {
           onChange={(e) => setSelectedYear(e.target.value)}
           className="ml-3 px-3 py-2 border rounded-md"
         >
-          {[2021, 2022, 2023, 2024].map((year) => (
+          {[2021, 2022, 2023, 2024,2025].map((year) => (
             <option key={year} value={String(year)}>
               {year}
             </option>

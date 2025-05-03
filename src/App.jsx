@@ -132,7 +132,7 @@ function App() {
               onClick={() => scrollToSection(calendarRef)}
               className="block w-full text-left px-3 py-2 text-[#461711] hover:bg-[#ff7612]/10 rounded-md font-medium transition-colors duration-200"
             >
-              Calendar
+              Calender
             </button>
             <button
               onClick={() => scrollToSection(storyRef)}
