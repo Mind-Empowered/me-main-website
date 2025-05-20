@@ -235,13 +235,28 @@
         "poster": "https://me-website-assets.s3.ap-south-1.amazonaws.com/calendar/2024/dec.jpeg"
     },
     {
+        "month": "0",
+        "year": "2025",
+        "poster": "https://me-website-assets.s3.ap-south-1.amazonaws.com/calendar/2025/january2025.jpeg"
+    },
+    {
         "month": "1",
         "year": "2025",
-        "poster": "https://me-website-assets.s3.ap-south-1.amazonaws.com/calendar/2025/feb2025.jpeg"
+        "poster": "https://me-website-assets.s3.ap-south-1.amazonaws.com/calendar/2025/february2025.jpeg"
     },
     {
         "month": "2",
         "year": "2025",
-        "poster": "https://me-website-assets.s3.ap-south-1.amazonaws.com/calendar/2025/march2025.jpeg"
+        "poster": "https://me-website-assets.s3.ap-south-1.amazonaws.com/calendar/2025/mar2025.jpeg"
+    },
+    {
+        "month": "3",
+        "year": "2025",
+        "poster": "https://me-website-assets.s3.ap-south-1.amazonaws.com/calendar/2025/april2025.jpeg"
+    },
+    {
+        "month": "4",
+        "year": "2025",
+        "poster": "https://me-website-assets.s3.ap-south-1.amazonaws.com/calendar/2025/may2025.jpeg"
     }
 ]
