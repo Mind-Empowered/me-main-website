@@ -44,11 +44,11 @@ const Newsletter = () => {
                 <PhotoView src="/NL/NLjan2025.jpeg">
                   <img src="/NL/NLjan2025.jpeg" alt="" width={100} />
                 </PhotoView>
+                <PhotoView src="/NL/NLdecember2024.png">
+                  <img src="/NL/NLdecember2024.png" alt="" width={100} />
+                </PhotoView>
                 <PhotoView src="/NL/NLnov2024.jpg">
                   <img src="/NL/NLnov2024.jpg" alt="" width={100} />
-                </PhotoView>
-                <PhotoView src="/NL/NLOct2024.jpg">
-                  <img src="/NL/NLOct2024.jpg" alt="" width={100} />
                 </PhotoView>
               </div>
             </PhotoProvider>
