@@ -2,7 +2,8 @@
   "name": "mind-empowered",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://<snehadilip1>.github.io/<me-main-website>",
+  "homepage": "https://mind-empowered.github.io/me-main-website",
+
   "type": "module",
   "scripts": {
     "dev": "vite",
