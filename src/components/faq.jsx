@@ -4,20 +4,20 @@ const Accordion = ({ title, data, isOpen, toggleAccordion }) => {
   return (
     <div className="border-b border-gray-200 last:border-b-0">
       <button
-        className="group w-full p-6 md:p-12 lg:p-16 text-left flex justify-between items-center hover:bg-gray-50 transition-all duration-300 focus:outline-none focus:bg-gray-50"
+        className="group w-full p-4 md:p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-all duration-300 focus:outline-none focus:bg-gray-50"
         onClick={toggleAccordion}
         aria-expanded={isOpen}
       >
-        <span className="font-bold text-xl md:text-3xl lg:text-6xl text-[#461711] pr-4 md:pr-8 tracking-wide transition-colors duration-300 group-hover:text-[#ff7612]">{title}</span>
+        <span className="font-bold text-lg md:text-xl text-[#461711] pr-4 tracking-wide transition-colors duration-300 group-hover:text-[#ff7612]">{title}</span>
         <span className={`flex-shrink-0 transform ${isOpen ? "rotate-180" : "rotate-0"} transition-transform duration-300 text-[#ff7612]`}>
-          <svg className="w-8 h-8 md:w-12 lg:w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </span>
       </button>
       {isOpen && (
-        <div className="p-6 md:p-12 lg:p-16 bg-gradient-to-r from-gray-50 to-white text-gray-700 leading-relaxed text-lg md:text-2xl lg:text-4xl border-t border-gray-100 tracking-wide">
-          <p className="text-xl md:text-3xl lg:text-5xl">{data}</p>
+        <div className="p-4 md:p-6 bg-gradient-to-r from-gray-50 to-white text-gray-700 leading-relaxed text-base md:text-lg border-t border-gray-100 tracking-wide">
+          <p>{data}</p>
         </div>
       )}
     </div>
@@ -58,16 +58,16 @@ const FAQ = () => {
 
   return (
     <div>
-      <div className="text-center mb-16">
-        <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-bold text-[#461711] mb-6 md:mb-10 leading-none">
+      <div className="text-center mb-12">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#461711] mb-4 md:mb-6 leading-none">
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]">
             Frequently Asked Questions
           </span>
         </h1>
-        <p className="text-lg sm:text-xl md:text-3xl lg:text-5xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
+        <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
           Find answers to common questions about our programs and services
         </p>
-        <div className="w-24 h-1.5 lg:w-36 lg:h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-6 md:mt-10"></div>
+        <div className="w-20 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-4 md:mt-6"></div>
       </div>
       
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
