@@ -1,31 +1,46 @@
 name: Deploy React App to GitHub Pages
 
 on:
+  # Runs on pushes targeting the 'deploy' branch
   push:
     branches:
       - deploy
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
+      - name: 1. Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: 2. Setup Node.js with Dependency Caching
         uses: actions/setup-node@v3
         with:
           node-version: '20.11.1'
+          cache: 'npm' # Caches npm dependencies for faster subsequent builds
 
-      - name: Install dependencies
+      - name: 3. Install Dependencies
+        # Use 'npm ci' for deterministic builds in CI environments
         run: npm ci
 
-      - name: Build the React app
+      - name: 4. Build Static Files
+        # Runs the build script defined in package.json
         run: npm run build
 
-      - name: Deploy to GitHub Pages
+      - name: 5. Create CNAME for Custom Domain
+        # Creates the CNAME file required by GitHub Pages for your custom domain
+        run: echo "mind-empowered.org" > dist/CNAME
+
+      - name: 6. Deploy to GitHub Pages
+        # Uses the popular action to deploy the build output to the gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
+          # This token is provided by GitHub Actions for authentication
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # The directory that contains the built static files
           publish_dir: ./dist
