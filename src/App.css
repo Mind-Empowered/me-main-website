@@ -3,6 +3,26 @@
   to { opacity: 1; }
 }
 
+@keyframes pulse-gentle {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 1s ease-out;
 }
@@ -15,10 +35,17 @@
   animation: fadeIn 1s ease-out 1s both;
 }
 
+.animate-fade-in-fast {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-fade-in-up-smooth {
+  animation: fadeInUp 0.8s ease-in-out;
+}
+
 
 html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 100px; 
+  scroll-padding-top: 192px; /* Increased for taller navbar (h-48 = 192px) */
 }
 
 ::-webkit-scrollbar {
@@ -98,9 +125,13 @@ nav {
   -webkit-backdrop-filter: blur(8px);
 }
 
+nav h1, nav p, nav button {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+
 html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 80px; 
+  scroll-padding-top: 192px; /* Increased for taller navbar (h-48 = 192px) */
 }
 
 .nav-item-active {
@@ -143,51 +174,313 @@ html {
 }
 
 body {
-  overflow-x: hidden; 
+  overflow-x: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+}
+
+/* Enhanced responsive design */
+@media (max-width: 475px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 475px) and (max-width: 640px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 768px) {
+  .hero-title {
+    font-size: 4rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hero-title {
+    font-size: 5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.75rem;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1280px) {
+  .hero-title {
+    font-size: 6rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1280px) and (max-width: 1536px) {
+  .hero-title {
+    font-size: 7rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 1536px) and (max-width: 1920px) {
+  .hero-title {
+    font-size: 8rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 2.5rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .hero-title {
+    font-size: 10rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 3rem;
+  }
+}
+
+/* Responsive container max-widths */
+@media (min-width: 2560px) {
+  .container-responsive {
+    max-width: 2400px;
+  }
+}
+
+@media (min-width: 3840px) {
+  .container-responsive {
+    max-width: 3600px;
+  }
+}
+
+/* Better image gallery styling */
+.testimonial-gallery .image-gallery-slide .image-gallery-image {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #eee;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  height: 60vh;
+  object-fit: contain !important;
+}
+
+.testimonial-gallery .image-gallery-thumbnails-container {
+  margin-top: 2rem;
+}
+
+.testimonial-gallery .image-gallery-thumbnail {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 3px solid transparent;
+  transition: all 0.3s ease;
+  width: 240px;
+  height: 300px;
+}
+
+.testimonial-gallery .image-gallery-thumbnail:hover {
+  border-color: #ffdb5b;
+}
+
+.testimonial-gallery .image-gallery-thumbnail.active {
+  border-color: #ff7612;
+  transform: scale(1.1);
+}
+
+/* Photo Gallery Enhanced Styles */
+.photo-gallery-enhanced .image-gallery-slide .image-gallery-image {
+  border-radius: 1rem;
+  height: 90vh; /* Makes the main image much taller */
+  object-fit: contain !important;
+}
+
+.photo-gallery-enhanced .image-gallery-thumbnails-container {
+  margin-top: 2rem;
+}
+
+.photo-gallery-enhanced .image-gallery-thumbnail {
+  border-radius: 0.75rem;
+  border: 4px solid transparent;
+  width: 180px; /* Larger thumbnail width */
+  height: 120px; /* Larger thumbnail height */
+  transition: all 0.3s ease;
+}
+
+
+/* Improved carousel styling */
+.slick-slide {
+  padding: 0 10px;
+}
+
+.slick-slide img {
+  border-radius: 12px;
+}
+
+/* Better focus states for accessibility */
+button:focus,
+input:focus,
+select:focus {
+  outline: 2px solid #ff7612;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition: all 0.3s ease;
+}
+
+/* Improved text selection */
+::selection {
+  background-color: #ff7612;
+  color: white;
+}
+
+::-moz-selection {
+  background-color: #ff7612;
+  color: white;
 }
 
 .slick-dots {
-  position: absolute !important;
-  bottom: -10px !important;
-  display: flex !important;
-  justify-content: center !important;
-  width: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  list-style: none !important;
-  z-index: 999 !important;
-  padding: 5px 0 !important;
+  bottom: -30px !important; /* Move dots further down */
 }
 
 .slick-dots li {
-  position: relative !important;
-  display: inline-block !important;
-  width: 8px !important;
-  height: 8px !important;
-  margin: 0 5px !important;
-  padding: 0 !important;
+  margin: 0 8px !important;
+  width: auto !important;
+  height: auto !important;
 }
 
 .slick-dots li button {
   font-size: 0 !important;
   line-height: 0 !important;
   display: block !important;
-  width: 8px !important;
-  height: 8px !important;
+  width: 24px !important; /* Default width for inactive dots */
+  height: 6px !important; /* Height of the bar */
   padding: 0 !important;
   border: none !important;
   outline: none !important;
-  background: #000000 !important;
-  border-radius: 50% !important;
+  background: #d1d5db !important; /* Inactive color (gray-300) */
+  border-radius: 3px !important;
+  transition: all 0.3s ease !important;
 }
 
 .slick-dots li.slick-active button {
-  background: #ff7612 !important;
-  transform: scale(1.2) !important;
+  background: #ff7612 !important; /* Active color */
+  width: 48px !important; /* Active dot is wider */
 }
 
 .slick-dots li button:before,
 .slick-dots li button:after {
   display: none !important;
   content: none !important;
+}
+
+/* Accessibility Styles */
+html.font-size-small {
+  font-size: 14px; /* 0.875rem base */
+}
+
+html.font-size-large {
+  font-size: 18px; /* 1.125rem base */
+}
+
+html.font-size-xlarge {
+  font-size: 20px; /* 1.25rem base */
+}
+
+/* High Contrast Mode */
+html.high-contrast {
+  --hc-bg: white;
+  --hc-text: black;
+  --hc-accent: #0055a5;
+  --hc-accent-text: white;
+  --hc-border: black;
+}
+
+html.high-contrast .content-section,
+html.high-contrast footer,
+html.high-contrast .accessibility-menu {
+  background: var(--hc-bg) !important;
+  background-image: none !important;
+}
+
+html.high-contrast h1, html.high-contrast h2, html.high-contrast h3, html.high-contrast h4, html.high-contrast p, html.high-contrast span, html.high-contrast li, html.high-contrast label {
+  color: var(--hc-text) !important;
+  text-shadow: none !important;
+}
+
+html.high-contrast button,
+html.high-contrast input[type="button"],
+html.high-contrast input[type="submit"] {
+  background: var(--hc-accent) !important;
+  color: var(--hc-accent-text) !important;
+  border: 2px solid var(--hc-border) !important;
+}
+
+.reduced-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Improved spacing and layout */
+.section-spacing {
+  padding: 3rem 0;
+}
+
+@media (min-width: 768px) {
+  .section-spacing {
+    padding: 4rem 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-spacing {
+    padding: 5rem 0;
+  }
+}
+
+/* Vision/Mission Card Hover Glow */
+.group:hover {
+  box-shadow: 0 10px 25px -5px rgba(255, 118, 18, 0.1), 0 8px 10px -6px rgba(255, 118, 18, 0.1);
+}
+
+/* Marquee Animation for Previous Newsletters */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 160s linear infinite;
+}
+
+.hover\:pause:hover {
+  animation-play-state: paused;
+}
+
+/* Previous Newsletters Hover Effect */
+.group\/gallery:hover .group\/item:not(:hover) {
+  opacity: 0.5;
+  filter: blur(2px);
+  transform: scale(0.95);
 }

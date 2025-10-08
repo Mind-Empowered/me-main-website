@@ -2,22 +2,25 @@ import React, { useState } from "react";
 
 function Accordion(props) {
     return (
-      <div className="border rounded-md mb-1">
+      <div className="border-b border-gray-200 last:border-b-0">
         <button
-          className="w-full p-4 text-left bg-gray-200
-                          hover:bg-gray-300 transition duration-300"
+          className="group w-full p-12 lg:p-16 text-left flex justify-between items-center hover:bg-gray-50 transition-all duration-300 focus:outline-none focus:bg-gray-50"
           onClick={props.toggleAccordion}
         >
-          {props.title}
+          <span className="font-bold text-4xl lg:text-6xl text-[#461711] pr-8 tracking-wide transition-colors duration-300 group-hover:text-[#ff7612]">{props.title}</span>
           <span
-            className={`float-right transform ${props.isOpen ? "rotate-180" : "rotate-0"
-              }
-              transition-transform duration-300`}
+            className={`flex-shrink-0 transform ${props.isOpen ? "rotate-180" : "rotate-0"} transition-transform duration-300 text-[#ff7612]`}
           >
-            &#9660;
+            <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
           </span>
         </button>
-        {props.isOpen && <div className="p-4 bg-white">{props.data}</div>}
+        {props.isOpen && (
+          <div className="p-12 lg:p-16 bg-gradient-to-r from-gray-50 to-white text-gray-700 leading-relaxed text-4xl border-t border-gray-100 tracking-wide">
+            <p className="text-5xl">{props.data}</p>
+          </div>
+        )}
       </div>
     );
   }
@@ -65,22 +68,30 @@ const FAQ = () => {
   };
 
   return (
-    <div className="p-4">
-      <div className="text-3xl font-bold text-[#461711] pb-2 w-100 mt-10">
-          FAQs
-        </div>
-        <div className="mt-5">
-          {accordions.map((accordion) => (
-            <Accordion
-              key={accordion.key}
-              title={accordion.title}
-              data={accordion.data}
-              isOpen={accordion.isOpen}
-              toggleAccordion={() => toggleAccordion(accordion.key)}
-              className="hover:shadow-md transition-shadow duration-300"
-            />
-          ))}
-        </div>
+    <div>
+      <div className="text-center mb-16">
+        <h1 className="text-8xl sm:text-9xl md:text-[10rem] font-bold text-[#461711] mb-10 leading-none">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]">
+            Frequently Asked Questions
+          </span>
+        </h1>
+        <p className="text-5xl sm:text-6xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
+          Find answers to common questions about our programs and services
+        </p>
+        <div className="w-36 h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-10"></div>
+      </div>
+      
+      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        {accordions.map((accordion) => (
+          <Accordion
+            key={accordion.key}
+            title={accordion.title}
+            data={accordion.data}
+            isOpen={accordion.isOpen}
+            toggleAccordion={() => toggleAccordion(accordion.key)}
+          />
+        ))}
+      </div>
     </div>
   );
 };
