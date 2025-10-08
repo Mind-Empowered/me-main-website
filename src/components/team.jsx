@@ -26,11 +26,11 @@ const imageFilenames = [
 const CustomArrow = ({ direction, onClick }) => (
   <button
     onClick={onClick}
-    className={`absolute top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-8 shadow-lg hover:shadow-xl transition-all duration-300 ${
+    className={`absolute top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-4 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300 ${
       direction === 'prev' ? 'left-0 md:-left-5' : 'right-0 md:-right-5'
     }`}
   >
-    <svg className="w-16 h-16 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-8 h-8 md:w-16 md:h-16 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       {direction === 'prev' ? (
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
       ) : (
@@ -49,23 +49,24 @@ const sliderSettings = {
   responsive: [
     { breakpoint: 1280, settings: { slidesToShow: 4, slidesToScroll: 1 } },
     { breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 1, arrows: false } },
-    { breakpoint: 600, settings: { slidesToShow: 2, slidesToScroll: 1 } }
+    { breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+    { breakpoint: 600, settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false } }
   ]
 };
 
 const Team = () => {
     return (
         <div>
-            <div className="text-center mb-24">
-                <h1 className="text-8xl sm:text-9xl md:text-[10rem] font-bold text-[#461711] mb-10 leading-none">
+            <div className="text-center mb-16 md:mb-24">
+                <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-bold text-[#461711] mb-6 md:mb-10 leading-none">
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]">
                         Meet Our Team
                     </span>
                 </h1>
-                <p className="text-5xl sm:text-6xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
+                <p className="text-lg sm:text-xl md:text-3xl lg:text-5xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
                     The passionate individuals driving mental health awareness and empowerment
                 </p>
-                <div className="w-36 h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-10"></div>
+                <div className="w-24 h-1.5 lg:w-36 lg:h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-6 md:mt-10"></div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-20">
@@ -107,9 +108,9 @@ const Team = () => {
                 bio: "Jessica is a creative self-taught designer with a BCom degree. She has worked on various projects, including designing posters, newsletters, and websites for Mind Empowered. With her passion for design and a background in social volunteering, she brings fresh ideas and enthusiasm to every project she undertakes."
                 }
             ].map((member, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
+                <div key={index} className="bg-white rounded-2xl shadow-xl p-6 md:p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
                 <div className="flex flex-col items-center text-center h-full">
-                    <div className="relative w-[32rem] h-[32rem] lg:w-[36rem] lg:h-[36rem] mb-16">
+                    <div className="relative w-48 h-48 sm:w-64 sm:h-64 lg:w-[36rem] lg:h-[36rem] mb-8 lg:mb-16">
                     <img
                         src={member.image}
                         alt={member.name}
@@ -118,11 +119,11 @@ const Team = () => {
                     <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#ff7612]/10 to-transparent" />
                     </div>
                     
-                    <h3 className="text-8xl sm:text-9xl font-bold text-[#461711] mb-6 tracking-wide">{member.name}</h3>
-                    <h4 className="font-semibold text-[#ff7612] mb-8 text-5xl sm:text-6xl">{member.role}</h4>
+                    <h3 className="text-3xl sm:text-4xl lg:text-8xl font-bold text-[#461711] mb-2 lg:mb-6 tracking-wide">{member.name}</h3>
+                    <h4 className="font-semibold text-[#ff7612] mb-4 lg:mb-8 text-xl sm:text-2xl lg:text-6xl">{member.role}</h4>
                     
                     <div className="flex-grow flex items-center">
-                    <p className="text-5xl sm:text-6xl text-gray-700 leading-relaxed tracking-wide">
+                    <p className="text-base sm:text-lg lg:text-5xl text-gray-700 leading-relaxed tracking-wide">
                         {member.bio}
                     </p>
                     </div>
@@ -133,14 +134,14 @@ const Team = () => {
 
             {/* ME Empowerment Coaches Section */}
             <div className="mt-16 lg:mt-24">
-                <div className="text-center mb-24">
-                    <h2 className="text-8xl sm:text-9xl md:text-[10rem] font-bold text-[#461711] mb-10 leading-none">
+                <div className="text-center mb-16 md:mb-24">
+                    <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-bold text-[#461711] mb-6 md:mb-10 leading-none">
                         ME Empowerment Coaches
                     </h2>
-                    <p className="text-5xl sm:text-6xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
+                    <p className="text-lg sm:text-xl md:text-3xl lg:text-5xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
                         Meet our dedicated team of mental health professionals and empowerment coaches
                     </p>
-                    <div className="w-36 h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-10"></div>
+                    <div className="w-24 h-1.5 lg:w-36 lg:h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-6 md:mt-10"></div>
                 </div>
                 
                 <div className="bg-gradient-to-br from-[#f5f0de] to-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100">
@@ -156,11 +157,11 @@ const Team = () => {
                                     <img
                                     src={`${s3BucketURL}${filename}`} 
                                     alt={trainerName} 
-                                    className="w-full h-[48rem] object-contain rounded-xl shadow-md transition-transform duration-300 ease-in-out hover:scale-105 mx-auto"
+                                    className="w-full h-64 sm:h-96 lg:h-[48rem] object-contain rounded-xl shadow-md transition-transform duration-300 ease-in-out hover:scale-105 mx-auto"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
                                 </div>
-                                <div className="text-5xl font-bold text-[#461711] leading-tight">
+                                <div className="text-lg md:text-2xl lg:text-5xl font-bold text-[#461711] leading-tight">
                                     {trainerName}
                                 </div>
                                 </div>
@@ -174,7 +175,7 @@ const Team = () => {
 
             {/* International Collaboration Section */}
             <div className="mt-16 lg:mt-24">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-[40rem] items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-24 items-center">
                     {/* Image Column */}
                     <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 lg:col-span-1">
                         <img
@@ -186,13 +187,13 @@ const Team = () => {
 
                     {/* Text Column */}
                     <div className="text-center lg:text-left lg:col-span-2">
-                        <h2 className="text-8xl sm:text-9xl md:text-[10rem] font-bold text-[#461711] mb-10 leading-none">
+                        <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-bold text-[#461711] mb-6 md:mb-10 leading-none">
                             International Collaboration
                         </h2>
-                        <p className="text-5xl sm:text-6xl text-gray-600 mx-auto lg:mx-0 leading-relaxed">
+                        <p className="text-lg sm:text-xl md:text-3xl lg:text-5xl text-gray-600 mx-auto lg:mx-0 leading-relaxed">
                             Partnering globally to break mental health stigma
                         </p>
-                        <div className="w-36 h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto lg:mx-0 rounded-full mt-10"></div>
+                        <div className="w-24 h-1.5 lg:w-36 lg:h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto lg:mx-0 rounded-full mt-6 md:mt-10"></div>
                     </div>
                 </div>
             </div>
