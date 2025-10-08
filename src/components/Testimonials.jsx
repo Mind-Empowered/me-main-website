@@ -34,19 +34,19 @@ const Testimonials = () => {
   return (
     <div>
       <div>
-        <div className="text-center mb-24">
-          <h2 className="text-8xl sm:text-9xl md:text-[10rem] font-bold text-[#461711] mb-10 leading-none">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#461711] mb-4 leading-none">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]">
               Student Testimonials
             </span>
           </h2>
-          <p className="text-5xl sm:text-6xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Hear from students who have been empowered by our programs
           </p>
-          <div className="w-36 h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-10"></div>
+          <div className="w-20 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-4"></div>
         </div>
         
-        <div className="bg-gradient-to-br from-[#f5f0de] to-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-xl p-4 lg:p-6 border border-gray-100">
           {testimonials.length > 0 ? (
             <ImageGallery 
               items={testimonials} 
@@ -62,9 +62,9 @@ const Testimonials = () => {
                 <button
                   onClick={onClick}
                   disabled={disabled}
-                  className="absolute left-0 md:-left-5 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-6 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="absolute left-0 md:-left-5 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <svg className="w-16 h-16 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
@@ -73,9 +73,9 @@ const Testimonials = () => {
                 <button
                   onClick={onClick}
                   disabled={disabled}
-                  className="absolute right-0 md:-right-5 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-6 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="absolute right-0 md:-right-5 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <svg className="w-16 h-16 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
