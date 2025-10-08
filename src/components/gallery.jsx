@@ -87,24 +87,44 @@ const imageFilenames = [
   
   const TrainersGallery = () => {
     return (
-      <div className="p-5 max-w-5xl mx-auto">
-        <h1 className="text-center text-[#461711] pb-5 text-3xl font-bold">ME Empowerment Coaches</h1>
-        <Slider {...settings}>
-          {imageFilenames.map((filename, index) => {
-            const trainerName = filename.substring(0, filename.lastIndexOf('.')).trim();
-            
-            return (
-              <div key={index} className="text-center flex flex-col items-center p-2">
-                <img
-                  src={`${s3BucketURL}${filename}`} 
-                  alt={trainerName} 
-                  className="w-full h-64 object-cover rounded-lg shadow-md transition-transform duration-300 ease-in-out hover:scale-105 mx-auto"
-                />
-                <div className="mt-2 text-base font-semibold w-full text-center">{trainerName}</div>
-              </div>
-            );
-          })}
-        </Slider>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#461711] mb-6">
+            ME Empowerment Coaches
+          </h1>
+          <p className="text-xl lg:text-2xl text-gray-600 font-medium mb-8">
+            Meet our dedicated team of mental health professionals and empowerment coaches
+          </p>
+          <div className="w-24 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full"></div>
+        </div>
+        
+        <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100">
+          <Slider {...settings}>
+            {imageFilenames.map((filename, index) => {
+              const trainerName = filename.substring(0, filename.lastIndexOf('.')).trim();
+              
+              return (
+                <div key={index} className="px-4">
+                  <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div className="text-center">
+                      <div className="relative mb-4">
+                        <img
+                          src={`${s3BucketURL}${filename}`} 
+                          alt={trainerName} 
+                          className="w-full h-64 object-cover rounded-lg shadow-md transition-transform duration-300 ease-in-out hover:scale-105 mx-auto"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
+                      </div>
+                      <div className="text-lg lg:text-xl font-bold text-[#461711] leading-tight">
+                        {trainerName}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </Slider>
+        </div>
       </div>
     );
   };
