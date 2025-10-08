@@ -44,10 +44,6 @@
 }
 
 
-html {
-  scroll-padding-top: 192px; /* Increased for taller navbar (h-48 = 192px) */
-}
-
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -65,16 +61,6 @@ html {
   background: #461711;
 } 
 
-.nav-links > div:hover {
-  cursor: pointer;
-  text-decoration: underline;
-  color: red;
-}
-.nav-links > div {
-  padding: 10px;
-  font-weight: bold;
-  color: #461711;
-}
 .inline-highlight-1 {
   color: #b78319;
   font-weight: bold;
@@ -129,10 +115,6 @@ nav h1, nav p, nav button {
   text-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-
-html {
-  scroll-padding-top: 192px; /* Increased for taller navbar (h-48 = 192px) */
-}
 
 .nav-item-active {
   color: #ff7612;
@@ -393,13 +375,22 @@ select:focus {
   content: none !important;
 }
 
+/* Base font size for normal mode */
+html {
+  font-size: 16px; /* Default base font size */
+}
+
 /* Accessibility Styles */
 html.font-size-small {
-  font-size: 14px; /* 0.875rem base */
+  font-size: 14px; /* Smaller base font size */
+}
+
+html.font-size-normal {
+  font-size: 16px; /* Normal base font size */
 }
 
 html.font-size-large {
-  font-size: 18px; /* 1.125rem base */
+  font-size: 18px; /* Larger base font size */
 }
 
 html.font-size-xlarge {
