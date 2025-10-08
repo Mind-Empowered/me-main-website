@@ -1,3 +1,31 @@
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-BoldItalic.otf') format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -157,8 +185,10 @@ nav h1, nav p, nav button {
 
 body {
   overflow-x: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.6;
+  font-family: var(--font-family, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif);
+  line-height: var(--line-height, 1.6);
+  letter-spacing: var(--letter-spacing, normal);
+  word-spacing: var(--word-spacing, normal);
 }
 
 /* Enhanced responsive design */
@@ -274,8 +304,8 @@ body {
   overflow: hidden;
   border: 3px solid transparent;
   transition: all 0.3s ease;
-  width: 240px;
-  height: 300px;
+  width: 120px;
+  height: 150px;
 }
 
 .testimonial-gallery .image-gallery-thumbnail:hover {
@@ -301,8 +331,8 @@ body {
 .photo-gallery-enhanced .image-gallery-thumbnail {
   border-radius: 0.75rem;
   border: 4px solid transparent;
-  width: 180px; /* Larger thumbnail width */
-  height: 120px; /* Larger thumbnail height */
+  width: 90px;
+  height: 60px;
   transition: all 0.3s ease;
 }
 
@@ -354,19 +384,18 @@ select:focus {
   font-size: 0 !important;
   line-height: 0 !important;
   display: block !important;
-  width: 24px !important; /* Default width for inactive dots */
-  height: 6px !important; /* Height of the bar */
+  width: 8px !important;
+  height: 8px !important;
   padding: 0 !important;
   border: none !important;
   outline: none !important;
   background: #d1d5db !important; /* Inactive color (gray-300) */
-  border-radius: 3px !important;
-  transition: all 0.3s ease !important;
+  border-radius: 50% !important;
+  transition: background-color 0.3s ease !important;
 }
 
 .slick-dots li.slick-active button {
   background: #ff7612 !important; /* Active color */
-  width: 48px !important; /* Active dot is wider */
 }
 
 .slick-dots li button:before,
@@ -404,6 +433,19 @@ html.high-contrast {
   --hc-accent: #0055a5;
   --hc-accent-text: white;
   --hc-border: black;
+}
+
+/* Readable Font */
+html.readable-font body {
+  font-family: 'OpenDyslexic', 'Arial', 'Helvetica', sans-serif;
+}
+
+/* Highlight Links */
+html.highlight-links a,
+html.highlight-links button {
+  text-decoration: underline !important;
+  background-color: #ffdb5b;
+  color: #461711 !important;
 }
 
 html.high-contrast .content-section,
@@ -474,4 +516,57 @@ html.high-contrast input[type="submit"] {
   opacity: 0.5;
   filter: blur(2px);
   transform: scale(0.95);
+}
+
+/* --- Custom Range Slider Styles --- */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Webkit (Chrome, Safari, etc.) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -6px; /* Vertically center thumb */
+  background-color: #ff7612;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.1);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 4px;
+  background: #e5e7eb; /* gray-200 */
+}
+
+/* Mozilla (Firefox) */
+input[type="range"]::-moz-range-thumb {
+  background-color: #ff7612;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+  transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 4px;
+  background: #e5e7eb; /* gray-200 */
 }

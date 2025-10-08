@@ -26,11 +26,11 @@ const imageFilenames = [
 const CustomArrow = ({ direction, onClick }) => (
   <button
     onClick={onClick}
-    className={`absolute top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-4 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300 ${
+    className={`absolute top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 md:p-3 shadow-lg hover:shadow-xl transition-all duration-300 ${
       direction === 'prev' ? 'left-0 md:-left-5' : 'right-0 md:-right-5'
     }`}
   >
-    <svg className="w-8 h-8 md:w-16 md:h-16 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-6 h-6 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       {direction === 'prev' ? (
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
       ) : (
@@ -57,19 +57,19 @@ const sliderSettings = {
 const Team = () => {
     return (
         <div>
-            <div className="text-center mb-16 md:mb-24">
-                <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-bold text-[#461711] mb-6 md:mb-10 leading-none">
+            <div className="text-center mb-6 md:mb-8">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#461711] mb-3 md:mb-4 leading-none">
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]">
                         Meet Our Team
                     </span>
                 </h1>
-                <p className="text-lg sm:text-xl md:text-3xl lg:text-5xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
+                <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
                     The passionate individuals driving mental health awareness and empowerment
                 </p>
-                <div className="w-24 h-1.5 lg:w-36 lg:h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-6 md:mt-10"></div>
+                <div className="w-10 h-0.5 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-3 md:mt-4"></div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-20">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
             {[
                 {
                 image: "/team/founder1.png",
@@ -108,22 +108,22 @@ const Team = () => {
                 bio: "Jessica is a creative self-taught designer with a BCom degree. She has worked on various projects, including designing posters, newsletters, and websites for Mind Empowered. With her passion for design and a background in social volunteering, she brings fresh ideas and enthusiasm to every project she undertakes."
                 }
             ].map((member, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-xl p-6 md:p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
+                <div key={index} className="bg-white rounded-xl shadow-xl p-4 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 flex flex-col">
                 <div className="flex flex-col items-center text-center h-full">
-                    <div className="relative w-48 h-48 sm:w-64 sm:h-64 lg:w-[36rem] lg:h-[36rem] mb-8 lg:mb-16">
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-3">
                     <img
                         src={member.image}
                         alt={member.name}
-                        className="rounded-full w-full h-full object-cover border-4 border-[#ff7612]/20 shadow-lg"
+                        className="rounded-full w-full h-full object-cover border-2 border-[#ff7612]/20 shadow-lg"
                     />
                     <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#ff7612]/10 to-transparent" />
                     </div>
                     
-                    <h3 className="text-3xl sm:text-4xl lg:text-8xl font-bold text-[#461711] mb-2 lg:mb-6 tracking-wide">{member.name}</h3>
-                    <h4 className="font-semibold text-[#ff7612] mb-4 lg:mb-8 text-xl sm:text-2xl lg:text-6xl">{member.role}</h4>
+                    <h3 className="text-lg font-bold text-[#461711] mb-0.5 tracking-wide">{member.name}</h3>
+                    <h4 className="font-semibold text-[#ff7612] mb-2 text-base">{member.role}</h4>
                     
                     <div className="flex-grow flex items-center">
-                    <p className="text-base sm:text-lg lg:text-5xl text-gray-700 leading-relaxed tracking-wide">
+                    <p className="text-sm text-gray-700 leading-relaxed tracking-wide">
                         {member.bio}
                     </p>
                     </div>
@@ -133,35 +133,35 @@ const Team = () => {
             </div>
 
             {/* ME Empowerment Coaches Section */}
-            <div className="mt-16 lg:mt-24">
-                <div className="text-center mb-16 md:mb-24">
-                    <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-bold text-[#461711] mb-6 md:mb-10 leading-none">
-                        ME Empowerment Coaches
+            <div className="mt-8 lg:mt-12">
+                <div className="text-center mb-6 md:mb-8">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#461711] mb-2 md:mb-3 leading-none">
+                        ME Coaches
                     </h2>
-                    <p className="text-lg sm:text-xl md:text-3xl lg:text-5xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
+                    <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-xl mx-auto leading-relaxed">
                         Meet our dedicated team of mental health professionals and empowerment coaches
                     </p>
-                    <div className="w-24 h-1.5 lg:w-36 lg:h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-6 md:mt-10"></div>
+                    <div className="w-10 h-0.5 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-2 md:mt-3"></div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-[#f5f0de] to-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100">
+                <div className="bg-gradient-to-br from-[#f5f0de] to-white rounded-xl shadow-xl p-4 md:p-8 border border-gray-100">
                     <Slider {...sliderSettings}>
                         {imageFilenames.map((filename, index) => {
                         const trainerName = filename.substring(0, filename.lastIndexOf('.')).trim();
                         
                         return (
-                            <div key={index} className="px-2">
-                            <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                            <div key={index} className="px-2 md:px-4">
+                            <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                                 <div className="text-center">
-                                <div className="relative mb-6">
+                                <div className="relative mb-4">
                                     <img
                                     src={`${s3BucketURL}${filename}`} 
                                     alt={trainerName} 
-                                    className="w-full h-64 sm:h-96 lg:h-[48rem] object-contain rounded-xl shadow-md transition-transform duration-300 ease-in-out hover:scale-105 mx-auto"
+                                    className="w-full h-24 sm:h-32 object-contain rounded-xl shadow-md transition-transform duration-300 ease-in-out hover:scale-105 mx-auto"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
                                 </div>
-                                <div className="text-lg md:text-2xl lg:text-5xl font-bold text-[#461711] leading-tight">
+                                <div className="text-base md:text-lg font-bold text-[#461711] leading-tight">
                                     {trainerName}
                                 </div>
                                 </div>
@@ -174,26 +174,26 @@ const Team = () => {
             </div>
 
             {/* International Collaboration Section */}
-            <div className="mt-16 lg:mt-24">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-24 items-center">
+            <div className="mt-8 lg:mt-12">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 items-center">
                     {/* Image Column */}
-                    <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 lg:col-span-1">
+                    <div className="bg-white rounded-2xl shadow-xl p-2 border border-gray-100 lg:col-span-1">
                         <img
                         src="https://me-website-assets.s3.ap-south-1.amazonaws.com/ytp_collab/ytp.jpeg"
                         alt="International Collaboration - The Yellow Tulip Project"
-                        className="w-full h-auto rounded-xl shadow-lg"
+                        className="w-full h-auto rounded-lg shadow-lg"
                         />
                     </div>
 
                     {/* Text Column */}
                     <div className="text-center lg:text-left lg:col-span-2">
-                        <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-bold text-[#461711] mb-6 md:mb-10 leading-none">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#461711] mb-2 md:mb-3 leading-none">
                             International Collaboration
                         </h2>
-                        <p className="text-lg sm:text-xl md:text-3xl lg:text-5xl text-gray-600 mx-auto lg:mx-0 leading-relaxed">
+                        <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                             Partnering globally to break mental health stigma
                         </p>
-                        <div className="w-24 h-1.5 lg:w-36 lg:h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto lg:mx-0 rounded-full mt-6 md:mt-10"></div>
+                        <div className="w-10 h-0.5 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto lg:mx-0 rounded-full mt-2 md:mt-3"></div>
                     </div>
                 </div>
             </div>

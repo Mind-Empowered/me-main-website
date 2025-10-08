@@ -39,40 +39,40 @@ const Newsletter = () => {
 
     return (
         <div>
-          <div className="text-center mb-28">
-            <h1 className="text-8xl sm:text-9xl md:text-[10rem] font-bold text-[#461711] mb-10 leading-none">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#461711] mb-4 leading-none">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]">
                 Stay Informed
               </span>
             </h1>
-            <div className="w-36 h-2 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto mb-10 rounded-full"></div>
-            <p className="text-5xl sm:text-6xl text-gray-600 max-w-5xl mx-auto leading-relaxed">
+            <div className="w-20 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto mb-4 rounded-full"></div>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Subscribe to receive updates and latest news via email
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-14 lg:gap-20 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* Newsletter Subscription */}
-            <div className="space-y-8 lg:col-span-2">
-              <div className="bg-white rounded-3xl shadow-xl p-16 lg:p-24 border border-gray-100">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div className="space-y-6 lg:col-span-2">
+              <div className="bg-white rounded-3xl shadow-xl p-6 lg:p-8 border border-gray-100">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                   {/* Left Column: Text and Form */}
-                  <div className="space-y-12">
-                    <h2 className="text-8xl sm:text-9xl font-bold text-[#461711] mb-6">
+                  <div className="space-y-6">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-[#461711]">
                       Newsletter Subscription
                     </h2>
-                    <p className="text-5xl sm:text-6xl text-gray-600 leading-relaxed">
+                    <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
                       Get the latest updates on our mental health initiatives, upcoming events, and resources delivered directly to your inbox.
                     </p>
-                    <div className="max-w-3xl w-full">
-                      <div className="flex flex-col sm:flex-row gap-12">
+                    <div className="w-full">
+                      <div className="flex flex-col sm:flex-row gap-4">
                         <input
                           type="email"
                           placeholder="Enter your email address"
-                          className="flex-1 border-8 border-[#461711] rounded-2xl p-14 text-6xl placeholder:text-5xl focus:ring-8 focus:ring-[#ff7612] focus:border-transparent outline-none transition-all duration-200"
+                          className="flex-1 border-2 border-[#461711] rounded-lg p-3 text-base placeholder:text-base focus:ring-2 focus:ring-[#ff7612] focus:border-transparent outline-none transition-all duration-200"
                         />
                         <button
-                          className="rounded-2xl text-white font-bold bg-[#461711] px-28 py-14 hover:bg-[#ff7612] transition-all duration-300 text-6xl shadow-2xl hover:shadow-2xl transform hover:-translate-y-2"
+                          className="rounded-lg text-white font-bold bg-[#461711] px-6 py-3 hover:bg-[#ff7612] transition-all duration-300 text-base shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                         >
                           Subscribe
                         </button>
@@ -81,27 +81,27 @@ const Newsletter = () => {
                   </div>
                   {/* Right Column: Image */}
                   <div className="flex items-center justify-center">
-                    <img src="/newsletter-gh.png" alt="Newsletter Graphic" className="w-full max-w-4xl" />
+                    <img src="/newsletter-gh.png" alt="Newsletter Graphic" className="w-full max-w-sm" />
                   </div>
               </div>
               </div>
 
               {/* Previous Newsletters */}
-              <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 overflow-hidden">
-                <h2 className="text-8xl sm:text-9xl font-bold text-[#461711] mb-12 text-center">
+              <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100 overflow-hidden">
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#461711] mb-6 text-center">
                   Previous Newsletters
                 </h2>
                 <div className="relative">
-                    <button onClick={() => scroll('left')} className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-6 shadow-lg transition-all duration-300">
-                        <svg className="w-12 h-12 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                    <button onClick={() => scroll('left')} className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300">
+                        <svg className="w-6 h-6 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                     </button>
                     <PhotoProvider maskOpacity={0.9}>
-                    <div ref={scrollContainerRef} className="relative w-full h-[48rem] flex items-center overflow-x-hidden">
+                    <div ref={scrollContainerRef} className="relative w-full h-[8rem] flex items-center overflow-x-hidden">
                         <div className="flex animate-marquee hover:pause group/gallery">
                         {[...newsletters.slice(1), ...newsletters.slice(1)].map((newsletter, index) => (
-                            <div key={index} className="group/item flex-shrink-0 mx-8">
+                            <div key={index} className="group/item flex-shrink-0 mx-4">
                             <PhotoView src={newsletter.src}>
-                                <div className="w-[36rem] h-[48rem] rounded-lg overflow-hidden shadow-md transition-all duration-300 group-hover/item:scale-110 group-hover/item:shadow-2xl">
+                                <div className="w-[6rem] h-[8rem] rounded-lg overflow-hidden shadow-md transition-all duration-300 group-hover/item:scale-110 group-hover/item:shadow-2xl">
                                 <img 
                                     src={newsletter.src} 
                                     alt={newsletter.alt} 
@@ -114,20 +114,20 @@ const Newsletter = () => {
                         </div>
                     </div>
                     </PhotoProvider>
-                    <button onClick={() => scroll('right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-6 shadow-lg transition-all duration-300">
-                        <svg className="w-12 h-12 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                    <button onClick={() => scroll('right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300">
+                        <svg className="w-6 h-6 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                     </button>
                 </div>
               </div>
             </div>
 
             {/* Latest Newsletter Display */}
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 mt-6 lg:mt-0">
               <div className="text-center">
-                <h2 className="text-8xl sm:text-9xl font-bold text-[#461711] mb-12">
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#461711] mb-6">
                   Latest Newsletter
                 </h2>
-                <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-gray-100 p-4">
+                <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-gray-100 p-2">
                   <PhotoProvider maskOpacity={0.9}>
                     <PhotoView src={latestNewsletter.src}>
                       <img 
