@@ -1,5 +1,6 @@
 import React from 'react';
 import Slider from 'react-slick';
+import { translations } from '../translations';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css"; 
 
@@ -26,11 +27,11 @@ const imageFilenames = [
 const CustomArrow = ({ direction, onClick }) => (
   <button
     onClick={onClick}
-    className={`absolute top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 md:p-3 shadow-lg hover:shadow-xl transition-all duration-300 ${
-      direction === 'prev' ? 'left-0 md:-left-5' : 'right-0 md:-right-5'
+    className={`absolute top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-1 shadow-md hover:shadow-lg transition-all duration-300 ${
+      direction === 'prev' ? 'left-0 md:-left-4' : 'right-0 md:-right-4'
     }`}
   >
-    <svg className="w-6 h-6 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       {direction === 'prev' ? (
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
       ) : (
@@ -54,77 +55,40 @@ const sliderSettings = {
   ]
 };
 
-const Team = () => {
+const Team = ({ language }) => {
     return (
         <div>
-            <div className="text-center mb-6 md:mb-8">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#461711] mb-3 md:mb-4 leading-none">
+            <div className="text-center mb-12">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#461711] mb-4 leading-none">
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]">
-                        Meet Our Team
+                        {translations.team.title[language]}
                     </span>
                 </h1>
-                <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                    The passionate individuals driving mental health awareness and empowerment
+                <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    {translations.team.subtitle[language]}
                 </p>
-                <div className="w-10 h-0.5 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-3 md:mt-4"></div>
+                <div className="w-20 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-4"></div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
-            {[
-                {
-                image: "/team/founder1.png",
-                name: "Maya Menon",
-                role: "Founder",
-                bio: "A superb communicator, Maya Devi Menon adorns many hats. A post graduate in IT from Monash University, Australia, she has experience as an IT professional both in India and abroad. Having captivating teaching and presentation skills, she finds time to take classes for school and college students on a variety of subjects like spoken english, cloud computing, wireless networks. At Mind Empowered, Maya is the mastermind behind visualisation, strategy, and fundraising."
-                },
-                {
-                image: "/team/founder2.png",
-                name: "Sreela Menon",
-                role: "Co-Founder",
-                bio: "An excellent human resource manager. Post her MBA from Birla Institute of Management Technology in Delhi, she has worked for 12 years in Recruitments as well as Learning and Development centers of corporates like E-lixir Web Solutions and Oracle Financial Software Services. At Mind Empowered, Sreela is responsible for the Finance and operations simultaneously offering freelance training in areas such as Behaviour Training, Softskill Development, Interview Etiquette and Corporate recruitment."
-                },
-                {
-                image: "/team/jaya.jpg",
-                name: "Jayashree Menon",
-                role: "Sr. Researcher",
-                bio: "An MSc, B.Ed, from MG University, Kerala,Jayshree Menon is a highly skilled and versatile professional. As an excellent researcher, Jayshree conducts in-depth research on a variety of topics for webinars and events. Additionally, she is instrumental in identifying and engaging experts for our Mental Health events, ensuring that we provide the highest quality of information and support to our audience."
-                },
-                {
-                image: "/team/anoopa.jpg",
-                name: "Anoopa Krishnan",
-                role: "Creative Director",
-                bio: "An MA in English Literature, Anoopa Krishnan is a creative and enthusiastic digital marketing professional specialising in Search Engine Optimization and Social Media Marketing. At Mind Empowered, Anoopa has been the driving force behind the exponential growth of our digital portfolio, expanding it tenfold. Her expertise in SEO and social media strategies has significantly increased our online presence and engagement."
-                },
-                {
-                image: "/team/barathi.jpg",
-                name: "Bharti Jaravta",
-                role: "Art Therapist, Counselling Psychologist",
-                bio: "At Mind Empowered, Bharti Jaravta serves as a dedicated Art Therapist, using her expertise to help individuals express themselves through the medium of art. With a B.Ed and an M.Phil in Counselling Psychology, she brings a deep understanding of the therapeutic process to her work. Bharti guides our audience in using art as a powerful form of communication, helping them increase self-awareness."
-                },
-                {
-                image: "/team/Jessica.jpeg",
-                name: "Jessica Susan John",
-                role: "Designer",
-                bio: "Jessica is a creative self-taught designer with a BCom degree. She has worked on various projects, including designing posters, newsletters, and websites for Mind Empowered. With her passion for design and a background in social volunteering, she brings fresh ideas and enthusiasm to every project she undertakes."
-                }
-            ].map((member, index) => (
-                <div key={index} className="bg-white rounded-xl shadow-xl p-4 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 flex flex-col">
+            {translations.teamMembers.map((member) => (
+                <div key={member.key} className="bg-white rounded-xl shadow-xl p-4 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 flex flex-col">
                 <div className="flex flex-col items-center text-center h-full">
-                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-3">
+                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 mb-4 transition-transform duration-300 ease-in-out group-hover:scale-105">
                     <img
                         src={member.image}
                         alt={member.name}
-                        className="rounded-full w-full h-full object-cover border-2 border-[#ff7612]/20 shadow-lg"
+                        className="rounded-full w-full h-full object-cover border-2 border-gray-200 shadow-md"
                     />
                     <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#ff7612]/10 to-transparent" />
                     </div>
                     
-                    <h3 className="text-lg font-bold text-[#461711] mb-0.5 tracking-wide">{member.name}</h3>
-                    <h4 className="font-semibold text-[#ff7612] mb-2 text-base">{member.role}</h4>
+                    <h3 className="text-base sm:text-lg font-bold text-[#461711] mb-1 tracking-wide">{member.name[language]}</h3>
+                    <h4 className="font-semibold text-[#ff7612] mb-2 text-sm sm:text-base">{member.role[language]}</h4>
                     
                     <div className="flex-grow flex items-center">
-                    <p className="text-sm text-gray-700 leading-relaxed tracking-wide">
-                        {member.bio}
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed tracking-wide" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                        {member.bio[language]}
                     </p>
                     </div>
                 </div>
@@ -134,23 +98,23 @@ const Team = () => {
 
             {/* ME Empowerment Coaches Section */}
             <div className="mt-8 lg:mt-12">
-                <div className="text-center mb-6 md:mb-8">
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#461711] mb-2 md:mb-3 leading-none">
-                        ME Coaches
+                <div className="text-center mb-12">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#461711] mb-4 leading-none">
+                        {translations.team.coachesTitle[language]}
                     </h2>
-                    <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-xl mx-auto leading-relaxed">
-                        Meet our dedicated team of mental health professionals and empowerment coaches
+                    <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        {translations.team.coachesSubtitle[language]}
                     </p>
-                    <div className="w-10 h-0.5 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-2 md:mt-3"></div>
+                    <div className="w-20 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-4"></div>
                 </div>
                 
                 <div className="bg-gradient-to-br from-[#f5f0de] to-white rounded-xl shadow-xl p-4 md:p-8 border border-gray-100">
                     <Slider {...sliderSettings}>
-                        {imageFilenames.map((filename, index) => {
+                        {imageFilenames.map((filename) => {
                         const trainerName = filename.substring(0, filename.lastIndexOf('.')).trim();
                         
                         return (
-                            <div key={index} className="px-2 md:px-4">
+                            <div key={trainerName} className="px-2 md:px-4">
                             <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                                 <div className="text-center">
                                 <div className="relative mb-4">
@@ -161,7 +125,7 @@ const Team = () => {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
                                 </div>
-                                <div className="text-base md:text-lg font-bold text-[#461711] leading-tight">
+                                <div className="text-sm md:text-base font-bold text-[#461711] leading-tight">
                                     {trainerName}
                                 </div>
                                 </div>
@@ -175,9 +139,9 @@ const Team = () => {
 
             {/* International Collaboration Section */}
             <div className="mt-8 lg:mt-12">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 items-center">
+                <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6 items-center">
                     {/* Image Column */}
-                    <div className="bg-white rounded-2xl shadow-xl p-2 border border-gray-100 lg:col-span-1">
+                    <div className="bg-white rounded-2xl shadow-xl p-2 border border-gray-100 lg:col-span-1 order-2 lg:order-1">
                         <img
                         src="https://me-website-assets.s3.ap-south-1.amazonaws.com/ytp_collab/ytp.jpeg"
                         alt="International Collaboration - The Yellow Tulip Project"
@@ -186,14 +150,14 @@ const Team = () => {
                     </div>
 
                     {/* Text Column */}
-                    <div className="text-center lg:text-left lg:col-span-2">
-                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#461711] mb-2 md:mb-3 leading-none">
-                            International Collaboration
+                    <div className="text-center lg:text-left lg:col-span-2 order-1 lg:order-2">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#461711] mb-4 leading-none">
+                            {translations.team.collabTitle[language]}
                         </h2>
-                        <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                            Partnering globally to break mental health stigma
+                        <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                            {translations.team.collabSubtitle[language]}
                         </p>
-                        <div className="w-10 h-0.5 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto lg:mx-0 rounded-full mt-2 md:mt-3"></div>
+                        <div className="w-20 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto lg:mx-0 rounded-full mt-4"></div>
                     </div>
                 </div>
             </div>

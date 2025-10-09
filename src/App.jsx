@@ -13,8 +13,9 @@ import {
   Team,
   TrainersGallery,
   Photogallery,
-  FAQ
+  FAQ,
 } from "./components";
+import { translations } from "./translations";
 
 // --- Accessibility Constants for maintainability ---
 const FONT_SIZE_KEYS = ['small', 'normal', 'large', 'xlarge'];
@@ -33,13 +34,39 @@ function App() {
   const storyRef = useRef(null);
   const teamRef = useRef(null);
 
+  const [language, setLanguage] = useState('en');
+  
+  // State for the new language selection flow
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [targetLanguage, setTargetLanguage] = useState(null);
+
+  const handleLanguageSelect = (lang) => {
+    if (lang !== language) {
+      setTargetLanguage(lang);
+      setIsLanguageModalOpen(false);
+      setIsConfirmModalOpen(true);
+    } else {
+      setIsLanguageModalOpen(false);
+    }
+  };
+
+  const handleConfirmTranslation = () => {
+    if (targetLanguage) {
+      setLanguage(targetLanguage);
+    }
+    setIsConfirmModalOpen(false);
+    setTargetLanguage(null);
+  };
+
   // --- Data-driven navigation ---
   const navItems = [
-    { name: 'Mission', ref: missionRef },
-    { name: 'Story', ref: storyRef },
-    { name: 'Team', ref: teamRef },
-    { name: 'Calendar', ref: calendarRef },
-    { name: 'FAQs', ref: faqsRef },
+    { name: translations.nav.mission[language], ref: missionRef, key: 'mission' },
+    { name: translations.nav.story[language], ref: storyRef, key: 'story' },
+    { name: translations.nav.team[language], ref: teamRef, key: 'team' },
+    { name: translations.nav.calendar[language], ref: calendarRef, key: 'calendar' },
+    { name: translations.nav.faqs[language], ref: faqsRef, key: 'faqs' },
+    { name: translations.nav.contact[language], ref: faqsRef, key: 'contact' },
   ];
   // -----------------------------
 
@@ -196,11 +223,11 @@ function App() {
       
 
       {/* Navbar */}
-      <Navbar navItems={navItems} scrollToSection={scrollToSection} scrolled={scrolled} />
+      <Navbar navItems={navItems} scrollToSection={scrollToSection} scrolled={scrolled} language={language} openLanguageModal={() => setIsLanguageModalOpen(true)} />
 
       {/* Hero Section Spacer */}
       <div className="relative h-screen">
-        <Hero />
+        <Hero language={language} />
       </div>
 
       {/* Accessibility Menu - Now controlled by the floating button */}
@@ -302,6 +329,56 @@ function App() {
         </div>
       </button>
 
+      {/* Language Selection Modal */}
+      {isLanguageModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in-fast" onClick={() => setIsLanguageModalOpen(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl md:text-2xl font-bold text-[#461711] mb-6 text-center">Choose a Language</h3>
+            <div className="space-y-4">
+              <button
+                onClick={() => handleLanguageSelect('en')}
+                className={`w-full text-left p-4 rounded-lg text-lg font-semibold transition-all duration-200 border-2 ${language === 'en' ? 'bg-[#ff7612] text-white border-transparent' : 'bg-gray-100 hover:bg-gray-200 border-gray-200 text-gray-800'}`}
+              >
+                English
+              </button>
+              <button
+                onClick={() => handleLanguageSelect('ml')}
+                className={`w-full text-left p-4 rounded-lg text-lg font-semibold transition-all duration-200 border-2 ${language === 'ml' ? 'bg-[#ff7612] text-white border-transparent' : 'bg-gray-100 hover:bg-gray-200 border-gray-200 text-gray-800'}`}
+                style={{ fontFamily: 'Manjari, sans-serif' }}
+              >
+                മലയാളം
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {isConfirmModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in-fast" onClick={() => setIsConfirmModalOpen(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md text-center" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl md:text-2xl font-bold text-[#461711] mb-4">Confirm Language Change</h3>
+            <p className="text-gray-600 mb-8">
+              Are you sure you want to translate the website to {targetLanguage === 'ml' ? 'Malayalam' : 'English'}?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setIsConfirmModalOpen(false)}
+                className="px-6 py-2 rounded-lg font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800 transition-all duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmTranslation}
+                className="px-6 py-2 rounded-lg font-semibold bg-[#461711] hover:bg-[#ff7612] text-white transition-all duration-200"
+              >
+                Yes, Translate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content Sections */}
       <div 
         className="bg-gradient-to-b from-[#fdfbf5] to-[#f5f0de] transition-transform duration-300"
@@ -309,19 +386,19 @@ function App() {
       >
       <section ref={missionRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
         <div className="px-4 sm:px-6 lg:px-8">
-          <VisionMission />
+          <VisionMission language={language} />
         </div>
       </section>
 
       <section className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
         <div className="px-4 sm:px-6 lg:px-8">
-          <Newsletter />
+          <Newsletter language={language} />
         </div>
       </section>
 
       <section ref={storyRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
         <div className="px-4 sm:px-6 lg:px-8">
-          <Story />
+          <Story language={language} />
         </div>
       </section>
 
@@ -329,27 +406,27 @@ function App() {
       <section ref={calendarRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 items-start">
-            <EventCalendar />
-            <Testimonials />
+            <EventCalendar language={language} />
+            <Testimonials language={language} />
           </div>
         </div>
       </section>
 
       <section ref={teamRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
         <div className="px-4 sm:px-6 lg:px-8">
-          <Team />
+          <Team language={language} />
         </div>
       </section>
 
       <section className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
         <div className="px-4 sm:px-6 lg:px-8">
-          <Photogallery />
+          <Photogallery language={language} />
         </div>
       </section>
 
       <section ref={faqsRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
         <div className="px-4 sm:px-6 lg:px-8">
-          <FAQ />
+          <FAQ language={language} />
         </div>
       </section>
       </div>
@@ -360,14 +437,14 @@ function App() {
             {/* Column 1: Brand */}
             <div className="space-y-4 text-center md:text-left">
               <h3 className="text-xl font-bold text-white">Mind Empowered</h3>
-              <p className="text-sm text-white/70 max-w-md mx-auto md:mx-0">
-                Illuminating minds, transforming lives. Championing the cause of mental health through awareness, education, and advocacy.
+              <p className="text-sm text-white/70 max-w-md mx-auto md:mx-0" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                {translations.footer.subtitle[language]}
               </p>
             </div>
 
             {/* Column 2: Connect */}
             <div className="text-center md:text-right">
-              <h4 className="font-semibold text-white mb-3">Connect</h4>
+              <h4 className="font-semibold text-white mb-3">{translations.footer.connect[language]}</h4>
               <div className="flex justify-center md:justify-end gap-4">
                 {socialLinks.map((link) => (
                   <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-[#ffdb5b] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1" aria-label={link.label}>

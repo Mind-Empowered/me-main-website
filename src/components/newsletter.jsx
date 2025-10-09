@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
+import { translations } from '../translations';
 
 const newsletters = [
   { src: "/NL/NLAugust2025.png", alt: "August 2025 Newsletter" },
@@ -24,7 +25,7 @@ const newsletters = [
 // The latest newsletter is always the first one in the array.
 const latestNewsletter = newsletters[0];
 
-const Newsletter = () => {
+const Newsletter = ({ language }) => {
     const scrollContainerRef = useRef(null);
 
     const scroll = (direction) => {
@@ -40,14 +41,14 @@ const Newsletter = () => {
     return (
         <div>
           <div className="text-center mb-12">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#461711] mb-4 leading-none">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]">
-                Stay Informed
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#461711] mb-4 leading-none" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]" >
+                {translations.newsletter.title[language]}
               </span>
             </h1>
             <div className="w-20 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto mb-4 rounded-full"></div>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Subscribe to receive updates and latest news via email
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+              {translations.newsletter.subtitle[language]}
             </p>
           </div>
 
@@ -58,23 +59,23 @@ const Newsletter = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                   {/* Left Column: Text and Form */}
                   <div className="space-y-6">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-[#461711]">
-                      Newsletter Subscription
+                    <h2 className="text-2xl sm:text-3xl font-bold text-[#461711]" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                      {translations.newsletter.formTitle[language]}
                     </h2>
-                    <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
-                      Get the latest updates on our mental health initiatives, upcoming events, and resources delivered directly to your inbox.
+                    <p className="text-base sm:text-lg text-gray-600 leading-relaxed" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                      {translations.newsletter.formSubtitle[language]}
                     </p>
                     <div className="w-full">
                       <div className="flex flex-col sm:flex-row gap-4">
                         <input
                           type="email"
-                          placeholder="Enter your email address"
+                          placeholder={translations.newsletter.formPlaceholder[language]}
                           className="flex-1 border-2 border-[#461711] rounded-lg p-3 text-base placeholder:text-base focus:ring-2 focus:ring-[#ff7612] focus:border-transparent outline-none transition-all duration-200"
                         />
                         <button
-                          className="rounded-lg text-white font-bold bg-[#461711] px-6 py-3 hover:bg-[#ff7612] transition-all duration-300 text-base shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                          className="rounded-lg text-white font-bold bg-[#461711] px-6 py-3 hover:bg-[#ff7612] transition-all duration-300 text-base shadow-lg hover:shadow-xl transform hover:-translate-y-1" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}
                         >
-                          Subscribe
+                          {translations.newsletter.formButton[language]}
                         </button>
                       </div>
                     </div>
@@ -88,8 +89,8 @@ const Newsletter = () => {
 
               {/* Previous Newsletters */}
               <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-100 overflow-hidden">
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#461711] mb-6 text-center">
-                  Previous Newsletters
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#461711] mb-6 text-center" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                  {translations.newsletter.previousTitle[language]}
                 </h2>
                 <div className="relative">
                     <button onClick={() => scroll('left')} className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300">
@@ -123,9 +124,9 @@ const Newsletter = () => {
 
             {/* Latest Newsletter Display */}
             <div className="lg:col-span-1 mt-6 lg:mt-0">
-              <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#461711] mb-6">
-                  Latest Newsletter
+              <div className="text-center" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#461711] mb-6" >
+                  {translations.newsletter.latestTitle[language]}
                 </h2>
                 <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-gray-100 p-2">
                   <PhotoProvider maskOpacity={0.9}>

@@ -16,7 +16,7 @@ const NavLink = ({ item, scrollToSection, scrolled, isMobile = false }) => {
   );
 };
 
-const Navbar = ({ navItems, scrollToSection, scrolled }) => {
+const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageModal }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const handleScrollToSection = (ref) => {
@@ -34,13 +34,13 @@ const Navbar = ({ navItems, scrollToSection, scrolled }) => {
         <div className="flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="bg-gradient-to-br from-[#ff7612] to-[#ffdb5b] rounded-full p-1 shadow-lg">
-              <img src="/logo192.png" alt="Mind Empowered Logo" className="h-10 w-auto sm:h-12 object-contain" />
+              <img src="/logo192.png" alt="Mind Empowered Logo" className="h-8 w-auto sm:h-12 object-contain" />
             </div>
-            <div className="hidden sm:block">
-              <h1 className={`text-lg md:text-xl font-bold leading-tight tracking-wide ${scrolled ? 'text-[#461711]' : 'text-white'}`}>
+            <div className="block">
+              <h1 className={`text-base sm:text-lg md:text-xl font-bold leading-tight tracking-wide ${scrolled ? 'text-[#461711]' : 'text-white'}`}>
                 Mind Empowered
               </h1>
-              <p className={`text-sm md:text-base font-medium tracking-wide ${scrolled ? 'text-[#ff7612]' : 'text-gray-200'}`}>
+              <p className={`font-medium tracking-wide ${scrolled ? 'text-[#ff7612]' : 'text-gray-200'} ${language === 'ml' ? 'text-[0.6rem] sm:text-xs md:text-sm' : 'text-xs sm:text-sm md:text-base'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
                 #MEforYouth
               </p>
             </div>
@@ -49,8 +49,26 @@ const Navbar = ({ navItems, scrollToSection, scrolled }) => {
 
         <div className="hidden lg:flex items-center justify-center space-x-4">
           {navItems.map((item) => (
-            <NavLink key={item.name} item={item} scrollToSection={handleScrollToSection} scrolled={scrolled} />
+            <NavLink key={item.key} item={item} scrollToSection={handleScrollToSection} scrolled={scrolled} />
           ))}
+        </div>
+
+        {/* Language Switcher */}
+        <div className="hidden lg:flex items-center ml-4 group relative">
+            <button
+                onClick={openLanguageModal}
+                aria-label="Change Language"
+                className={`p-2 rounded-full transition-all duration-300 ${
+                    scrolled ? 'text-[#461711] hover:bg-[#ff7612]/20' : 'text-white hover:bg-white/20'
+                }`}
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                </svg>
+            </button>
+            <div className="absolute top-full mt-2 -right-2 w-max bg-black/70 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                {language === 'en' ? 'Change to മലയാളം' : 'Change to English'}
+            </div>
         </div>
 
         {/* Mobile menu button */}
@@ -76,11 +94,25 @@ const Navbar = ({ navItems, scrollToSection, scrolled }) => {
       </div>
 
       {/* Mobile menu */}
-      <div id="mobile-menu" className={`${isMobileMenuOpen ? 'block' : 'hidden'} lg:hidden bg-white shadow-lg border-t border-[#ff7612]/20`}>
+      <div 
+        id="mobile-menu" 
+        className={`
+          lg:hidden bg-white shadow-lg border-t border-[#ff7612]/20 overflow-hidden transition-all duration-300 ease-in-out
+          ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
+        `}>
         <div className="px-4 pt-4 pb-6 space-y-2">
           {navItems.map((item) => (
             <NavLink key={item.name} item={item} scrollToSection={handleScrollToSection} scrolled={scrolled} isMobile />
           ))}
+          <div className="border-t border-gray-200 pt-4 mt-4">
+            <button
+              onClick={openLanguageModal}
+              className="flex items-center gap-3 w-full text-left px-4 py-3 text-[#461711] hover:bg-[#ff7612]/10 rounded-lg font-semibold text-lg transition-all duration-300"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+              <span>{language === 'en' ? 'മലയാളം' : 'English'}</span>
+            </button>
+          </div>
         </div>
       </div>
     </nav>
