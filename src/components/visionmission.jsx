@@ -1,15 +1,17 @@
-const VisionMission = () => {
+import { translations } from "../translations";
+
+const VisionMission = ({ language }) => {
   return (
     <div>
       <div className="text-center mb-12">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#461711] mb-4 leading-none">
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]">
-            Our Vision & Mission
+        <h1 className={`font-bold text-[#461711] mb-4 leading-none ${language === 'ml' ? 'text-2xl sm:text-3xl md:text-4xl' : 'text-3xl sm:text-4xl md:text-5xl'}`}>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+            {translations.visionMission.title[language]}
           </span>
         </h1>
         <div className="w-20 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto mb-4 rounded-full"></div>
-        <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          The guiding principles that drive our commitment to mental health empowerment.
+        <p className={`text-gray-600 max-w-3xl mx-auto leading-relaxed ${language === 'ml' ? 'text-sm sm:text-base md:text-lg' : 'text-base sm:text-lg md:text-xl'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+          {translations.visionMission.subtitle[language]}
         </p>
       </div>
       
@@ -25,14 +27,11 @@ const VisionMission = () => {
               />
             </div>
             <div className="text-center">
-              <h2 className="text-2xl lg:text-4xl font-bold text-[#461711] mb-4">
-                Our Vision
+              <h2 className={`font-bold text-[#461711] mb-4 ${language === 'ml' ? 'text-xl lg:text-3xl' : 'text-2xl lg:text-4xl'}`}>
+                {translations.visionMission.visionTitle[language]}
               </h2>
-              <p className="text-base lg:text-lg text-gray-700 leading-relaxed">
-                Empowering{" "}
-                <span className="text-[#ff7612] font-bold">Individuals</span>{" "}
-                to navigate life with{" "}
-                <span className="text-[#ff7612] font-bold">Emotional Resilience</span>.
+              <p className={`text-gray-700 leading-relaxed ${language === 'ml' ? 'text-sm lg:text-base' : 'text-base lg:text-lg'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                {translations.visionMission.visionText[language]}
               </p>
             </div>
           </div>
@@ -49,15 +48,11 @@ const VisionMission = () => {
               />
             </div>
             <div className="text-center">
-              <h2 className="text-2xl lg:text-4xl font-bold text-[#461711] mb-4">
-                Our Mission
+              <h2 className={`font-bold text-[#461711] mb-4 ${language === 'ml' ? 'text-xl lg:text-3xl' : 'text-2xl lg:text-4xl'}`}>
+                {translations.visionMission.missionTitle[language]}
               </h2>
-              <p className="text-base lg:text-lg text-gray-700 leading-relaxed">
-                Championing the cause of mental health through{" "}
-                <span className="text-[#ff7612] font-bold">Awareness</span>,{" "}
-                <span className="text-[#ff7612] font-bold">Education</span>,{" "}
-                <span className="text-[#ff7612] font-bold">Advocacy</span> and
-                creating an empathetic community.
+              <p className={`text-gray-700 leading-relaxed ${language === 'ml' ? 'text-sm lg:text-base' : 'text-base lg:text-lg'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                {translations.visionMission.missionText[language]}
               </p>
             </div>
           </div>
