@@ -624,3 +624,47 @@ input[type="range"]::-moz-range-track {
   border-radius: 4px;
   background: #e5e7eb; /* gray-200 */
 }
+
+/* Hide Images */
+html.hide-images img,
+html.hide-images [style*="background-image"] {
+  visibility: hidden !important;
+}
+
+/* Big Cursor */
+html.big-cursor, html.big-cursor * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 32 32"><path fill="black" stroke="white" stroke-width="2" d="M2,2 L2,26 L10,18 L18,26 L22,22 L14,14 L26,14 L2,2 Z"></path></svg>') 1 1, auto !important;
+}
+
+/* Dark Mode Styles */
+html.dark-mode .bg-gradient-to-b.from-\[\#fdfbf5\].to-\[\#f5f0de\] {
+  background: linear-gradient(to bottom, #2d2a26, #1a1816);
+}
+
+html.dark-mode .text-gray-600 {
+  color: #a0aec0; /* gray-400 */
+}
+
+html.dark-mode .text-gray-800 {
+  color: #e2e8f0; /* gray-200 */
+}
+
+html.dark-mode .text-\[\#461711\] {
+  color: #f7fafc; /* gray-100 */
+}
+
+html.dark-mode .bg-white {
+  background-color: #2d3748; /* gray-800 */
+}
+
+html.dark-mode .border-gray-100 {
+  border-color: #4a5568; /* gray-600 */
+}
+
+html.dark-mode .shadow-xl {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
+}
+
+html.dark-mode .shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}

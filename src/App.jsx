@@ -1,6 +1,7 @@
 import "./App.css";
 import { useRef, useState, useEffect } from "react";
 
+import { FaWheelchair } from 'react-icons/fa';
 import Navbar from "./Navbar"; // Corrected import path
 import {
   Hero,
@@ -103,6 +104,9 @@ function App() {
   const [lineHeight, setLineHeight] = useState(() => parseFloat(localStorage.getItem('lineHeight')) || 1.6);
   const [letterSpacing, setLetterSpacing] = useState(() => parseFloat(localStorage.getItem('letterSpacing')) || 0);
   const [wordSpacing, setWordSpacing] = useState(() => parseFloat(localStorage.getItem('wordSpacing')) || 0);
+  const [hideImages, setHideImages] = useState(() => localStorage.getItem('hideImages') === 'true');
+  const [bigCursor, setBigCursor] = useState(() => localStorage.getItem('bigCursor') === 'true');
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
 
   // Effect to save settings to localStorage whenever they change
   useEffect(() => {
@@ -115,7 +119,10 @@ function App() {
     localStorage.setItem('lineHeight', lineHeight);
     localStorage.setItem('letterSpacing', letterSpacing);
     localStorage.setItem('wordSpacing', wordSpacing);
-  }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, contentScale, lineHeight, letterSpacing, wordSpacing]);
+    localStorage.setItem('hideImages', hideImages);
+    localStorage.setItem('bigCursor', bigCursor);
+    localStorage.setItem('darkMode', darkMode);
+  }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, contentScale, lineHeight, letterSpacing, wordSpacing, hideImages, bigCursor, darkMode]);
   // -----------------------------------------
 
   const scrollToSection = (ref) => {
@@ -177,6 +184,9 @@ function App() {
     setLineHeight(1.6);
     setLetterSpacing(0);
     setWordSpacing(0);
+    setHideImages(false);
+    setBigCursor(false);
+    setDarkMode(false);
   };
 
   const increaseContentScale = () => setContentScale(s => Math.min(s + 10, 150));
@@ -198,7 +208,10 @@ function App() {
     root.style.setProperty('--line-height', lineHeight);
     root.style.setProperty('--letter-spacing', `${letterSpacing}em`);
     root.style.setProperty('--word-spacing', `${wordSpacing}em`);
-  }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, lineHeight, letterSpacing, wordSpacing]);
+    root.classList.toggle('hide-images', hideImages);
+    root.classList.toggle('big-cursor', bigCursor);
+    root.classList.toggle('dark-mode', darkMode);
+  }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, lineHeight, letterSpacing, wordSpacing, hideImages, bigCursor, darkMode]);
 
   // Handle navbar style on scroll
   useEffect(() => {
@@ -223,7 +236,7 @@ function App() {
       
 
       {/* Navbar */}
-      <Navbar navItems={navItems} scrollToSection={scrollToSection} scrolled={scrolled} language={language} openLanguageModal={() => setIsLanguageModalOpen(true)} />
+      <Navbar navItems={navItems} scrollToSection={scrollToSection} scrolled={scrolled} language={language} openLanguageModal={() => setIsLanguageModalOpen(true)} missionRef={missionRef} />
 
       {/* Hero Section Spacer */}
       <div className="relative h-screen">
@@ -233,10 +246,10 @@ function App() {
       {/* Accessibility Menu - Now controlled by the floating button */}
       {showAccessibilityMenu && (
         <div className="accessibility-menu fixed right-4 bottom-20 sm:right-6 sm:bottom-24 w-[90vw] max-w-xs bg-white rounded-xl shadow-2xl border-2 border-gray-200 p-3 sm:p-4 z-40 animate-fade-in-fast">
-          <h3 className="text-lg sm:text-xl font-bold text-[#461711] mb-3 text-center">Accessibility</h3>
+          <h3 className="text-lg sm:text-xl font-bold text-[#461711] mb-3 text-center" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.title[language]}</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm sm:text-base text-gray-800 font-semibold">Font Size</span>
+              <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.fontSize[language]}</span>
               <div className="flex items-center space-x-2">
                 <button onClick={decreaseFontSize} className="px-2 py-0.5 text-xs bg-gray-200 rounded-md hover:bg-gray-300 font-bold">A-</button>
                 <span className="text-xs text-gray-600 font-bold w-14 text-center capitalize">{fontSize}</span>
@@ -244,64 +257,91 @@ function App() {
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm sm:text-base text-gray-800 font-semibold">High Contrast</span>
+              <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.highContrast[language]}</span>
               <button 
                 onClick={() => setHighContrast(!highContrast)}
                 className={`px-3 py-1 text-xs rounded-md font-bold w-14 text-center ${highContrast ? 'bg-[#ff7612] text-white' : 'bg-gray-200'}`}
               >
-                {highContrast ? 'ON' : 'OFF'}
+                {highContrast ? translations.nav.on[language] : translations.nav.off[language]}
               </button>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm sm:text-base text-gray-800 font-semibold">Reduced Motion</span>
+              <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.reducedMotion[language]}</span>
               <button 
                 onClick={() => setReducedMotion(!reducedMotion)}
                 className={`px-3 py-1 text-xs rounded-md font-bold w-14 text-center ${reducedMotion ? 'bg-[#ff7612] text-white' : 'bg-gray-200'}`}
               >
-                {reducedMotion ? 'ON' : 'OFF'}
+                {reducedMotion ? translations.nav.on[language] : translations.nav.off[language]}
               </button>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm sm:text-base text-gray-800 font-semibold">Dyslexia Friendly</span>
+              <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.dyslexiaFriendly[language]}</span>
               <button 
                 onClick={() => setReadableFont(!readableFont)}
                 className={`px-3 py-1 text-xs rounded-md font-bold w-14 text-center ${readableFont ? 'bg-[#ff7612] text-white' : 'bg-gray-200'}`}
               >
-                {readableFont ? 'ON' : 'OFF'}
+                {readableFont ? translations.nav.on[language] : translations.nav.off[language]}
               </button>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm sm:text-base text-gray-800 font-semibold">Highlight Links</span>
+              <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.highlightLinks[language]}</span>
               <button 
                 onClick={() => setHighlightLinks(!highlightLinks)}
                 className={`px-3 py-1 text-xs rounded-md font-bold w-14 text-center ${highlightLinks ? 'bg-[#ff7612] text-white' : 'bg-gray-200'}`}
               >
-                {highlightLinks ? 'ON' : 'OFF'}
+                {highlightLinks ? translations.nav.on[language] : translations.nav.off[language]}
               </button>
             </div>
             <div className="flex items-center justify-between">
-              <label htmlFor="lineHeight" className="text-sm sm:text-base text-gray-800 font-semibold">Line Height</label>
+              <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.darkMode[language]}</span>
+              <button 
+                onClick={() => setDarkMode(!darkMode)}
+                className={`px-3 py-1 text-xs rounded-md font-bold w-14 text-center ${darkMode ? 'bg-[#ff7612] text-white' : 'bg-gray-200'}`}
+              >
+                {darkMode ? translations.nav.on[language] : translations.nav.off[language]}
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.hideImages[language]}</span>
+              <button 
+                onClick={() => setHideImages(!hideImages)}
+                className={`px-3 py-1 text-xs rounded-md font-bold w-14 text-center ${hideImages ? 'bg-[#ff7612] text-white' : 'bg-gray-200'}`}
+              >
+                {hideImages ? translations.nav.on[language] : translations.nav.off[language]}
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.bigCursor[language]}</span>
+              <button 
+                onClick={() => setBigCursor(!bigCursor)}
+                className={`px-3 py-1 text-xs rounded-md font-bold w-14 text-center ${bigCursor ? 'bg-[#ff7612] text-white' : 'bg-gray-200'}`}
+              >
+                {bigCursor ? translations.nav.on[language] : translations.nav.off[language]}
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <label htmlFor="lineHeight" className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.lineHeight[language]}</label>
               <div className="flex items-center space-x-2">
                 <input id="lineHeight" type="range" min="1.2" max="2.5" step="0.1" value={lineHeight} onChange={(e) => setLineHeight(parseFloat(e.target.value))} className="w-24" />
                 <span className="text-xs text-gray-600 font-bold w-10 text-right">{lineHeight.toFixed(1)}</span>
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <label htmlFor="letterSpacing" className="text-sm sm:text-base text-gray-800 font-semibold">Letter Spacing</label>
+              <label htmlFor="letterSpacing" className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.letterSpacing[language]}</label>
               <div className="flex items-center space-x-2">
                 <input id="letterSpacing" type="range" min="0" max="0.2" step="0.01" value={letterSpacing} onChange={(e) => setLetterSpacing(parseFloat(e.target.value))} className="w-24" />
                 <span className="text-xs text-gray-600 font-bold w-10 text-right">{letterSpacing.toFixed(2)}</span>
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <label htmlFor="wordSpacing" className="text-sm sm:text-base text-gray-800 font-semibold">Word Spacing</label>
+              <label htmlFor="wordSpacing" className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.wordSpacing[language]}</label>
               <div className="flex items-center space-x-2">
                 <input id="wordSpacing" type="range" min="0" max="0.5" step="0.05" value={wordSpacing} onChange={(e) => setWordSpacing(parseFloat(e.target.value))} className="w-24" />
                 <span className="text-xs text-gray-600 font-bold w-10 text-right">{wordSpacing.toFixed(2)}</span>
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm sm:text-base text-gray-800 font-semibold">Content Scale</span>
+              <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.contentScale[language]}</span>
               <div className="flex items-center space-x-2">
                 <button onClick={decreaseContentScale} className="px-2 py-0.5 text-xs bg-gray-200 rounded-md hover:bg-gray-300 font-bold">-</button>
                 <span className="text-xs text-gray-600 font-bold w-14 text-center">{contentScale}%</span>
@@ -310,22 +350,22 @@ function App() {
             </div>
             <button 
               onClick={resetAccessibility}
-              className="w-full px-3 py-1.5 text-xs bg-gray-100 rounded-md hover:bg-gray-200 transition-colors font-bold mt-2"
+              className="w-full px-3 py-1.5 text-xs bg-gray-100 rounded-md hover:bg-gray-200 transition-colors font-bold mt-2" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}
             >
-              Reset All
+              {translations.accessibility.resetAll[language]}
             </button>
           </div>
         </div>
       )}
 
-      {/* Chatbot Icon */}
+      {/* Accessibility Icon */}
       <button 
         onClick={() => setShowAccessibilityMenu(!showAccessibilityMenu)}
         className="z-40 bottom-4 right-4 sm:bottom-6 sm:right-6 fixed transition-transform hover:scale-110 cursor-pointer animate-[pulse-gentle_3s_infinite] focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-[#ff7612] rounded-full"
         aria-label="Open Accessibility Menu"
       >
-        <div className="bg-white/20 backdrop-blur-lg rounded-full shadow-lg border border-white/30">
-          <img src="/logo192.png" alt="chat" className="w-12 sm:w-14" />
+        <div className="bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-white/30 p-3 sm:p-4 flex items-center justify-center">
+          <FaWheelchair className="w-6 h-6 sm:w-7 sm:h-7 text-[#461711]" />
         </div>
       </button>
 

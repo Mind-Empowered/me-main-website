@@ -1,4 +1,3 @@
-import React from 'react';
 import '../App.css';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css"; 
@@ -79,6 +78,13 @@ const imageFilenames = [
         breakpoint: 600,
         settings: {
           slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
           slidesToScroll: 1
         }
       }

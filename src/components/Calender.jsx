@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { translations, getMonthName } from "../translations";
 
 const EventCalendar = ({ language }) => {
   const [calendarData, setCalendarData] = useState([]); 
   const [availableYears, setAvailableYears] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth().toString());
+  const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [posterUrl, setPosterUrl] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
@@ -32,7 +32,7 @@ const EventCalendar = ({ language }) => {
 
         if (sortedData.length > 0) {
           const latestEntry = sortedData[0];
-          setSelectedYear(latestEntry.year);
+          setSelectedYear(latestEntry.year);  
           setSelectedMonth(latestEntry.month);
           setPosterUrl(latestEntry.poster);
           setHasSearched(true);
@@ -44,17 +44,21 @@ const EventCalendar = ({ language }) => {
         setError(translations.calendar.error[language]);
         setIsLoading(false);
       });
-  }, []);
+  }, [language]);
 
-  const handleView = () => {
-    setHasSearched(true);
-    const selectedData = calendarData.find(
-      (entry) => 
-        Number(entry.month) === Number(selectedMonth) && 
-        entry.year === selectedYear
-    );
-    setPosterUrl(selectedData ? selectedData.poster : "");
-  };
+  useEffect(() => {
+    if (calendarData.length > 0) {
+      setHasSearched(true);
+      const selectedData = calendarData.find(
+        (entry) =>
+          Number(entry.month) === Number(selectedMonth) &&
+          entry.year === selectedYear
+      );
+      setPosterUrl(selectedData ? selectedData.poster : "");
+    }
+  }, [selectedMonth, selectedYear, calendarData]);
+
+  const handleView = () => {}; // No longer needed, but kept to avoid breaking the onClick handler
 
   return (
     <div className="max-w-[120rem] mx-auto">
@@ -72,14 +76,14 @@ const EventCalendar = ({ language }) => {
 
       <div className="bg-white rounded-2xl shadow-xl p-3 lg:p-4 border border-gray-100">
         <div className="max-w-max mx-auto">
-          <div className="mb-4 flex flex-wrap justify-center items-center gap-2">
+          <div className="mb-4 flex flex-row flex-nowrap justify-center items-center gap-2">
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="px-3 py-2 border-2 border-[#461711] rounded-lg text-sm font-medium text-[#461711] bg-white focus:ring-2 focus:ring-[#ff7612] focus:border-transparent outline-none transition-all duration-200"
             >
               {Array.from({ length: 12 }, (_, i) => (
-                <option key={i} value={i}>
+                <option key={i} value={i + 1}>
                   {getMonthName(i, language)}
                 </option>
               ))}
@@ -121,7 +125,7 @@ const EventCalendar = ({ language }) => {
             <img
               key={posterUrl}
               src={posterUrl}
-              alt={`Event poster for ${getMonthName(parseInt(selectedMonth), language)} ${selectedYear}`}
+              alt={`Event poster for ${getMonthName(parseInt(selectedMonth) - 1, language)} ${selectedYear}`}
               className="w-full h-auto object-contain rounded-xl shadow-2xl animate-fade-in-up-smooth"
             />
           </div>
