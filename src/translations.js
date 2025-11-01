@@ -6,6 +6,8 @@ export const translations = {
         calendar: { en: 'Calendar', ml: 'കലണ്ടർ' },
         faqs: { en: 'FAQs', ml: 'പതിവുചോദ്യങ്ങൾ' },
         contact: { en: 'Contact Us', ml: 'ബന്ധപ്പെടുക' },
+        on: { en: 'ON', ml: 'ഓൺ' },
+        off: { en: 'OFF', ml: 'ഓഫ്' },
     },
     hero: {
         title: { en: 'Mind Empowered', ml: 'മൈൻഡ് എംപവേർഡ്' },
@@ -164,6 +166,23 @@ export const translations = {
     footer: {
         subtitle: { en: 'Illuminating minds, transforming lives. Championing the cause of mental health through awareness, education, and advocacy.', ml: 'മനസ്സുകളെ പ്രകാശിപ്പിക്കുന്നു, ജീവിതങ്ങളെ രൂപാന്തരപ്പെടുത്തുന്നു. ബോധവൽക്കരണം, വിദ്യാഭ്യാസം, હિમાയത്ത് എന്നിവയിലൂടെ മാനസികാരോഗ്യത്തിന്റെ ലക്ഷ്യത്തിനായി നിലകൊള്ളുന്നു.' },
         connect: { en: 'Connect', ml: 'ബന്ധപ്പെടുക' },
+    }
+    ,
+    accessibility: {
+        title: { en: 'Accessibility', ml: 'പ്രവേശനക്ഷമത' },
+        fontSize: { en: 'Font Size', ml: 'അക്ഷരവലിപ്പം' },
+        highContrast: { en: 'High Contrast', ml: 'ഉയർന്ന കോൺട്രാസ്റ്റ്' },
+        reducedMotion: { en: 'Reduced Motion', ml: 'ചലനം കുറയ്ക്കുക' },
+        dyslexiaFriendly: { en: 'Dyslexia Friendly', ml: 'ഡിസ്ലെക്സിയ സൗഹൃദം' },
+        highlightLinks: { en: 'Highlight Links', ml: 'ലിങ്കുകൾ ഹൈലൈറ്റ് ചെയ്യുക' },
+        lineHeight: { en: 'Line Height', ml: 'വരിയുടെ ഉയരം' },
+        letterSpacing: { en: 'Letter Spacing', ml: 'അക്ഷരങ്ങൾക്കിടയിലെ അകലം' },
+        wordSpacing: { en: 'Word Spacing', ml: 'വാക്കുകൾക്കിടയിലെ അകലം' },
+        contentScale: { en: 'Content Scale', ml: 'ഉള്ളടക്കത്തിന്റെ വലുപ്പം' },
+        resetAll: { en: 'Reset All', ml: 'എല്ലാം പുനഃസജ്ജമാക്കുക' },
+        hideImages: { en: 'Hide Images', ml: 'ചിത്രങ്ങൾ മറയ്ക്കുക' },
+        bigCursor: { en: 'Big Cursor', ml: 'വലിയ കഴ്സർ' },
+        darkMode: { en: 'Dark Mode', ml: 'ഡാർക്ക് മോഡ്' },
     }
 };
 
