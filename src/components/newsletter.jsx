@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import { translations } from '../translations';
@@ -52,9 +52,29 @@ const Newsletter = ({ language }) => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
+            {/* Latest Newsletter Display (Mobile: Order 1, Desktop: Order 2) */}
+            <div className="lg:col-span-1 order-1 lg:order-2">
+              <div className="text-center" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#461711] mb-6" >
+                  {translations.newsletter.latestTitle[language]}
+                </h2>
+                <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-gray-100 p-2">
+                  <PhotoProvider maskOpacity={0.9}>
+                    <PhotoView src={latestNewsletter.src}>
+                      <img 
+                        src={latestNewsletter.src} 
+                        alt={latestNewsletter.alt} 
+                        className="cursor-pointer w-full h-auto object-cover hover:scale-105 transition-transform duration-300" 
+                      />
+                    </PhotoView>
+                  </PhotoProvider>
+                </div>
+              </div>
+            </div>
+
             {/* Newsletter Subscription */}
-            <div className="space-y-6 lg:col-span-2">
+            <div className="space-y-6 lg:col-span-2 order-2 lg:order-1">
               <div className="bg-white rounded-3xl shadow-xl p-6 lg:p-8 border border-gray-100">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                   {/* Left Column: Text and Form */}
@@ -118,26 +138,6 @@ const Newsletter = ({ language }) => {
                     <button onClick={() => scroll('right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-300">
                         <svg className="w-6 h-6 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                     </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Latest Newsletter Display */}
-            <div className="lg:col-span-1 mt-6 lg:mt-0">
-              <div className="text-center" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#461711] mb-6" >
-                  {translations.newsletter.latestTitle[language]}
-                </h2>
-                <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-gray-100 p-2">
-                  <PhotoProvider maskOpacity={0.9}>
-                    <PhotoView src={latestNewsletter.src}>
-                      <img 
-                        src={latestNewsletter.src} 
-                        alt={latestNewsletter.alt} 
-                        className="cursor-pointer w-full h-auto object-cover hover:scale-105 transition-transform duration-300" 
-                      />
-                    </PhotoView>
-                  </PhotoProvider>
                 </div>
               </div>
             </div>

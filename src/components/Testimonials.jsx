@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ImageGallery from "react-image-gallery";
 import { translations } from "../translations";
 import "react-image-gallery/styles/css/image-gallery.css";
