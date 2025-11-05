@@ -2,6 +2,7 @@ import "./App.css";
 import { useRef, useState, useEffect } from "react";
 
 import { FaWheelchair } from 'react-icons/fa';
+import Draggable from 'react-draggable';
 import Navbar from "./Navbar"; // Corrected import path
 import {
   Hero,
@@ -245,9 +246,11 @@ function App() {
 
       {/* Accessibility Menu - Now controlled by the floating button */}
       {showAccessibilityMenu && (
-        <div className="accessibility-menu fixed right-4 bottom-20 sm:right-6 sm:bottom-24 w-[90vw] max-w-xs bg-white rounded-xl shadow-2xl border-2 border-gray-200 p-3 sm:p-4 z-40 animate-fade-in-fast">
-          <h3 className="text-lg sm:text-xl font-bold text-[#461711] mb-3 text-center" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.title[language]}</h3>
-          <div className="space-y-3">
+        <Draggable handle=".drag-handle" bounds="body">
+          <div className="accessibility-menu fixed right-4 bottom-20 sm:right-6 sm:bottom-24 w-[90vw] max-w-xs bg-white rounded-xl shadow-2xl border-2 border-gray-200 p-3 sm:p-4 z-40 animate-fade-in-fast cursor-default">
+            {/* The handle for dragging the menu */}
+            <h3 className="drag-handle text-lg sm:text-xl font-bold text-[#461711] mb-3 text-center cursor-move" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.title[language]}</h3>
+            <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.fontSize[language]}</span>
               <div className="flex items-center space-x-2">
@@ -356,7 +359,8 @@ function App() {
             </button>
           </div>
         </div>
-      )}
+      </Draggable>
+    )}
 
       {/* Accessibility Icon */}
       <button 

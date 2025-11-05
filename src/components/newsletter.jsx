@@ -4,6 +4,7 @@ import 'react-photo-view/dist/react-photo-view.css';
 import { translations } from '../translations';
 
 const newsletters = [
+  { src: "/NL/NLSept2025.jpg", alt: "September 2025 Newsletter" },
   { src: "/NL/NLAugust2025.png", alt: "August 2025 Newsletter" },
   { src: "/NL/NLJuly2025.png", alt: "July 2025 Newsletter" },
   { src: "/NL/NLJune2025.png", alt: "June 2025 Newsletter" },
@@ -120,9 +121,9 @@ const Newsletter = ({ language }) => {
                     <div ref={scrollContainerRef} className="relative w-full h-[8rem] flex items-center overflow-x-hidden">
                         <div className="flex animate-marquee hover:pause group/gallery">
                         {[...newsletters.slice(1), ...newsletters.slice(1)].map((newsletter, index) => (
-                            <div key={index} className="group/item flex-shrink-0 mx-4">
+                            <div key={index} className="group/item flex-shrink-0 mx-2 sm:mx-4">
                             <PhotoView src={newsletter.src}>
-                                <div className="w-[6rem] h-[8rem] rounded-lg overflow-hidden shadow-md transition-all duration-300 group-hover/item:scale-110 group-hover/item:shadow-2xl">
+                                <div className="w-[5rem] h-[7rem] sm:w-[6rem] sm:h-[8rem] rounded-lg overflow-hidden shadow-md transition-all duration-300 group-hover/item:scale-110 group-hover/item:shadow-2xl">
                                 <img 
                                     src={newsletter.src} 
                                     alt={newsletter.alt} 
