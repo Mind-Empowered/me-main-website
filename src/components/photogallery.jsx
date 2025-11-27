@@ -9,12 +9,12 @@ const imageFilenames = [
   "ME6.jpeg", "ME7.jpeg", "ME8.jpeg", "ME9.jpeg", "ME10.jpeg",
   "ME11.jpeg", "ME12.jpeg", "ME13.jpeg", "ME14.jpeg", "ME15.jpeg",
   "ME16.jpeg", "ME17.jpeg", "ME18.jpeg", "ME19.jpeg", "ME20.jpeg",
-  "ME21.jpeg", "ME22.jpeg", "ME23.jpeg", "ME24.jpeg", "ME25.jpeg",
-  "ME26.jpeg", "ME27.jpeg", "ME28.jpeg", "ME29.jpeg", "ME30.jpeg",
+  "ME21.jpeg", "ME22.jpeg", "ME23.jpeg", "ME24.jpeg", "ME25.jpg",
+  "ME26.jpg", "ME27.jpeg", "ME28.jpeg", "ME29.jpeg", "ME30.jpeg",
   "ME31.jpeg", "ME32.jpeg", "ME33.jpeg", "ME34.jpeg", "ME35.png",
-  "ME36.png", "ME37.jpeg", "ME38.jpeg", "ME39.jpeg", "ME40.jpeg",
+  "ME36.png", "ME37.jpeg", "ME38.jpg", "ME39.jpeg", "ME40.jpeg",
   "ME41.jpeg", "ME42.jpeg", "ME43.jpeg", "ME44.jpeg", "ME45.jpeg",
-  "ME46.jpeg", "ME47.jpeg", "ME48.jpeg", "ME49.jpeg", "ME50.jpeg",
+  "ME46.jpeg", "ME47.jpeg", "ME48.jpeg", "ME49.jpg", "ME50.jpeg",
   "ME51.jpeg"
 ];
 
