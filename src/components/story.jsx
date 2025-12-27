@@ -103,7 +103,7 @@ const Story = ({ language }) => {
                                 title="Mind Empowered Journey 2025"
                                 aria-label="A video showcasing the journey and impact of Mind Empowered organization in 2025"
                             >
-                                <source src="/ME%20Video%202025.mp4" type="video/mp4" />
+                                <source src="/ME_Video_2025.mp4" type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
                         </div>
