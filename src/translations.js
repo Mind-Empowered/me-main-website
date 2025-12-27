@@ -35,7 +35,7 @@ export const translations = {
         title: { en: 'Our Story', ml: 'ഞങ്ങളുടെ കഥ' },
         subtitle: { en: 'Born from compassion during challenging times, dedicated to mental health empowerment', ml: 'പ്രതിസന്ധി ഘട്ടങ്ങളിൽ അനുകമ്പയിൽ നിന്ന് ജനിച്ചത്, മാനസികാരോഗ്യ ശാക്തീകരണത്തിനായി സമർപ്പിക്കപ്പെട്ടത്' },
         p1: { en: 'is a charitable organization based in India, born from compassion and understanding. It is the brainchild of', ml: 'ഇന്ത്യ ആസ്ഥാനമായുള്ള ഒരു ചാരിറ്റബിൾ ഓർഗനൈസേഷനാണ്, അനുകമ്പയിൽ നിന്നും മനസ്സിലാക്കലിൽ നിന്നും ജനിച്ചത്. ഇത്' },
-        p1_author: { en: 'Maya Menon and her sister', ml: 'മായ മേനോന്റെയും സഹോദരിയുടെയും' },
+        p1_author: { en: 'Maya Menon and Srila Menon', ml: 'മായ മേനോന്റെയും ശ്രീലാ മേനോന്റെയും' },
         p1_cont: { en: ', two sisters who resonate positivity and happiness wherever they go.', ml: 'സൃഷ്ടിയാണ്, എവിടെ പോയാലും പോസിറ്റിവിറ്റിയും സന്തോഷവും പ്രസരിപ്പിക്കുന്ന രണ്ട് സഹോദരിമാർ.' },
         p2: { en: 'During the lockdown period, the sisters started conducting free online classes on Spoken English and Interview Skills for college students. Through this close association, they realized Gen-Z was grappling with a wide range of mental health issues—from anxiety and depression to loneliness and cyberbullying—in ways they never had before.', ml: 'ലോക്ക്ഡൗൺ കാലത്ത്, സഹോദരിമാർ കോളേജ് വിദ്യാർത്ഥികൾക്കായി സ്പോക്കൺ ഇംഗ്ലീഷ്, ഇന്റർവ്യൂ സ്കിൽസ് എന്നിവയിൽ സൗജന്യ ഓൺലൈൻ ക്ലാസുകൾ ആരംഭിച്ചു. ഈ അടുത്ത ബന്ധത്തിലൂടെ, ഉത്കണ്ഠയും വിഷാദവും മുതൽ ഏകാന്തതയും സൈബർ ഭീഷണിയും വരെയുള്ള മാനസികാരോഗ്യ പ്രശ്നങ്ങളുമായി Gen-Z മുമ്പെങ്ങുമില്ലാത്തവിധം പോരാടുകയാണെന്ന് അവർ മനസ്സിലാക്കി.' },
         p3: { en: 'Recognizing the urgent need to eliminate the stigma associated with mental illness, the idea of an open forum to help students came to life by forming "ME".', ml: 'മാനസിക രോഗവുമായി ബന്ധപ്പെട്ട കളങ്കം ഇല്ലാതാക്കേണ്ടതിന്റെ അടിയന്തിര ആവശ്യം തിരിച്ചറിഞ്ഞ്, വിദ്യാർത്ഥികളെ സഹായിക്കുന്നതിനായി ഒരു ഓപ്പൺ ഫോറം എന്ന ആശയം "ME" രൂപീകരിക്കുന്നതിലൂടെ യാഥാർത്ഥ്യമായി.' },
@@ -143,24 +143,24 @@ export const translations = {
     },
     accordions: [
         {
-          key: 0,
-          title: { en: "How can ME help me?", ml: "ME എന്നെ എങ്ങനെ സഹായിക്കും?" },
-          data: { en: "ME conducts free webinars every Saturday with mental, physical and personality development experts to give you an access to reliable information and guide you on your path towards healing and happiness. ME puts forth an open forum where you feel safe to discuss your emotions without the fear of being ridiculed or misunderstood.", ml: "ഓരോ ശനിയാഴ്ചയും മാനസികവും ശാരീരികവും വ്യക്തിത്വ വികസന വിദഗ്ദ്ധരുമായി ME സൗജന്യ വെബിനാറുകൾ നടത്തുന്നു. ഇത് നിങ്ങൾക്ക് വിശ്വസനീയമായ വിവരങ്ങൾ നൽകുകയും രോഗശാന്തിയിലേക്കും സന്തോഷത്തിലേക്കുമുള്ള നിങ്ങളുടെ പാതയിൽ വഴികാട്ടുകയും ചെയ്യുന്നു. കളിയാക്കപ്പെടുമെന്നോ തെറ്റിദ്ധരിക്കപ്പെടുമെന്നോ ഭയമില്ലാതെ നിങ്ങളുടെ വികാരങ്ങൾ ചർച്ച ചെയ്യാൻ സുരക്ഷിതമെന്ന് തോന്നുന്ന ഒരു തുറന്ന വേദി ME ഒരുക്കുന്നു." }
+            key: 0,
+            title: { en: "How can ME help me?", ml: "ME എന്നെ എങ്ങനെ സഹായിക്കും?" },
+            data: { en: "ME conducts free webinars every Saturday with mental, physical and personality development experts to give you an access to reliable information and guide you on your path towards healing and happiness. ME puts forth an open forum where you feel safe to discuss your emotions without the fear of being ridiculed or misunderstood.", ml: "ഓരോ ശനിയാഴ്ചയും മാനസികവും ശാരീരികവും വ്യക്തിത്വ വികസന വിദഗ്ദ്ധരുമായി ME സൗജന്യ വെബിനാറുകൾ നടത്തുന്നു. ഇത് നിങ്ങൾക്ക് വിശ്വസനീയമായ വിവരങ്ങൾ നൽകുകയും രോഗശാന്തിയിലേക്കും സന്തോഷത്തിലേക്കുമുള്ള നിങ്ങളുടെ പാതയിൽ വഴികാട്ടുകയും ചെയ്യുന്നു. കളിയാക്കപ്പെടുമെന്നോ തെറ്റിദ്ധരിക്കപ്പെടുമെന്നോ ഭയമില്ലാതെ നിങ്ങളുടെ വികാരങ്ങൾ ചർച്ച ചെയ്യാൻ സുരക്ഷിതമെന്ന് തോന്നുന്ന ഒരു തുറന്ന വേദി ME ഒരുക്കുന്നു." }
         },
         {
-          key: 1,
-          title: { en: "Why should I attend these sessions and speak up about my issues?", ml: "ഞാൻ എന്തിന് ഈ സെഷനുകളിൽ പങ്കെടുക്കുകയും എന്റെ പ്രശ്നങ്ങളെക്കുറിച്ച് സംസാരിക്കുകയും ചെയ്യണം?" },
-          data: { en: "ME provides you with a platform to interact with mental health experts from all around the globe for free. Instead of clearing your doubts via google, which may not always be a reliable source, you can get in touch with these professionals every Saturday 4:00pm to 5:00pm for free. Online sessions can be attended from the comfort of your homes Anonymity is preserved.", ml: "ലോകമെമ്പാടുമുള്ള മാനസികാരോഗ്യ വിദഗ്ദ്ധരുമായി സൗജന്യമായി സംവദിക്കാൻ ME നിങ്ങൾക്ക് ഒരു വേദി നൽകുന്നു. എല്ലായ്പ്പോഴും വിശ്വസനീയമായ ഉറവിടമല്ലാത്ത ഗൂഗിൾ വഴി നിങ്ങളുടെ സംശയങ്ങൾ തീർക്കുന്നതിനുപകരം, ഓരോ ശനിയാഴ്ചയും വൈകുന്നേരം 4:00 മുതൽ 5:00 വരെ ഈ പ്രൊഫഷണലുകളുമായി നിങ്ങൾക്ക് സൗജന്യമായി ബന്ധപ്പെടാം. നിങ്ങളുടെ വീടുകളിൽ നിന്ന് തന്നെ ഓൺലൈൻ സെഷനുകളിൽ പങ്കെടുക്കാം, നിങ്ങളുടെ സ്വകാര്യത സംരക്ഷിക്കപ്പെടും." }
+            key: 1,
+            title: { en: "Why should I attend these sessions and speak up about my issues?", ml: "ഞാൻ എന്തിന് ഈ സെഷനുകളിൽ പങ്കെടുക്കുകയും എന്റെ പ്രശ്നങ്ങളെക്കുറിച്ച് സംസാരിക്കുകയും ചെയ്യണം?" },
+            data: { en: "ME provides you with a platform to interact with mental health experts from all around the globe for free. Instead of clearing your doubts via google, which may not always be a reliable source, you can get in touch with these professionals every Saturday 4:00pm to 5:00pm for free. Online sessions can be attended from the comfort of your homes Anonymity is preserved.", ml: "ലോകമെമ്പാടുമുള്ള മാനസികാരോഗ്യ വിദഗ്ദ്ധരുമായി സൗജന്യമായി സംവദിക്കാൻ ME നിങ്ങൾക്ക് ഒരു വേദി നൽകുന്നു. എല്ലായ്പ്പോഴും വിശ്വസനീയമായ ഉറവിടമല്ലാത്ത ഗൂഗിൾ വഴി നിങ്ങളുടെ സംശയങ്ങൾ തീർക്കുന്നതിനുപകരം, ഓരോ ശനിയാഴ്ചയും വൈകുന്നേരം 4:00 മുതൽ 5:00 വരെ ഈ പ്രൊഫഷണലുകളുമായി നിങ്ങൾക്ക് സൗജന്യമായി ബന്ധപ്പെടാം. നിങ്ങളുടെ വീടുകളിൽ നിന്ന് തന്നെ ഓൺലൈൻ സെഷനുകളിൽ പങ്കെടുക്കാം, നിങ്ങളുടെ സ്വകാര്യത സംരക്ഷിക്കപ്പെടും." }
         },
         {
-          key: 2,
-          title: { en: "How can we ensure that our identity is not revealed?", ml: "എന്റെ ഐഡന്റിറ്റി വെളിപ്പെടുത്തില്ലെന്ന് എങ്ങനെ ഉറപ്പാക്കാം?" },
-          data: { en: "In order to ensure anonymity, we don't force our participants to switch on the camera or unmute themselves during our online sessions. The students are free to use the chat box to interact with the experts.", ml: "സ്വകാര്യത ഉറപ്പാക്കാൻ, ഞങ്ങളുടെ ഓൺലൈൻ സെഷനുകളിൽ പങ്കെടുക്കുന്നവരെ ക്യാമറ ഓൺ ചെയ്യാനോ അൺമ്യൂട്ട് ചെയ്യാനോ ഞങ്ങൾ നിർബന്ധിക്കുന്നില്ല. വിദഗ്ദ്ധരുമായി സംവദിക്കാൻ വിദ്യാർത്ഥികൾക്ക് ചാറ്റ് ബോക്സ് ഉപയോഗിക്കാൻ സ്വാതന്ത്ര്യമുണ്ട്." }
+            key: 2,
+            title: { en: "How can we ensure that our identity is not revealed?", ml: "എന്റെ ഐഡന്റിറ്റി വെളിപ്പെടുത്തില്ലെന്ന് എങ്ങനെ ഉറപ്പാക്കാം?" },
+            data: { en: "In order to ensure anonymity, we don't force our participants to switch on the camera or unmute themselves during our online sessions. The students are free to use the chat box to interact with the experts.", ml: "സ്വകാര്യത ഉറപ്പാക്കാൻ, ഞങ്ങളുടെ ഓൺലൈൻ സെഷനുകളിൽ പങ്കെടുക്കുന്നവരെ ക്യാമറ ഓൺ ചെയ്യാനോ അൺമ്യൂട്ട് ചെയ്യാനോ ഞങ്ങൾ നിർബന്ധിക്കുന്നില്ല. വിദഗ്ദ്ധരുമായി സംവദിക്കാൻ വിദ്യാർത്ഥികൾക്ക് ചാറ്റ് ബോക്സ് ഉപയോഗിക്കാൻ സ്വാതന്ത്ര്യമുണ്ട്." }
         },
         {
-          key: 3,
-          title: { en: "How can I send across my queries directly to the experts?", ml: "എന്റെ ചോദ്യങ്ങൾ വിദഗ്ദ്ധർക്ക് നേരിട്ട് എങ്ങനെ അയയ്ക്കാം?" },
-          data: { en: "ME floats a Google form periodically wherein you are free to anonymously send in any queries. Our panel doctors answer these queries during the month-end sessions.", ml: "ME ഇടയ്ക്കിടെ ഒരു ഗൂഗിൾ ഫോം നൽകാറുണ്ട്, അതിൽ നിങ്ങൾക്ക് അജ്ഞാതമായി ഏത് ചോദ്യങ്ങളും അയയ്ക്കാം. ഞങ്ങളുടെ പാനൽ ഡോക്ടർമാർ മാസാന്ത്യ സെഷനുകളിൽ ഈ ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകുന്നു." }
+            key: 3,
+            title: { en: "How can I send across my queries directly to the experts?", ml: "എന്റെ ചോദ്യങ്ങൾ വിദഗ്ദ്ധർക്ക് നേരിട്ട് എങ്ങനെ അയയ്ക്കാം?" },
+            data: { en: "ME floats a Google form periodically wherein you are free to anonymously send in any queries. Our panel doctors answer these queries during the month-end sessions.", ml: "ME ഇടയ്ക്കിടെ ഒരു ഗൂഗിൾ ഫോം നൽകാറുണ്ട്, അതിൽ നിങ്ങൾക്ക് അജ്ഞാതമായി ഏത് ചോദ്യങ്ങളും അയയ്ക്കാം. ഞങ്ങളുടെ പാനൽ ഡോക്ടർമാർ മാസാന്ത്യ സെഷനുകളിൽ ഈ ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകുന്നു." }
         },
     ],
     footer: {

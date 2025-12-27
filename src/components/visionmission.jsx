@@ -14,7 +14,7 @@ const VisionMission = ({ language }) => {
           {translations.visionMission.subtitle[language]}
         </p>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Vision Card */}
         <div className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
