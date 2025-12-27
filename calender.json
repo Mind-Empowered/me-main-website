@@ -278,5 +278,20 @@
         "month": "9",
         "year": "2025",
         "poster": "/calendar/2025/9.jpg"
+    },
+    {
+        "month": "10",
+        "year": "2025",
+        "poster": "/calendar/2025/10.png"
+    },
+    {
+        "month": "11",
+        "year": "2025",
+        "poster": "/calendar/2025/11.png"
+    },
+    {
+        "month": "12",
+        "year": "2025",
+        "poster": "/calendar/2025/12.png"
     }
 ]
