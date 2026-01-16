@@ -16,6 +16,7 @@ import {
   Photogallery,
   FAQ,
   Ytp,
+  DonateModal,
 } from "./components";
 import { translations } from "./translations";
 
@@ -40,6 +41,7 @@ function App() {
 
   // State for the new language selection flow
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState(null);
 
@@ -237,7 +239,15 @@ function App() {
 
 
       {/* Navbar */}
-      <Navbar navItems={navItems} scrollToSection={scrollToSection} scrolled={scrolled} language={language} openLanguageModal={() => setIsLanguageModalOpen(true)} missionRef={missionRef} />
+      <Navbar
+        navItems={navItems}
+        scrollToSection={scrollToSection}
+        scrolled={scrolled}
+        language={language}
+        openLanguageModal={() => setIsLanguageModalOpen(true)}
+        openDonateModal={() => setIsDonateModalOpen(true)}
+        missionRef={missionRef}
+      />
 
       {/* Hero Section Spacer */}
       <div className="relative h-screen">
@@ -422,6 +432,14 @@ function App() {
           </div>
         </div>
       )}
+
+
+      {/* Donate Modal */}
+      <DonateModal
+        isOpen={isDonateModalOpen}
+        onClose={() => setIsDonateModalOpen(false)}
+        language={language}
+      />
 
       {/* Main Content Sections */}
       <div
