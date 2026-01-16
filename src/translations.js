@@ -8,6 +8,7 @@ export const translations = {
         contact: { en: 'Contact Us', ml: 'ബന്ധപ്പെടുക' },
         on: { en: 'ON', ml: 'ഓൺ' },
         off: { en: 'OFF', ml: 'ഓഫ്' },
+        donate: { en: 'Donate for ME', ml: 'സംഭാവന നൽകുക' },
     },
     hero: {
         title: { en: 'Mind Empowered', ml: 'മൈൻഡ് എംപവേർഡ്' },
