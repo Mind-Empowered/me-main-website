@@ -6,6 +6,8 @@ export const translations = {
         calendar: { en: 'Calendar', ml: 'കലണ്ടർ' },
         faqs: { en: 'FAQs', ml: 'പതിവുചോദ്യങ്ങൾ' },
         contact: { en: 'Contact Us', ml: 'ബന്ധപ്പെടുക' },
+        events: { en: 'Events', ml: 'ഇവന്റുകൾ' },
+        gallery: { en: 'Gallery', ml: 'ഗാലറി' },
         on: { en: 'ON', ml: 'ഓൺ' },
         off: { en: 'OFF', ml: 'ഓഫ്' },
         donate: { en: 'Donate for ME', ml: 'സംഭാവന നൽകുക' },
