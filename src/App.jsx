@@ -10,6 +10,7 @@ import {
   Newsletter,
   Objectives,
   Story,
+  Events,
   EventCalendar,
   Testimonials,
   Team,
@@ -36,6 +37,8 @@ function App() {
   const calendarRef = useRef(null);
   const storyRef = useRef(null);
   const teamRef = useRef(null);
+  const eventsRef = useRef(null);
+  const galleryRef = useRef(null);
 
   const [language, setLanguage] = useState('en');
 
@@ -43,6 +46,7 @@ function App() {
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
   const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState(null);
 
   const handleLanguageSelect = (lang) => {
@@ -65,11 +69,10 @@ function App() {
 
   // --- Data-driven navigation ---
   const navItems = [
-    { name: translations.nav.mission[language], ref: missionRef, key: 'mission' },
     { name: translations.nav.story[language], ref: storyRef, key: 'story' },
+    { name: translations.nav.events[language], ref: eventsRef, key: 'events' },
     { name: translations.nav.team[language], ref: teamRef, key: 'team' },
-    { name: translations.nav.calendar[language], ref: calendarRef, key: 'calendar' },
-    { name: translations.nav.faqs[language], ref: faqsRef, key: 'faqs' },
+    { name: translations.nav.gallery[language], ref: galleryRef, key: 'gallery' },
     { name: translations.nav.contact[language], ref: faqsRef, key: 'contact' },
   ];
   // -----------------------------
@@ -441,6 +444,42 @@ function App() {
         language={language}
       />
 
+      {/* Event Registration Modal */}
+      {isRegisterModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-4xl h-[90vh] bg-white rounded-[2rem] shadow-2xl overflow-hidden border-2 border-[#D4AF37]/30 flex flex-col" onClick={(e) => e.stopPropagation()}>
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 md:px-8 border-b border-gray-100 bg-[#FAF9F6]">
+              <div>
+                <h3 className="text-xl md:text-2xl font-bold text-[#800020] font-serif">Event Registration</h3>
+                <p className="text-xs text-[#5D4037] opacity-70">Register for Dhriti Mental Health Festival</p>
+              </div>
+              <button
+                onClick={() => setIsRegisterModalOpen(false)}
+                className="p-2 text-gray-400 hover:text-[#800020] hover:bg-[#800020]/5 rounded-full transition-colors"
+                aria-label="Close registration form"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            {/* Google Form Iframe */}
+            <div className="flex-grow relative bg-gray-50">
+              <iframe
+                src="https://docs.google.com/forms/d/e/1FAIpQLSdRdX19XoYFkuJq3yklwYireMzul6zZyRIF-oKlFEWxf3BG7A/viewform?embedded=true"
+                className="w-full h-full border-none"
+                title="Registration Form"
+              >
+                Loading…
+              </iframe>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content Sections */}
       <div
         className="bg-gradient-to-b from-[#fdfbf5] to-[#f5f0de] transition-transform duration-300"
@@ -470,6 +509,10 @@ function App() {
           </div>
         </section>
 
+        <section ref={eventsRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
+          <Events language={language} onRegister={() => setIsRegisterModalOpen(true)} />
+        </section>
+
         <section className="content-section py-16 md:py-24 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <Ytp language={language} />
@@ -482,6 +525,7 @@ function App() {
           </div>
         </section>
 
+
         <section ref={calendarRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 items-start">
@@ -491,7 +535,7 @@ function App() {
           </div>
         </section>
 
-        <section className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
+        <section ref={galleryRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <Photogallery language={language} />
           </div>

@@ -34,25 +34,6 @@ const Accordion = ({ title, data, isOpen, toggleAccordion, language }) => {
   );
 };
 
-const ContactTile = ({ icon, label, href }) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#ff7612]/20 hover:-translate-y-1 transition-all duration-300 group"
-  >
-    <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-[#ff7612] group-hover:bg-[#ff7612] group-hover:text-white transition-colors duration-300">
-      {icon}
-    </div>
-    <div>
-      <div className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">{label}</div>
-      <div className="text-sm font-bold text-[#461711] truncate max-w-[150px] md:max-w-none">
-        {href.replace('mailto:', '').replace('https://', '')}
-      </div>
-    </div>
-  </a>
-);
-
 const FAQ = ({ language }) => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
@@ -193,17 +174,53 @@ const FAQ = ({ language }) => {
             </form>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <ContactTile
-              label="Connect"
-              icon={<svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" /></svg>}
+          <div className="flex items-center justify-center gap-4 flex-wrap">
+            <a
               href="https://www.linkedin.com/company/mind-empowered/"
-            />
-            <ContactTile
-              label="Instagram"
-              icon={<svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.012-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218 1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.08 2.525c.636-.247 1.363-.416 2.427-.465C9.53 2.013 9.884 2 12.315 2zM12 7a5 5 0 100 10 5 5 0 000-10zm0 8a3 3 0 110-6 3 3 0 010 6zm5.25-9.75a1.25 1.25 0 100-2.5 1.25 1.25 0 000 2.5z" /></svg>}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group w-16 h-16 rounded-2xl bg-white border-2 border-gray-100 shadow-sm hover:shadow-xl hover:border-[#ff7612]/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center"
+              aria-label="LinkedIn"
+            >
+              <svg className="w-7 h-7 text-[#461711] group-hover:text-[#ff7612] transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+              </svg>
+            </a>
+
+            <a
               href="https://www.instagram.com/mind.empowered/"
-            />
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group w-16 h-16 rounded-2xl bg-white border-2 border-gray-100 shadow-sm hover:shadow-xl hover:border-[#ff7612]/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center"
+              aria-label="Instagram"
+            >
+              <svg className="w-7 h-7 text-[#461711] group-hover:text-[#ff7612] transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.012-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218 1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.08 2.525c.636-.247 1.363-.416 2.427-.465C9.53 2.013 9.884 2 12.315 2zM12 7a5 5 0 100 10 5 5 0 000-10zm0 8a3 3 0 110-6 3 3 0 010 6zm5.25-9.75a1.25 1.25 0 100-2.5 1.25 1.25 0 000 2.5z" />
+              </svg>
+            </a>
+
+            <a
+              href="mailto:Mindempowered2020@gmail.com"
+              className="group w-16 h-16 rounded-2xl bg-white border-2 border-gray-100 shadow-sm hover:shadow-xl hover:border-[#ff7612]/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center"
+              aria-label="Email"
+            >
+              <svg className="w-7 h-7 text-[#461711] group-hover:text-[#ff7612] transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </a>
+
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=ERRA+34,+Elamana+Road,+Tripunithura,+Ernakulam,+Kerala+682301"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group w-16 h-16 rounded-2xl bg-white border-2 border-gray-100 shadow-sm hover:shadow-xl hover:border-[#ff7612]/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center"
+              aria-label="Location - ERRA 34, Elamana Road, Tripunithura"
+            >
+              <svg className="w-7 h-7 text-[#461711] group-hover:text-[#ff7612] transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </a>
           </div>
         </div>
       </div>
