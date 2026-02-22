@@ -40,6 +40,22 @@ function App() {
   const eventsRef = useRef(null);
   const galleryRef = useRef(null);
 
+  // --- Background Music ---
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.muted = false;
+    audio.play().catch(() => {
+      // Browser blocked unmuted autoplay; try muted as fallback
+      audio.muted = true;
+      audio.play().catch(() => { });
+    });
+  }, []);
+  // ------------------------
+
   const [language, setLanguage] = useState('en');
 
   // State for the new language selection flow
@@ -234,6 +250,17 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 isolate">
+      {/* Background Music */}
+      <audio
+        ref={audioRef}
+        src="/MeSong.mpeg"
+        autoPlay
+        loop
+        muted
+        preload="auto"
+      />
+
+
       {/* Fixed Background GIF */}
       <div className="fixed inset-0 -z-10">
         <img src="/landing-bg.gif" alt="landing-bg" className="w-full h-screen object-cover" loading="lazy" />
