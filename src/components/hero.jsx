@@ -3,9 +3,9 @@ const Hero = ({ language, openDonateModal, openVolunteerModal }) => {
         <div className="absolute inset-0">
             {/* Centered Text Content */}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none">
-                <div className="pointer-events-auto flex flex-col items-center">
+                <div className="pointer-events-auto flex flex-col items-center -mt-20 sm:mt-0">
                     <h1
-                        className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black animate-fade-in-up"
+                        className="text-5xl leading-[1.1] sm:text-4xl md:text-5xl lg:text-7xl font-black animate-fade-in-up"
                         style={{ textShadow: '0 10px 30px rgba(0, 0, 0, 0.2)' }}
                     >
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] via-[#ff7612] to-[#ffdb5b] bg-[length:200%_auto] animate-gradient-slow">

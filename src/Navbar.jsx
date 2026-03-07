@@ -51,11 +51,11 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
               <img src="/brand/logo.jpeg" alt="Mind Empowered Logo" className="w-full h-full object-cover rounded-full" />
             </div>
             <div className="block transition-transform duration-300 group-hover:translate-x-1">
-              <h1 className={`text-base sm:text-lg md:text-xl font-bold leading-tight tracking-wide transition-colors duration-300 ${scrolled ? 'text-[#461711]' : 'text-white'}`}>
+              <h1 className={`text-2xl sm:text-3xl md:text-4xl font-black leading-none tracking-tight transition-colors duration-300 ${scrolled ? 'text-[#461711] drop-shadow-sm' : 'text-white drop-shadow-md'}`}>
                 Mind Empowered
               </h1>
-              <p className={`font-medium tracking-wide transition-colors duration-300 ${scrolled ? 'text-[#ff7612]' : 'text-gray-200'} ${language === 'ml' ? 'text-[0.6rem] sm:text-xs md:text-sm' : 'text-xs sm:text-sm md:text-base'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
-                #MEforYouth
+              <p className={`font-bold tracking-[0.2em] mt-1 transition-colors duration-300 uppercase ${scrolled ? 'text-[#ff7612]' : 'text-white/80'} ${language === 'ml' ? 'text-[9px] sm:text-[10px] md:text-xs' : 'text-[10px] sm:text-[11px] md:text-xs'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                #MEFORYOUTH
               </p>
             </div>
           </div>
@@ -90,18 +90,19 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
         </div>
 
         {/* Mobile menu button */}
-        <div className="lg:hidden">
+        <div className="lg:hidden flex items-center">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="inline-flex items-center justify-center p-2 rounded-xl text-white bg-black/20 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-[#ff7612] transition-all duration-300 hover:bg-[#ff7612]/20 group"
+            className={`inline-flex items-center justify-center p-2.5 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#ff7612] ${scrolled ? 'text-[#461711] hover:bg-black/5' : 'text-white hover:bg-white/10'}`}
             aria-controls="mobile-menu"
             aria-expanded={isMobileMenuOpen}
+            aria-label="Toggle navigation menu"
           >
             <span className="sr-only">Open main menu</span>
-            <div className="relative w-6 h-6">
-              <span className={`absolute block h-0.5 w-6 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-0' : '-translate-y-2'}`}></span>
-              <span className={`absolute block h-0.5 w-6 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-              <span className={`absolute block h-0.5 w-6 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 translate-y-0' : 'translate-y-2'}`}></span>
+            <div className="relative w-[24px] h-[16px]">
+              <span className={`absolute right-0 block h-[2px] bg-current transform transition-all duration-300 ease-in-out rounded-full ${isMobileMenuOpen ? 'top-[7px] w-[24px] rotate-45' : 'top-0 w-[24px]'}`}></span>
+              <span className={`absolute right-0 block h-[2px] bg-current transform transition-all duration-300 ease-in-out rounded-full ${isMobileMenuOpen ? 'top-[7px] w-0 opacity-0' : 'top-[7px] w-[16px]'}`}></span>
+              <span className={`absolute right-0 block h-[2px] bg-current transform transition-all duration-300 ease-in-out rounded-full ${isMobileMenuOpen ? 'top-[7px] w-[24px] -rotate-45' : 'top-[14px] w-[20px]'}`}></span>
             </div>
           </button>
         </div>
@@ -111,10 +112,10 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
       <div
         id="mobile-menu"
         className={`
-          lg:hidden bg-white/95 backdrop-blur-xl shadow-2xl border-t border-[#ff7612]/20 overflow-hidden transition-all duration-500 ease-in-out rounded-b-3xl mx-4 mt-2
-          ${isMobileMenuOpen ? 'max-h-[500px] opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-4'}
+          lg:hidden absolute left-4 right-4 top-full mt-2 bg-white/95 backdrop-blur-2xl shadow-[0_40px_100px_-10px_rgba(70,23,17,0.3)] border border-[#ff7612]/20 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] rounded-3xl
+          ${isMobileMenuOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'}
         `}>
-        <div className="px-4 pt-4 pb-6 space-y-1">
+        <div className="px-5 pt-6 pb-8 space-y-1">
           {navItems.map((item, idx) => (
             <div
               key={item.name}

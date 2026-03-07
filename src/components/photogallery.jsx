@@ -3,7 +3,7 @@ import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { translations } from "../translations";
 
-// Generate an array of image filenames from ME1.jpeg to ME51.jpeg
+// Generate an array of image filenames from ME1.jpeg to ME54.png
 const imageFilenames = [
   "ME1.jpeg", "ME2.jpeg", "ME3.jpeg", "ME4.jpeg", "ME5.jpeg",
   "ME6.jpeg", "ME7.jpeg", "ME8.jpeg", "ME9.jpeg", "ME10.jpeg",
@@ -15,7 +15,7 @@ const imageFilenames = [
   "ME36.png", "ME37.jpeg", "ME38.jpg", "ME39.jpeg", "ME40.jpeg",
   "ME41.jpeg", "ME42.jpeg", "ME43.jpeg", "ME44.jpeg", "ME45.jpeg",
   "ME46.jpeg", "ME47.jpeg", "ME48.jpeg", "ME49.jpg", "ME50.jpeg",
-  "ME51.jpeg"
+  "ME51.png", "ME52.png", "ME53.png", "ME54.png"
 ];
 
 const photoGallery = imageFilenames.map((filename, index) => ({

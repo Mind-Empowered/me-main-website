@@ -139,6 +139,24 @@
   border-radius: 0.75rem;
 }
 
+/* Reset constraints and explicitly center when in fullscreen mode */
+.photo-gallery-enhanced.fullscreen-modal .image-gallery-slide {
+  height: calc(100vh - 100px) !important;
+  /* Account for thumbnail strip height */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.photo-gallery-enhanced.fullscreen-modal .image-gallery-image {
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  max-height: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 0 !important;
+}
+
 /* Thumbnail strip wrapper */
 .photo-gallery-enhanced .image-gallery-thumbnail {
   width: 80px;

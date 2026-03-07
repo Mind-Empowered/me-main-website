@@ -76,12 +76,12 @@ function App() {
 
   // --- Data-driven navigation ---
   const navItems = [
-    { name: translations.nav.mission[language], ref: missionRef, key: 'about' },
-    { name: translations.nav.story[language], ref: storyRef, key: 'story' },
-    { name: translations.nav.team[language], ref: teamRef, key: 'team' },
-    { name: translations.nav.gallery[language], ref: galleryRef, key: 'gallery' },
-    { name: translations.nav.newsletter[language], ref: newsletterRef, key: 'newsletter' },
-    { name: translations.nav.contact[language], ref: contactRef, key: 'contact' },
+    { name: translations?.nav?.mission?.[language] || 'Mission', ref: missionRef, key: 'about' },
+    { name: translations?.nav?.story?.[language] || 'Story', ref: storyRef, key: 'story' },
+    { name: translations?.nav?.team?.[language] || 'Team', ref: teamRef, key: 'team' },
+    { name: translations?.nav?.gallery?.[language] || 'Gallery', ref: galleryRef, key: 'gallery' },
+    { name: translations?.nav?.newsletter?.[language] || 'Newsletter', ref: newsletterRef, key: 'newsletter' },
+    { name: translations?.nav?.contact?.[language] || 'Contact', ref: contactRef, key: 'contact' },
   ];
 
   // -----------------------------
@@ -297,22 +297,52 @@ function App() {
         // Attempt to play on the very first user interaction
         const handleFirstInteraction = () => {
           playAudio();
-          window.removeEventListener('click', handleFirstInteraction);
-          window.removeEventListener('keydown', handleFirstInteraction);
-          window.removeEventListener('touchstart', handleFirstInteraction);
+          window.removeEventListener('click', handleFirstInteraction, true);
+          window.removeEventListener('keydown', handleFirstInteraction, true);
+          window.removeEventListener('touchstart', handleFirstInteraction, true);
+          window.removeEventListener('touchend', handleFirstInteraction, true);
         };
 
-        window.addEventListener('click', handleFirstInteraction);
-        window.addEventListener('keydown', handleFirstInteraction);
-        window.addEventListener('touchstart', handleFirstInteraction);
+        window.addEventListener('click', handleFirstInteraction, true);
+        window.addEventListener('keydown', handleFirstInteraction, true);
+        window.addEventListener('touchstart', handleFirstInteraction, true);
+        window.addEventListener('touchend', handleFirstInteraction, true);
 
         return () => {
-          window.removeEventListener('click', handleFirstInteraction);
-          window.removeEventListener('keydown', handleFirstInteraction);
-          window.removeEventListener('touchstart', handleFirstInteraction);
+          window.removeEventListener('click', handleFirstInteraction, true);
+          window.removeEventListener('keydown', handleFirstInteraction, true);
+          window.removeEventListener('touchstart', handleFirstInteraction, true);
+          window.removeEventListener('touchend', handleFirstInteraction, true);
         };
       }
     }
+  }, [soundEnabled]);
+
+  // Handle pausing background music when videos play
+  useEffect(() => {
+    const handleMediaPlay = (e) => {
+      if (e.target.tagName === 'VIDEO' && audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+
+    const handleMediaPause = (e) => {
+      if (e.target.tagName === 'VIDEO' && audioRef.current && soundEnabled) {
+        // Only resume if background music is supposed to be enabled
+        audioRef.current.play().catch(() => { });
+      }
+    };
+
+    // Use capture phase to intercept the events from any deep video element
+    document.addEventListener('play', handleMediaPlay, true);
+    document.addEventListener('pause', handleMediaPause, true);
+    document.addEventListener('ended', handleMediaPause, true);
+
+    return () => {
+      document.removeEventListener('play', handleMediaPlay, true);
+      document.removeEventListener('pause', handleMediaPause, true);
+      document.removeEventListener('ended', handleMediaPause, true);
+    };
   }, [soundEnabled]);
 
   return (
