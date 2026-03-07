@@ -1,22 +1,21 @@
 import "./App.css";
 import { useRef, useState, useEffect } from "react";
 
-import { FaWheelchair } from 'react-icons/fa';
+import { FaWheelchair, FaArrowUp } from 'react-icons/fa';
 import Draggable from 'react-draggable';
 import Navbar from "./Navbar"; // Corrected import path
 import {
   Hero,
   VisionMission,
   Newsletter,
-  Objectives,
   Story,
   Events,
-  EventCalendar,
   Testimonials,
   Team,
   Photogallery,
+  EventHighlight,
   FAQ,
-  Ytp,
+  Contact,
   DonateModal,
 } from "./components";
 import { translations } from "./translations";
@@ -34,26 +33,17 @@ const FONT_SIZE_CLASSES = {
 function App() {
   const missionRef = useRef(null);
   const faqsRef = useRef(null);
-  const calendarRef = useRef(null);
+  const contactRef = useRef(null);
   const storyRef = useRef(null);
   const teamRef = useRef(null);
   const eventsRef = useRef(null);
   const galleryRef = useRef(null);
+  const newsletterRef = useRef(null);
+
+
 
   // --- Background Music ---
   const audioRef = useRef(null);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = 0;
-    audio.muted = false;
-    audio.play().catch(() => {
-      // Browser blocked unmuted autoplay; try muted as fallback
-      audio.muted = true;
-      audio.play().catch(() => { });
-    });
-  }, []);
   // ------------------------
 
   const [language, setLanguage] = useState('en');
@@ -63,6 +53,7 @@ function App() {
   const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isVolunteerModalOpen, setIsVolunteerModalOpen] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState(null);
 
   const handleLanguageSelect = (lang) => {
@@ -85,12 +76,14 @@ function App() {
 
   // --- Data-driven navigation ---
   const navItems = [
+    { name: translations.nav.mission[language], ref: missionRef, key: 'about' },
     { name: translations.nav.story[language], ref: storyRef, key: 'story' },
-    { name: translations.nav.events[language], ref: eventsRef, key: 'events' },
     { name: translations.nav.team[language], ref: teamRef, key: 'team' },
     { name: translations.nav.gallery[language], ref: galleryRef, key: 'gallery' },
-    { name: translations.nav.contact[language], ref: faqsRef, key: 'contact' },
+    { name: translations.nav.newsletter[language], ref: newsletterRef, key: 'newsletter' },
+    { name: translations.nav.contact[language], ref: contactRef, key: 'contact' },
   ];
+
   // -----------------------------
 
   // --- Data-driven footer social links ---
@@ -116,6 +109,10 @@ function App() {
   const [showAccessibilityMenu, setShowAccessibilityMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // Refs for smooth parallax direct manipulation
+  const backgroundRef = useRef(null);
+  const heroContentRef = useRef(null);
+
   // --- State with localStorage persistence ---
   const [fontSize, setFontSize] = useState(() => localStorage.getItem('fontSize') || 'normal');
   const [highContrast, setHighContrast] = useState(() => localStorage.getItem('highContrast') === 'true');
@@ -129,6 +126,11 @@ function App() {
   const [hideImages, setHideImages] = useState(() => localStorage.getItem('hideImages') === 'true');
   const [bigCursor, setBigCursor] = useState(() => localStorage.getItem('bigCursor') === 'true');
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    // Changed key to bgMusicEnabled to reset previous 'false' defaults
+    const saved = localStorage.getItem('bgMusicEnabled');
+    return saved === null ? true : saved === 'true';
+  });
 
   // Effect to save settings to localStorage whenever they change
   useEffect(() => {
@@ -144,7 +146,8 @@ function App() {
     localStorage.setItem('hideImages', hideImages);
     localStorage.setItem('bigCursor', bigCursor);
     localStorage.setItem('darkMode', darkMode);
-  }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, contentScale, lineHeight, letterSpacing, wordSpacing, hideImages, bigCursor, darkMode]);
+    localStorage.setItem('bgMusicEnabled', soundEnabled);
+  }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, contentScale, lineHeight, letterSpacing, wordSpacing, hideImages, bigCursor, darkMode, soundEnabled]);
   // -----------------------------------------
 
   const scrollToSection = (ref) => {
@@ -209,6 +212,7 @@ function App() {
     setHideImages(false);
     setBigCursor(false);
     setDarkMode(false);
+    setSoundEnabled(true);
   };
 
   const increaseContentScale = () => setContentScale(s => Math.min(s + 10, 150));
@@ -235,35 +239,103 @@ function App() {
     root.classList.toggle('dark-mode', darkMode);
   }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, lineHeight, letterSpacing, wordSpacing, hideImages, bigCursor, darkMode]);
 
-  // Handle navbar style on scroll
+  // Optimized smooth parallax and navbar scroll effect
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+    let ticking = false;
+
+    const updateParallax = () => {
+      const y = window.scrollY;
+
+      // Update Navbar State (React state is fine here as it's infrequent)
+      if (y > 10 !== scrolled) {
+        setScrolled(y > 10);
+      }
+
+      // 1. Background Image Parallax (Gentle constant motion)
+      if (backgroundRef.current && !reducedMotion) {
+        backgroundRef.current.style.transform = `translate3d(0, ${y * 0.15}px, 0)`;
+      }
+
+      // 2. Hero Content Parallax (Faster movement + Fade out)
+      if (heroContentRef.current && !reducedMotion) {
+        const opacity = Math.max(0, 1 - y / (window.innerHeight * 0.8));
+        const translate = y * 0.4;
+        heroContentRef.current.style.transform = `translate3d(0, ${translate}px, 0)`;
+        heroContentRef.current.style.opacity = opacity;
+        heroContentRef.current.style.visibility = opacity === 0 ? 'hidden' : 'visible';
+      }
+
+      ticking = false;
     };
 
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
     };
-  }, []);
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [scrolled, reducedMotion]);
+
+  // Sync sound state with audio element
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = !soundEnabled;
+      if (soundEnabled) {
+        const playAudio = () => {
+          audioRef.current.play().catch(() => {
+            // If still blocked, we don't set soundEnabled to false, 
+            // we just wait for the next interaction.
+          });
+        };
+
+        playAudio();
+
+        // Standard fix for modern browser autoplay restrictions:
+        // Attempt to play on the very first user interaction
+        const handleFirstInteraction = () => {
+          playAudio();
+          window.removeEventListener('click', handleFirstInteraction);
+          window.removeEventListener('keydown', handleFirstInteraction);
+          window.removeEventListener('touchstart', handleFirstInteraction);
+        };
+
+        window.addEventListener('click', handleFirstInteraction);
+        window.addEventListener('keydown', handleFirstInteraction);
+        window.addEventListener('touchstart', handleFirstInteraction);
+
+        return () => {
+          window.removeEventListener('click', handleFirstInteraction);
+          window.removeEventListener('keydown', handleFirstInteraction);
+          window.removeEventListener('touchstart', handleFirstInteraction);
+        };
+      }
+    }
+  }, [soundEnabled]);
 
   return (
     <div className="min-h-screen bg-gray-50 isolate">
+
+
       {/* Background Music */}
       <audio
         ref={audioRef}
         src="/MeSong.mpeg"
         autoPlay
         loop
-        muted
+        muted={!soundEnabled}
         preload="auto"
       />
 
 
-      {/* Fixed Background GIF */}
-      <div className="fixed inset-0 -z-10">
-        <img src="/landing-bg.gif" alt="landing-bg" className="w-full h-screen object-cover" loading="lazy" />
+      {/* Fixed Background GIF with Parallax */}
+      <div
+        ref={backgroundRef}
+        className="fixed inset-0 -z-10 will-change-transform"
+      >
+        <img src="/landing-bg.gif" alt="landing-bg" className="w-full h-screen object-cover scale-125" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
       </div>
 
@@ -279,15 +351,24 @@ function App() {
         missionRef={missionRef}
       />
 
-      {/* Hero Section Spacer */}
-      <div className="relative h-screen">
-        <Hero language={language} />
+      {/* Hero Section Spacer with Parallax Content */}
+      <div className="relative h-screen overflow-hidden">
+        <div
+          ref={heroContentRef}
+          className="absolute inset-0 will-change-transform"
+        >
+          <Hero
+            language={language}
+            openDonateModal={() => setIsDonateModalOpen(true)}
+            openVolunteerModal={() => setIsVolunteerModalOpen(true)}
+          />
+        </div>
       </div>
 
       {/* Accessibility Menu - Now controlled by the floating button */}
       {showAccessibilityMenu && (
         <Draggable handle=".drag-handle" bounds="body">
-          <div className="accessibility-menu fixed right-4 bottom-20 sm:right-6 sm:bottom-24 w-[90vw] max-w-xs bg-white rounded-xl shadow-2xl border-2 border-gray-200 p-3 sm:p-4 z-40 animate-fade-in-fast cursor-default">
+          <div className="accessibility-menu fixed left-4 bottom-20 sm:left-6 sm:bottom-24 w-[90vw] max-w-xs bg-white rounded-xl shadow-2xl border-2 border-gray-200 p-3 sm:p-4 z-40 animate-fade-in-fast cursor-default">
             {/* The handle for dragging the menu */}
             <h3 className="drag-handle text-lg sm:text-xl font-bold text-[#461711] mb-3 text-center cursor-move" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.title[language]}</h3>
             <div className="space-y-3">
@@ -342,6 +423,15 @@ function App() {
                   className={`px-3 py-1 text-xs rounded-md font-bold w-14 text-center ${darkMode ? 'bg-[#ff7612] text-white' : 'bg-gray-200'}`}
                 >
                   {darkMode ? translations.nav.on[language] : translations.nav.off[language]}
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.backgroundMusic[language]}</span>
+                <button
+                  onClick={() => setSoundEnabled(!soundEnabled)}
+                  className={`px-3 py-1 text-xs rounded-md font-bold w-14 text-center ${soundEnabled ? 'bg-[#ff7612] text-white' : 'bg-gray-200'}`}
+                >
+                  {soundEnabled ? translations.nav.on[language] : translations.nav.off[language]}
                 </button>
               </div>
               <div className="flex items-center justify-between">
@@ -405,13 +495,26 @@ function App() {
       {/* Accessibility Icon */}
       <button
         onClick={() => setShowAccessibilityMenu(!showAccessibilityMenu)}
-        className="z-40 bottom-4 right-4 sm:bottom-6 sm:right-6 fixed transition-transform hover:scale-110 cursor-pointer animate-[pulse-gentle_3s_infinite] focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-[#ff7612] rounded-full"
+        className="z-40 bottom-4 left-4 sm:bottom-6 sm:left-6 fixed transition-transform hover:scale-110 cursor-pointer animate-[pulse-gentle_3s_infinite] focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-[#ff7612] rounded-full"
         aria-label="Open Accessibility Menu"
       >
         <div className="bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-white/30 p-3 sm:p-4 flex items-center justify-center">
           <FaWheelchair className="w-6 h-6 sm:w-7 sm:h-7 text-[#461711]" />
         </div>
       </button>
+
+      {/* Back to Top Icon */}
+      {scrolled && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="z-40 bottom-4 right-4 sm:bottom-6 sm:right-6 fixed transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-[#ff7612] rounded-full group"
+          aria-label="Back to Top"
+        >
+          <div className="bg-[#461711] rounded-full shadow-xl p-3 sm:p-4 flex items-center justify-center transition-colors group-hover:bg-[#ff7612]">
+            <FaArrowUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          </div>
+        </button>
+      )}
 
       {/* Language Selection Modal */}
       {isLanguageModalOpen && (
@@ -507,100 +610,136 @@ function App() {
         </div>
       )}
 
+      {/* Volunteer Modal */}
+      {isVolunteerModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-4xl h-[90vh] bg-white rounded-[2rem] shadow-2xl overflow-hidden border-2 border-[#ff7612]/30 flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 md:px-8 border-b border-gray-100 bg-[#FAF9F6]">
+              <div>
+                <h3 className="text-xl md:text-2xl font-bold text-[#461711]">Volunteer with ME</h3>
+                <p className="text-xs text-orange-600 opacity-70">Join our mission to empower youth</p>
+              </div>
+              <button
+                onClick={() => setIsVolunteerModalOpen(false)}
+                className="p-2 text-gray-400 hover:text-[#ff7612] hover:bg-orange-50 rounded-full transition-colors"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <div className="flex-grow relative bg-gray-50">
+              <iframe
+                src="https://docs.google.com/forms/d/e/1FAIpQLSd8lofeaLC0XkkXRCC_fFbKYBL4F1uxhptyyUsa1tIUBEVQMQ/viewform?embedded=true"
+                className="w-full h-full border-none"
+                title="Volunteer Form"
+              >
+                Loading…
+              </iframe>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content Sections */}
       <div
         className="bg-gradient-to-b from-[#fdfbf5] to-[#f5f0de] transition-transform duration-300"
         style={{ transform: `scale(${contentScale / 100})`, transformOrigin: 'top center' }}
       >
+        {/* 1. Vision & Mission + Core Objectives */}
         <section ref={missionRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <VisionMission language={language} />
           </div>
         </section>
 
-        <section className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
-          <div className="px-4 sm:px-6 lg:px-8">
-            <Newsletter language={language} />
-          </div>
-        </section>
-
-        <section className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
-          <div className="px-4 sm:px-6 lg:px-8">
-            <Objectives language={language} />
-          </div>
-        </section>
-
+        {/* 2. Our Story + YTP */}
         <section ref={storyRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <Story language={language} />
           </div>
         </section>
 
+        {/* 3. Upcoming Events - Hidden per request */}
+        {/* 
         <section ref={eventsRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <Events language={language} onRegister={() => setIsRegisterModalOpen(true)} />
         </section>
+        */}
 
-        <section className="content-section py-16 md:py-24 bg-transparent">
-          <div className="px-4 sm:px-6 lg:px-8">
-            <Ytp language={language} />
-          </div>
+        {/* 3.5 Dhriti Highlight Showcase */}
+        <section className="bg-transparent">
+          <EventHighlight language={language} />
         </section>
 
+        {/* 4. Meet Our Team */}
         <section ref={teamRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <Team language={language} />
           </div>
         </section>
 
-
-        <section ref={calendarRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
+        {/* 5. Student Testimonials */}
+        <section className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 items-start">
-              <EventCalendar language={language} />
-              <Testimonials language={language} />
-            </div>
+            <Testimonials language={language} />
           </div>
         </section>
 
+        {/* 6. Photo Gallery */}
         <section ref={galleryRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <Photogallery language={language} />
           </div>
         </section>
 
+        {/* 7. Newsletter */}
+        <section ref={newsletterRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <Newsletter language={language} />
+          </div>
+        </section>
+
+        {/* 8. FAQ */}
         <section ref={faqsRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <FAQ language={language} />
           </div>
         </section>
 
+        {/* 9. Contact Us */}
+        <section ref={contactRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <Contact language={language} />
+          </div>
+        </section>
+
       </div>
 
       <footer className="bg-[#461711] text-white/90">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full py-8 md:py-12 flex flex-col md:flex-row justify-between items-center md:items-start gap-8">
-            {/* Column 1: Brand */}
-            <div className="space-y-4 text-center md:text-left">
-              <h3 className="text-xl font-bold text-white">Mind Empowered</h3>
-              <p className="text-sm text-white/70 max-w-md mx-auto md:mx-0" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
-                {translations.footer.subtitle[language]}
-              </p>
-            </div>
-
-            {/* Column 2: Connect */}
-            <div className="text-center md:text-right">
-              <h4 className="font-semibold text-white mb-3">{translations.footer.connect[language]}</h4>
-              <div className="flex justify-center md:justify-end gap-4">
-                {socialLinks.map((link) => (
-                  <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-[#ffdb5b] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1" aria-label={link.label}>
-                    {link.icon}
-                  </a>
-                ))}
+        <div className="w-full px-4 sm:px-6 lg:px-12">
+          <div className="w-full py-8 md:py-12 flex flex-col md:flex-row justify-between items-center gap-6">
+            {/* Brand */}
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 bg-white rounded-full p-0.5 shadow-md overflow-hidden ring-2 ring-[#ff7612]/20">
+                <img src="/brand/logo.jpeg" alt="Mind Empowered Logo" className="w-full h-full object-cover rounded-full" />
+              </div>
+              <div className="text-center md:text-left">
+                <h3 className="text-lg font-bold text-white">Mind Empowered</h3>
+                <p className="text-xs text-[#ffdb5b] font-medium">#MEforYouth</p>
               </div>
             </div>
+
+            {/* Tagline */}
+            <p className="text-sm text-white/60 max-w-xs text-center" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+              {translations.footer.subtitle[language]}
+            </p>
           </div>
+
+          {/* Copyright */}
           <div className="text-center border-t border-white/10 py-4">
-            <p className="text-xs text-white/50">© {new Date().getFullYear()} Mind Empowered. All rights reserved.</p>
+            <p className="text-xs text-white/40">© {new Date().getFullYear()} Mind Empowered. All rights reserved. · Illuminating minds, transforming lives.</p>
           </div>
         </div>
       </footer>
