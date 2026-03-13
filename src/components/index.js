@@ -1,13 +1,12 @@
 export { default as Hero } from './hero';
 export { default as VisionMission } from './visionmission';
 export { default as Newsletter } from './newsletter';
-export { default as Objectives } from './objectives';
 export { default as Story } from './story';
 export { default as Events } from './events';
-export { default as EventCalendar } from './Calender';
 export { default as Testimonials } from './Testimonials';
 export { default as Team } from './team';
 export { default as Photogallery } from './photogallery';
+export { default as EventHighlight } from './EventHighlight';
 export { default as FAQ } from './faq';
-export { default as Ytp } from './ytp';
+export { default as Contact } from './contact';
 export { default as DonateModal } from './DonateModal';

@@ -4,120 +4,219 @@ import { translations } from "../translations";
 const Story = ({ language }) => {
     return (
         <div className="relative isolate">
-            {/* Background Decorative Elements */}
-            <div className="absolute top-0 left-1/4 -z-10 w-72 h-72 bg-[#ff7612]/5 rounded-full blur-3xl animate-pulse" />
+            {/* ── Background Aesthetics ────────────────────────── */}
+            <div className="absolute top-40 left-0 w-full h-[80%] bg-[#ff7612]/[0.02] -z-10 skew-y-3" />
+            <div className="absolute top-0 left-1/4 -z-10 w-72 h-72 bg-[#ff7612]/5 rounded-full blur-3xl" />
             <div className="absolute bottom-20 right-1/4 -z-10 w-96 h-96 bg-[#ffdb5b]/10 rounded-full blur-3xl" />
 
-            {/* Section Header */}
-            <div className="text-center mb-16 md:mb-20">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#461711]/5 text-[#461711] text-xs font-bold tracking-widest uppercase mb-4">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff7612]"></span>
+            {/* ── Section Header ──────────────────────────────── */}
+            <div className="text-center mb-16 md:mb-24">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#461711]/5 text-[#461711] text-[10px] font-black tracking-[0.2em] uppercase mb-6 border border-[#461711]/10">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff7612]" />
                     Our Narrative
                 </div>
-                <h1 className={`font-extrabold text-[#461711] mb-6 leading-tight ${language === 'ml' ? 'text-3xl sm:text-4xl md:text-5xl' : 'text-4xl sm:text-5xl md:text-6xl'}`}>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff7612] to-[#ffdb5b]" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                <h2 className={`font-black text-[#461711] mb-8 tracking-tight leading-none ${language === 'ml' ? 'text-4xl sm:text-5xl md:text-6xl' : 'text-5xl sm:text-6xl md:text-7xl'}`}>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff7612] via-[#ff7612] to-[#ffdb5b]" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
                         {translations.story.title[language]}
                     </span>
-                </h1>
-                <div className="w-24 h-1.5 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto mb-6 rounded-full"></div>
-                <p className={`text-gray-600 max-w-2xl mx-auto leading-relaxed font-medium ${language === 'ml' ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                </h2>
+                <div className="flex justify-center gap-1.5 mb-8">
+                    <div className="w-12 h-1.5 bg-[#ff7612] rounded-full"></div>
+                    <div className="w-3 h-1.5 bg-[#ffdb5b] rounded-full"></div>
+                    <div className="w-3 h-1.5 bg-[#461711]/10 rounded-full"></div>
+                </div>
+                <p className={`text-gray-500 max-w-2xl mx-auto leading-relaxed font-semibold italic ${language === 'ml' ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
                     {translations.story.subtitle[language]}
                 </p>
             </div>
 
-            {/* Main Content: Illustration & Text */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center mb-20 md:mb-32">
-                {/* Illustration Column */}
-                <div className="lg:col-span-5 order-2 lg:order-1 relative group">
-                    <div className="absolute -inset-4 bg-gradient-to-tr from-[#ff7612]/10 to-[#ffdb5b]/20 rounded-3xl blur-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-700" />
-                    <div className="relative bg-white/40 backdrop-blur-sm rounded-3xl p-4 sm:p-8 border border-white/50 shadow-xl transform transition-transform duration-500 group-hover:scale-[1.03]">
-                        <img
-                            src="/mestory.svg"
-                            alt="Mind Empowered Story Illustration"
-                            className="w-full h-auto object-contain drop-shadow-2xl"
-                        />
+            {/* ── Main Content Grid ────────────────────────────── */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start mb-20 md:mb-40">
+
+                {/* Left Column: Visual & Founding Details */}
+                <div className="lg:col-span-6 space-y-12">
+                    <div className="relative">
+                        {/* Interactive Frame removed hover */}
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-[#ff7612]/20 to-[#ffdb5b]/30 rounded-[2.5rem] blur-2xl opacity-40" />
+
+                        <div className="relative">
+                            <div className="relative rounded-[2rem] overflow-hidden shadow-[0_32px_64px_-12px_rgba(70,23,17,0.2)] bg-black border-8 border-white ring-1 ring-gray-100">
+                                <video
+                                    className="w-full h-auto aspect-video object-cover"
+                                    controls
+                                    playsInline
+                                    preload="metadata"
+                                    title="Mind Empowered Journey 2025"
+                                >
+                                    <source src="/ME%20Video%202025.mp4" type="video/mp4" />
+                                </video>
+                            </div>
+
+
+                        </div>
                     </div>
-                    {/* Floating Accent */}
-                    <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-[#ff7612]/10 rounded-full blur-xl animate-bounce" style={{ animationDuration: '3s' }} />
+
+                    {/* Founding Details Card */}
+                    <div className="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 border border-white shadow-xl shadow-orange-900/5 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 -mr-16 -mt-16 rounded-full" />
+
+                        <div className="relative z-10 space-y-8">
+                            <p className={`text-gray-700 font-medium leading-relaxed ${language === 'ml' ? 'text-lg md:text-xl' : 'text-lg md:text-xl'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                                {translations.story.p3[language]}
+                            </p>
+
+                            <div className="flex items-center gap-6 pt-4 border-t border-orange-100">
+                                <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-[#ff7612] to-[#ffdb5b] flex items-center justify-center text-white shadow-lg shadow-orange-500/30">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p className="text-[#461711] font-black text-xl mb-1" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                                        {translations.story.p4_date[language]}
+                                    </p>
+                                    <p className="text-[#ff7612] text-sm font-bold uppercase tracking-widest">A Movement Was Born</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Text Content Column */}
-                <div className={`lg:col-span-7 order-1 lg:order-2 space-y-6 text-gray-700 leading-relaxed ${language === 'ml' ? 'text-lg md:text-xl' : 'text-lg md:text-xl'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                {/* Right Column: Narrative & Philosophy */}
+                <div className={`lg:col-span-6 pt-0 lg:pt-12 space-y-10 text-gray-700 leading-relaxed ${language === 'ml' ? 'text-lg md:text-xl' : 'text-lg md:text-xl'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+
                     <div className="relative">
-                        <span className="absolute -left-8 -top-8 text-8xl text-[#ff7612]/10 font-serif leading-none select-none">“</span>
-                        <p className="relative z-10">
-                            <span className="font-extrabold text-[#461711] text-2xl">Mind Empowered (ME)</span> {translations.story.p1[language]} <span className="font-bold text-[#ff7612] border-b-2 border-[#ff7612]/20">{translations.story.p1_author[language]}</span>{translations.story.p1_cont[language]}
-                        </p>
-                    </div>
-
-                    <p className="opacity-90">
-                        {translations.story.p2[language]}
-                    </p>
-
-                    <div className="relative py-8 md:py-10">
-                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#ff7612] to-[#ffdb5b] rounded-full" />
-                        <blockquote className="pl-8">
-                            <p className={`font-bold text-[#461711] italic leading-snug ${language === 'ml' ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'}`}>
-                                {translations.story.quote[language]}
+                        <span className="absolute -left-12 -top-12 text-[12rem] text-[#ff7612]/5 font-serif leading-none select-none">"</span>
+                        <div className="relative z-10 space-y-8">
+                            <p className="first-letter:text-5xl first-letter:font-black first-letter:text-[#ff7612] first-letter:mr-3 first-letter:float-left pt-2">
+                                <span className="font-black text-[#461711] text-2xl">Mind Empowered (ME)</span> {translations.story.p1[language]} <span className="text-[#ff7612] font-black underline decoration-4 decoration-orange-100 underline-offset-4">{translations.story.p1_author[language]}</span>{translations.story.p1_cont[language]}
                             </p>
-                        </blockquote>
+
+                            <p className="opacity-80 font-medium">
+                                {translations.story.p2[language]}
+                            </p>
+                        </div>
                     </div>
 
-                    <p className="opacity-90">
-                        {translations.story.p3[language]}
-                    </p>
+                    {/* Highly Stylized Quote Block */}
+                    <div className="relative mt-20 pt-16">
+                        {/* Visual Connector Line */}
+                        <div className="absolute top-0 left-10 w-px h-16 bg-gradient-to-b from-orange-200 to-transparent" />
 
-                    <div className="pt-4 flex items-center gap-4 text-[#461711]">
-                        <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-[#ff7612]">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
+                        <div className="relative bg-gradient-to-br from-[#461711] to-[#2a0d0a] text-white p-12 md:p-14 rounded-[3rem] shadow-2xl shadow-orange-950/20 overflow-hidden">
+                            {/* Decorative Quote Icon */}
+                            <div className="absolute top-8 right-10 text-white/10">
+                                <svg className="w-24 h-24 rotate-180" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M14.017 21L14.017 18C14.017 16.899 14.899 16.017 16 16.017L21.017 16.017L21.017 21L14.017 21ZM14.017 14L14.017 11C14.017 9.899 14.899 9.017 16 9.017L21.017 9.017L21.017 14L14.017 14ZM5.017 21L5.017 18C5.017 16.899 5.899 16.017 7 16.017L12.017 16.017L12.017 21L5.017 21ZM5.017 14L5.017 11C5.017 9.899 5.899 9.017 7 9.017L12.017 9.017L12.017 14L5.017 14ZM12 6C12 5.4 12.1 4.8 12.2 4.3C12.3 3.9 12.5 3.5 12.8 3.1C13.1 2.8 13.5 2.5 14 2.2C14.5 2 15 1.9 15.4 1.9L15.8 1.9L15.8 5.4L15.4 5.4C14.9 5.4 14.5 5.5 14.2 5.7C13.9 5.9 13.8 6.2 13.8 6.5L13.8 7.6L15.8 7.6L15.8 11.1L12 11.1L12 6ZM3.1 6C3.1 5.4 3.2 4.8 3.3 4.3C3.4 3.9 3.6 3.5 3.9 3.1C4.2 2.8 4.6 2.5 5.1 2.2C5.6 2 6.1 1.9 6.5 1.9L6.9 1.9L6.9 5.4L6.5 5.4C6 5.4 5.6 5.5 5.3 5.7C5 5.9 4.9 6.2 4.9 6.5L4.9 7.6L6.9 7.6L6.9 11.1L3.1 11.1L3.1 6Z" />
+                                </svg>
+                            </div>
+
+                            <blockquote className="relative z-10">
+                                <p className={`font-black italic leading-[1.1] text-transparent bg-clip-text bg-gradient-to-br from-white to-orange-200 ${language === 'ml' ? 'text-3xl md:text-4xl' : 'text-4xl md:text-5xl'}`}>
+                                    {translations.story.quote[language]}
+                                </p>
+                            </blockquote>
+
+                            <div className="mt-8 flex items-center gap-3">
+                                <div className="h-0.5 w-12 bg-[#ff7612]" />
+                                <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-60">The core philosophy</p>
+                            </div>
                         </div>
-                        <p className="font-bold">
-                            {translations.story.p4[language]} <span className="text-[#ff7612] bg-[#ff7612]/10 px-2 py-0.5 rounded-md">{translations.story.p4_date[language]}</span>{translations.story.p4_cont[language]}
-                        </p>
                     </div>
                 </div>
             </div>
 
-            {/* ME Story Cinema/Video Section */}
-            <div className="mt-20 md:mt-32">
-                <div className="text-center mb-10">
-                    <h3 className="text-2xl md:text-3xl font-bold text-[#461711] mb-2" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
-                        {language === 'ml' ? 'ഞങ്ങളുടെ യാത്ര കാണുക' : 'Experience Our Journey'}
-                    </h3>
-                    <p className="text-gray-500 font-medium">A visual recount of our impact and milestones</p>
+            {/* ── YTP Collaboration Section ───────────────────── */}
+            <div className="mt-20 lg:mt-32">
+                {/* Advanced Divider */}
+                <div className="flex items-center gap-6 mb-20">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-orange-200 to-orange-200" />
+                    <div className="flex items-center gap-3 px-6 py-2 rounded-full border-2 border-orange-100 bg-white shadow-sm">
+                        <img src="/brand/mascot.svg" className="w-5 h-5" alt="Mascot" />
+                        <span className="text-[10px] font-black text-[#461711] tracking-[0.2em] uppercase">Expanding Impact</span>
+                    </div>
+                    <div className="h-px flex-1 bg-gradient-to-l from-transparent via-orange-200 to-orange-200" />
                 </div>
 
-                <div className="max-w-5xl mx-auto px-4 md:px-0">
-                    <div className="relative group">
-                        {/* Dramatic Glow behind video */}
-                        <div className="absolute -inset-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] rounded-[2rem] blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+                <div className="relative overflow-hidden bg-white/40 backdrop-blur-md rounded-[3rem] shadow-2xl border border-white p-8 md:p-16 lg:p-24">
+                    {/* Artistic gradient background */}
+                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-orange-100/50 to-transparent -mr-80 -mt-80 rounded-full blur-[120px] -z-10" />
 
-                        <div className="relative rounded-[1.8rem] overflow-hidden shadow-2xl bg-black border-[6px] border-white ring-1 ring-gray-200">
-                            <video
-                                className="w-full h-auto aspect-video object-cover"
-                                controls
-                                playsInline
-                                preload="metadata"
-                                title="Mind Empowered Journey 2025"
-                                aria-label="A video showcasing the journey and impact of Mind Empowered organization in 2025"
-                            >
-                                <source src="/ME_Video_2025.mp4" type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
+                    <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24 relative z-10">
+                        {/* Text Block */}
+                        <div className="w-full lg:w-3/5 space-y-8">
+                            <div className="inline-flex items-center px-4 py-1.5 rounded-xl bg-[#ff7612] text-white text-[10px] font-black tracking-widest uppercase shadow-lg shadow-orange-500/20">
+                                Global Partnership
+                            </div>
+
+                            <h3 className={`font-black text-[#461711] leading-none tracking-tighter ${language === 'ml' ? 'text-4xl sm:text-5xl' : 'text-5xl sm:text-6xl'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                                {translations.team.collabTitle[language]}
+                            </h3>
+
+                            <div className="space-y-6 text-gray-600 font-medium">
+                                <p className="text-xl text-[#ff7612] font-black italic">
+                                    {translations.team.collabSubtitle[language]}
+                                </p>
+                                <p className="leading-relaxed leading-[1.8] opacity-80">
+                                    The Yellow Tulip Project (YTP) is a global mental health initiative dedicated to empowering young people and reducing stigma. Mind Empowered is the bridge bringing this global perspective to the youth of India — combining local heart with international expertise.
+                                </p>
+                            </div>
+
+                            {/* Impact Cards Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4">
+                                {[
+                                    { title: 'Global Reach', text: '3 Continents', icon: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945' },
+                                    { title: 'Youth First', text: 'Gen-Z Led', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1z' },
+                                    { title: 'Safe Space', text: 'Stigma-Free', icon: 'M9 12l2 2 4-4' }
+                                ].map((stat, i) => (
+                                    <div key={i} className="bg-white p-6 rounded-[2rem] border border-orange-50 shadow-sm">
+                                        <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-[#ff7612] mb-4">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.icon} />
+                                            </svg>
+                                        </div>
+                                        <div className="text-[10px] font-black text-[#461711] uppercase tracking-wider mb-1 opacity-40">{stat.title}</div>
+                                        <div className="text-sm font-black text-[#461711]">{stat.text}</div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="pt-6">
+                                <a
+                                    href="https://www.theyellowtulipproject.org/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="relative inline-flex items-center gap-4 px-10 py-5 bg-[#461711] text-white rounded-[1.5rem] text-sm font-black uppercase tracking-widest shadow-2xl shadow-orange-950/20"
+                                >
+                                    <span>Explore YTP Global</span>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
 
-                        {/* Video Footer Detail */}
-                        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full max-w-md">
-                            <div className="bg-white/90 backdrop-blur px-6 py-3 rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center gap-3">
-                                <span className="flex h-3 w-3 relative">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff7612] opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-[#ff7612]"></span>
-                                </span>
-                                <span className="text-sm font-bold text-[#461711] uppercase tracking-wider">
-                                    ME Impact Documentary 2025
-                                </span>
+                        {/* Image Frame */}
+                        <div className="w-full lg:w-2/5">
+                            <div className="relative">
+                                <div className="absolute -inset-6 bg-gradient-to-br from-[#ff7612]/20 to-[#ffdb5b]/30 rounded-[3rem] blur-2xl opacity-30" />
+                                <div className="relative bg-white p-4 rounded-[3rem] shadow-2xl border border-white transition-transform duration-500">
+                                    <img
+                                        src="https://me-website-assets.s3.ap-south-1.amazonaws.com/ytp_collab/ytp.jpeg"
+                                        alt="International Collaboration"
+                                        className="w-full h-auto rounded-[2.2rem] shadow-inner transition-all duration-700"
+                                    />
+                                    {/* Glass Link Tag */}
+                                    <div className="absolute -bottom-4 -right-4 bg-white/90 backdrop-blur-md p-6 rounded-[2rem] shadow-2xl border border-white flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-2xl bg-[#ff7612] flex items-center justify-center text-white shadow-lg">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9" /></svg>
+                                        </div>
+                                        <div>
+                                            <div className="text-sm font-black text-[#461711]">ME × YTP</div>
+                                            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Global Alliance</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
