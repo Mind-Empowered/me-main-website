@@ -124,3 +124,168 @@
 .content-section {
   position: relative;
 }
+
+/* ── Photo Gallery — uniform aspect ratios ─────────────────────────────────
+   react-image-gallery renders its own DOM; we override it here.
+   Main slide: 16:9 widescreen  |  Thumbnails: 4:3 square-ish
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Main slide image */
+.photo-gallery-enhanced .image-gallery-image {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  width: 100%;
+  max-height: 600px;
+  border-radius: 0.75rem;
+}
+
+/* Reset constraints and explicitly center when in fullscreen mode */
+.photo-gallery-enhanced.fullscreen-modal .image-gallery-slide {
+  height: calc(100vh - 100px) !important;
+  /* Account for thumbnail strip height */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.photo-gallery-enhanced.fullscreen-modal .image-gallery-image {
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  max-height: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 0 !important;
+}
+
+/* Thumbnail strip wrapper */
+.photo-gallery-enhanced .image-gallery-thumbnail {
+  width: 80px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.photo-gallery-enhanced .image-gallery-thumbnail.active,
+.photo-gallery-enhanced .image-gallery-thumbnail:hover {
+  border-color: #ff7612;
+  transform: translateY(-2px);
+}
+
+/* Thumbnail image — fixed 4:3 */
+.photo-gallery-enhanced .image-gallery-thumbnail-image {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Splash Screen Animations */
+@keyframes splash-fade-out {
+  0% {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  100% {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+}
+
+.animate-splash-exit {
+  animation: splash-fade-out 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes progress-fill {
+  0% {
+    width: 0%;
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.2);
+  }
+
+  100% {
+    width: 100%;
+    filter: brightness(1);
+  }
+}
+
+.animate-progress-fill {
+  animation: progress-fill 4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@keyframes logo-float {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-15px) scale(1.05);
+  }
+}
+
+.animate-logo-float {
+  animation: logo-float 3s ease-in-out infinite;
+}
+
+@keyframes orb-rotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.animate-orb {
+  animation: orb-rotate 10s linear infinite;
+}
+
+@keyframes title-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.animate-title-reveal {
+  animation: title-reveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes bg-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-bg-pan {
+  background-size: 200% 200%;
+  animation: bg-pan 15s ease infinite;
+}

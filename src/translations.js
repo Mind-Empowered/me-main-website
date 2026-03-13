@@ -11,6 +11,20 @@ export const translations = {
         on: { en: 'ON', ml: 'ഓൺ' },
         off: { en: 'OFF', ml: 'ഓഫ്' },
         donate: { en: 'Donate for ME', ml: 'സംഭാവന നൽകുക' },
+        newsletter: { en: 'Newsletters', ml: 'വാർത്താക്കുറിപ്പ്' },
+    },
+    dhritiHighlight: {
+        title: { en: 'Dhriti: Relive the Magic', ml: 'ധൃതി: ആവേശം വീണ്ടും' },
+        subtitle: { en: 'A Journey of Empowerment and Resilience', ml: 'ശാക്തീകരണത്തിന്റെയും പ്രതിരോധത്തിന്റെയും ഒരു യാത്ര' },
+        description: {
+            en: 'Beyond just an event, Dhriti was a celebration of mental health, creativity, and the power of youth. Watch the highlights of our most impactful flagship event to date.',
+            ml: 'ഒരു ഇവന്റിന് അപ്പുറം, മാനസികാരോഗ്യം, സർഗ്ഗാത്മകത, യുവശക്തി എന്നിവയുടെ ആഘോഷമായിരുന്നു ധൃതി. ഞങ്ങളുടെ ഏറ്റവും ശ്രദ്ധേയമായ പരിപാടിയുടെ ദൃശ്യങ്ങൾ കാണുക.'
+        },
+        stats: {
+            attendees: { en: '10,000+ Reached', ml: '10,000+ ആളുകൾ' },
+            impact: { en: '50+ Activities', ml: '50+ പ്രവർത്തനങ്ങൾ' },
+            energy: { en: '100% Inclusive', ml: '100% ഉൾക്കൊള്ളുന്നതും' }
+        }
     },
     hero: {
         title: { en: 'Mind Empowered', ml: 'മൈൻഡ് എംപവേർഡ്' },
@@ -165,7 +179,28 @@ export const translations = {
             title: { en: "How can I send across my queries directly to the experts?", ml: "എന്റെ ചോദ്യങ്ങൾ വിദഗ്ദ്ധർക്ക് നേരിട്ട് എങ്ങനെ അയയ്ക്കാം?" },
             data: { en: "ME floats a Google form periodically wherein you are free to anonymously send in any queries. Our panel doctors answer these queries during the month-end sessions.", ml: "ME ഇടയ്ക്കിടെ ഒരു ഗൂഗിൾ ഫോം നൽകാറുണ്ട്, അതിൽ നിങ്ങൾക്ക് അജ്ഞാതമായി ഏത് ചോദ്യങ്ങളും അയയ്ക്കാം. ഞങ്ങളുടെ പാനൽ ഡോക്ടർമാർ മാസാന്ത്യ സെഷനുകളിൽ ഈ ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകുന്നു." }
         },
+        {
+            key: 4,
+            title: { en: "What types of sessions does ME conduct?", ml: "ME എന്ത് തരം സെഷനുകൾ നടത്തുന്നു?" },
+            data: { en: "ME conducts a variety of sessions including weekly webinars with mental health professionals, interactive workshops on stress management, spoken English and interview skill-building classes, offline community meetups, and special month-end Q&A panels where experts address questions submitted anonymously by participants.", ml: "മാനസികാരോഗ്യ വിദഗ്ദ്ധരുമായുള്ള പ്രതിവാര വെബിനാറുകൾ, സ്‌ട്രെസ് മാനേജ്‌മെന്റ് വർക്ക്‌ഷോപ്പുകൾ, സ്‌പോക്കൺ ഇംഗ്ലീഷ്, ഇന്റർവ്യൂ തയ്യാറെടുപ്പ് ക്ലാസ്സുകൾ, ഓഫ്‌ലൈൻ കമ്മ്യൂണിറ്റി മീറ്റ്-അപ്പുകൾ, അജ്ഞാതമായി സമർപ്പിക്കപ്പെടുന്ന ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകുന്ന പ്രത്യേക മാസാന്ത്യ Q&A പാനലുകൾ എന്നിവ ME നടത്തുന്നു." }
+        },
+        {
+            key: 5,
+            title: { en: "Is ME open to everyone, or only students?", ml: "ME എല്ലാവർക്കും തുറന്നതാണോ, അതോ വിദ്യാർത്ഥികൾക്ക് മാത്രമോ?" },
+            data: { en: "While ME was founded with a strong focus on youth and college-going students, our community warmly welcomes anyone — working professionals, parents, and curious learners of all ages — who wants to learn about mental health, break the stigma, or simply find a safe, supportive space to share their experiences.", ml: "ME യൗവനത്തിലും കോളേജ് വിദ്യാർത്ഥികളിലും ശ്രദ്ധ കേന്ദ്രീകരിച്ചു കൊണ്ടാണ് സ്ഥാപിതമായത്. എന്നിരുന്നാലും, മാനസികാരോഗ്യത്തെ കുറിച്ച് അറിയാൻ ആഗ്രഹിക്കുന്ന, കളങ്കം ഇല്ലാതാക്കാൻ ആഗ്രഹിക്കുന്ന, അല്ലെങ്കിൽ അനുഭവങ്ങൾ പങ്കിടാൻ ഒരു സുരക്ഷിത ഇടം ആഗ്രഹിക്കുന്ന ആർക്കും — തൊഴിൽ ചെയ്യുന്നവരും, രക്ഷിതാക്കളും, എല്ലാ പ്രായക്കാരും — ഞങ്ങളുടെ കമ്മ്യൂണിറ്റി ഊഷ്മളമായി സ്വാഗതം ചെയ്യുന്നു." }
+        },
+        {
+            key: 6,
+            title: { en: "Are ME's programs completely free of charge?", ml: "ME-യുടെ പ്രോഗ്രാമുകൾ തികച്ചും സൗജന്യമാണോ?" },
+            data: { en: "Yes — all of ME's core programs, including weekly webinars, expert sessions, and community workshops are completely free. ME is a not-for-profit, volunteer-driven initiative. Our mission is to make quality mental health education and support accessible to every young person in India, regardless of their financial background.", ml: "അതെ — ME-യുടെ എല്ലാ പ്രധാന പ്രോഗ്രാമുകളും — പ്രതിവാര വെബിനാറുകൾ, വിദഗ്ദ്ധ സെഷനുകൾ, കമ്മ്യൂണിറ്റി വർക്ക്‌ഷോപ്പുകൾ — തികച്ചും സൗജന്യമാണ്. ME ഒരു ലാഭേച്ഛയില്ലാത്ത, സന്നദ്ധ സേവകർ നയിക്കുന്ന സംരംഭമാണ്. ഇന്ത്യയിലെ ഓരോ യുവാവിനും, അവരുടെ സാമ്പത്തിക പശ്ചാത്തലം പരിഗണിക്കാതെ, ഗുണനിലവാരമുള്ള മാനസികാരോഗ്യ വിദ്യാഭ്യാസം ലഭ്യമാക്കുകയാണ് ഞങ്ങളുടെ ദൗത്യം." }
+        },
+        {
+            key: 7,
+            title: { en: "How can I volunteer or contribute to ME?", ml: "ME-ൽ എങ്ങനെ സന്നദ്ധ സേവകനാകാം അല്ലെങ്കിൽ സംഭാവന നൽകാം?" },
+            data: { en: "There are many ways to get involved! You can volunteer as a session facilitator, help spread awareness on social media, connect ME with relevant mental health professionals, donate to support our operations, or simply attend our sessions and bring a friend along. Reach out to us via the Contact form below or email us at Mindempowered2020@gmail.com — we would love to have you on board.", ml: "ഇതിൽ ഭാഗഭാക്കാകാൻ നിരവധി വഴികളുണ്ട്! സെഷൻ ഫെസിലിറ്റേറ്ററായി സന്നദ്ധ സേവനം ചെയ്യാം, സോഷ്യൽ മീഡിയയിൽ അവബോധം പ്രചരിപ്പിക്കാൻ സഹായിക്കാം, ME-ക്ക് പ്രസക്തമായ മാനസികാരോഗ്യ വിദഗ്ദ്ധരുമായി ബന്ധപ്പെടുത്താം, ഞങ്ങളുടെ പ്രവർത്തനങ്ങൾ പിന്തുണയ്ക്കാൻ സംഭാവന നൽകാം, അല്ലെങ്കിൽ ഞങ്ങളുടെ സെഷനുകളിൽ പങ്കെടുത്ത് ഒരു സുഹൃത്തിനെ കൂടെ കൊണ്ടുവരാം. താഴെ കൊടുത്ത ഫോം വഴിയോ Mindempowered2020@gmail.com-ൽ ഇ-മെയിൽ ചെയ്‌തോ ഞങ്ങളെ ബന്ധപ്പെടൂ." }
+        },
     ],
+
     footer: {
         subtitle: { en: 'Illuminating minds, transforming lives. Championing the cause of mental health through awareness, education, and advocacy.', ml: 'മനസ്സുകളെ പ്രകാശിപ്പിക്കുന്നു, ജീവിതങ്ങളെ രൂപാന്തരപ്പെടുത്തുന്നു. ബോധവൽക്കരണം, വിദ്യാഭ്യാസം, હિમાയത്ത് എന്നിവയിലൂടെ മാനസികാരോഗ്യത്തിന്റെ ലക്ഷ്യത്തിനായി നിലകൊള്ളുന്നു.' },
         connect: { en: 'Connect', ml: 'ബന്ധപ്പെടുക' },
@@ -186,6 +221,7 @@ export const translations = {
         hideImages: { en: 'Hide Images', ml: 'ചിത്രങ്ങൾ മറയ്ക്കുക' },
         bigCursor: { en: 'Big Cursor', ml: 'വലിയ കഴ്സർ' },
         darkMode: { en: 'Dark Mode', ml: 'ഡാർക്ക് മോഡ്' },
+        backgroundMusic: { en: 'Background Music', ml: 'പശ്ചാത്തല സംഗീതം' },
     }
 };
 

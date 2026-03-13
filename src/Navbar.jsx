@@ -1,16 +1,27 @@
 import React from 'react';
+import CalendarPopup from './components/CalendarPopup';
 
 const NavLink = ({ item, scrollToSection, scrolled, isMobile = false }) => {
-  const desktopClasses = `font-semibold text-sm lg:text-base tracking-wider transition-all duration-300 py-2 px-3 rounded-md border-b-2 ${scrolled
-    ? 'text-[#461711] hover:text-[#ff7612] hover:bg-[#ffdb5b]/10 border-transparent hover:border-[#ff7612]'
-    : 'text-white hover:text-gray-200 border-transparent hover:border-gray-200'
+  const desktopClasses = `relative font-bold text-xs lg:text-sm tracking-[0.1em] uppercase transition-all duration-300 py-2.5 px-4 rounded-full group overflow-hidden ${scrolled
+    ? 'text-[#461711] hover:text-[#ff7612]'
+    : 'text-white/90 hover:text-white'
     }`;
 
-  const mobileClasses = `block w-full text-left px-4 py-3 text-[#461711] hover:bg-[#ff7612]/10 rounded-lg font-semibold text-lg transition-all duration-300 border-l-4 border-transparent hover:border-[#ff7612]`;
+  const mobileClasses = `block w-full text-left px-5 py-4 text-[#461711] rounded-2xl font-black text-lg transition-all duration-300 border-2 border-transparent hover:border-[#ff7612]/20 hover:bg-[#ff7612]/5 hover:pl-8 shadow-sm`;
 
   return (
     <button onClick={() => scrollToSection(item.ref)} className={isMobile ? mobileClasses : desktopClasses}>
-      {item.name}
+      {/* Premium Pill Background Glow (Desktop) */}
+      {!isMobile && (
+        <div className="absolute inset-0 bg-white/10 dark:bg-black/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out -z-10 rounded-full" />
+      )}
+      <span className="relative z-10 block transition-transform duration-300">
+        {item.name}
+      </span>
+      {/* Animated Dot Indicator */}
+      {!isMobile && (
+        <span className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 group-hover:bottom-0 ${scrolled ? 'bg-[#ff7612]' : 'bg-white'}`} style={{ transform: 'translate(-50%, 0)' }}></span>
+      )}
     </button>
   );
 };
@@ -25,82 +36,74 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/20 backdrop-blur-xl shadow-lg border-b border-white/10' : 'bg-black/30 backdrop-blur-xl shadow-none border-b border-transparent'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${scrolled
+        ? 'bg-white/85 backdrop-blur-2xl shadow-[0_20px_40px_-15px_rgba(70,23,17,0.1)] py-1'
+        : 'bg-black/10 backdrop-blur-xl shadow-none py-3'
         }`}
     >
-      <div className="relative flex items-center justify-between h-16 lg:h-20 px-4 sm:px-6 lg:px-8">
+      <div className="relative flex items-center justify-between h-16 lg:h-20 px-4 sm:px-6 lg:px-12">
         <div className="flex-shrink-0">
-          <div className="flex items-center space-x-3">
-            <div className="bg-gradient-to-br from-[#ff7612] to-[#ffdb5b] rounded-full p-1 shadow-lg">
-              <img src="/logo192.png" alt="Mind Empowered Logo" className="h-8 w-auto sm:h-12 object-contain" />
+          <div
+            className="flex items-center space-x-3 group cursor-pointer"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <div className="relative h-10 w-10 sm:h-14 sm:w-14 bg-white rounded-full p-0.5 shadow-md overflow-hidden transition-all duration-500 group-hover:scale-105 group-active:scale-95 ring-2 ring-[#ff7612]/20">
+              <img src="/brand/logo.jpeg" alt="Mind Empowered Logo" className="w-full h-full object-cover rounded-full" />
             </div>
-            <div className="block">
-              <h1 className={`text-base sm:text-lg md:text-xl font-bold leading-tight tracking-wide ${scrolled ? 'text-[#461711]' : 'text-white'}`}>
+            <div className="block transition-transform duration-300 group-hover:translate-x-1">
+              <h1 className={`text-2xl sm:text-3xl md:text-4xl font-black leading-none tracking-tight transition-colors duration-300 ${scrolled ? 'text-[#461711] drop-shadow-sm' : 'text-white drop-shadow-md'}`}>
                 Mind Empowered
               </h1>
-              <p className={`font-medium tracking-wide ${scrolled ? 'text-[#ff7612]' : 'text-gray-200'} ${language === 'ml' ? 'text-[0.6rem] sm:text-xs md:text-sm' : 'text-xs sm:text-sm md:text-base'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
-                #MEforYouth
+              <p className={`font-bold tracking-[0.2em] mt-1 transition-colors duration-300 uppercase ${scrolled ? 'text-[#ff7612]' : 'text-white/80'} ${language === 'ml' ? 'text-[9px] sm:text-[10px] md:text-xs' : 'text-[10px] sm:text-[11px] md:text-xs'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                #MEFORYOUTH
               </p>
             </div>
           </div>
         </div>
 
-        <div className="hidden lg:flex items-center justify-center space-x-4">
+        <div className="hidden lg:flex items-center justify-center space-x-2 bg-black/5 dark:bg-white/5 p-1 rounded-full border border-white/10 backdrop-blur-md">
           {navItems.map((item) => (
             <NavLink key={item.key} item={item} scrollToSection={handleScrollToSection} scrolled={scrolled} />
           ))}
         </div>
 
-        <div className="hidden lg:flex items-center ml-4">
-          <button
-            onClick={openDonateModal}
-            className={`px-4 py-2 rounded-full font-bold shadow-md transition-all duration-300 transform hover:scale-105 flex items-center gap-2 ${scrolled
-              ? 'bg-[#461711] text-white hover:bg-[#ff7612]'
-              : 'bg-white text-[#461711] hover:bg-[#ffdb5b]'
-              }`}
-          >
-            <svg className={`w-4 h-4 ${scrolled ? 'text-[#ffdb5b]' : 'text-[#ff7612]'}`} fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-            </svg>
-            {language === 'en' ? 'Donate' : 'സംഭാവന'}
-          </button>
-        </div>
+        {/* Right-side actions — grouped tightly */}
+        <div className="hidden lg:flex items-center gap-2">
+          {/* Donate */}
 
-        {/* Language Switcher */}
-        <div className="hidden lg:flex items-center ml-4 group relative">
-          <button
-            onClick={openLanguageModal}
-            aria-label="Change Language"
-            className={`p-2 rounded-full transition-all duration-300 ${scrolled ? 'text-[#461711] hover:bg-[#ff7612]/20' : 'text-white hover:bg-white/20'
-              }`}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-            </svg>
-          </button>
-          <div className="absolute top-full mt-2 -right-2 w-max bg-black/70 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-            {language === 'en' ? 'Change to മലയാളം' : 'Change to English'}
+
+          {/* Calendar */}
+          <CalendarPopup language={language} scrolled={scrolled} />
+
+          <div className="relative">
+            <button
+              onClick={openLanguageModal}
+              aria-label="Change Language"
+              className={`p-2 rounded-full transition-all duration-300 hover:bg-black/10 hover:scale-110 active:scale-95 group ${scrolled ? 'text-[#461711]' : 'text-white'
+                }`}
+            >
+              <svg className="w-5 h-5 transition-transform duration-500 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              </svg>
+            </button>
           </div>
         </div>
 
         {/* Mobile menu button */}
-        <div className="lg:hidden">
+        <div className="lg:hidden flex items-center">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="inline-flex items-center justify-center p-2 rounded-lg text-white hover:text-[#ffdb5b] bg-black/20 hover:bg-black/40 focus:outline-none focus:ring-2 focus:ring-[#ff7612] transition-all duration-300"
+            className={`inline-flex items-center justify-center p-2.5 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#ff7612] ${scrolled ? 'text-[#461711] hover:bg-black/5' : 'text-white hover:bg-white/10'}`}
             aria-controls="mobile-menu"
             aria-expanded={isMobileMenuOpen}
+            aria-label="Toggle navigation menu"
           >
             <span className="sr-only">Open main menu</span>
-            {isMobileMenuOpen ? (
-              <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
+            <div className="relative w-[24px] h-[16px]">
+              <span className={`absolute right-0 block h-[2px] bg-current transform transition-all duration-300 ease-in-out rounded-full ${isMobileMenuOpen ? 'top-[7px] w-[24px] rotate-45' : 'top-0 w-[24px]'}`}></span>
+              <span className={`absolute right-0 block h-[2px] bg-current transform transition-all duration-300 ease-in-out rounded-full ${isMobileMenuOpen ? 'top-[7px] w-0 opacity-0' : 'top-[7px] w-[16px]'}`}></span>
+              <span className={`absolute right-0 block h-[2px] bg-current transform transition-all duration-300 ease-in-out rounded-full ${isMobileMenuOpen ? 'top-[7px] w-[24px] -rotate-45' : 'top-[14px] w-[20px]'}`}></span>
+            </div>
           </button>
         </div>
       </div>
@@ -109,31 +112,40 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
       <div
         id="mobile-menu"
         className={`
-          lg:hidden bg-white shadow-lg border-t border-[#ff7612]/20 overflow-hidden transition-all duration-300 ease-in-out
-          ${isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
+          lg:hidden absolute left-4 right-4 top-full mt-2 bg-white/95 backdrop-blur-2xl shadow-[0_40px_100px_-10px_rgba(70,23,17,0.3)] border border-[#ff7612]/20 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] rounded-3xl
+          ${isMobileMenuOpen ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'}
         `}>
-        <div className="px-4 pt-4 pb-6 space-y-2">
-          {navItems.map((item) => (
-            <NavLink key={item.name} item={item} scrollToSection={handleScrollToSection} scrolled={scrolled} isMobile />
+        <div className="px-5 pt-6 pb-8 space-y-1">
+          {navItems.map((item, idx) => (
+            <div
+              key={item.name}
+              style={{ transitionDelay: `${idx * 50}ms` }}
+              className={`transition-all duration-500 ${isMobileMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}
+            >
+              <NavLink item={item} scrollToSection={handleScrollToSection} scrolled={scrolled} isMobile />
+            </div>
           ))}
 
-          {/* Mobile Donate Button */}
-          <div className="px-4 py-2 mt-2">
-            <button
-              onClick={openDonateModal}
-              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold bg-[#461711] text-white hover:bg-[#ff7612] transition-colors shadow-md"
-            >
-              <svg className="w-5 h-5 text-[#ffdb5b]" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-              </svg>
-              {language === 'en' ? 'Donate for ME' : 'സംഭാവന നൽകുക'}
-            </button>
-          </div>
 
-          <div className="border-t border-gray-200 pt-4 mt-2">
+
+          <div className="border-t border-gray-200 pt-4 mt-2 space-y-2">
+            {/* Mobile Calendar */}
+            <button
+              onClick={() => document && document.querySelector('[aria-label="Event Calendar"]')?.click()}
+              className="flex items-center gap-3 w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                {language === 'en' ? 'Event Calendar' : 'ഇവന്റ് കലണ്ടർ'}
+              </span>
+            </button>
+
             <button
               onClick={openLanguageModal}
-              className="flex items-center gap-3 w-full text-left px-4 py-3 text-[#461711] hover:bg-[#ff7612]/10 rounded-lg font-semibold text-lg transition-all duration-300"
+              className="flex items-center gap-3 w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
               <span>{language === 'en' ? 'മലയാളം' : 'English'}</span>
