@@ -1,9 +1,8 @@
-import React from "react";
-import ImageGallery from "react-image-gallery";
-import "react-image-gallery/styles/css/image-gallery.css";
+import React, { useState, useMemo } from "react";
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 import { translations } from "../translations";
 
-// Generate an array of image filenames from ME1.jpeg to ME54.png
 const imageFilenames = [
   "ME1.jpeg", "ME2.jpeg", "ME3.jpeg", "ME4.jpeg", "ME5.jpeg",
   "ME6.jpeg", "ME7.jpeg", "ME8.jpeg", "ME9.jpeg", "ME10.jpeg",
@@ -18,82 +17,114 @@ const imageFilenames = [
   "ME51.png", "ME52.png", "ME53.png", "ME54.png"
 ];
 
-const photoGallery = imageFilenames.map((filename, index) => ({
-  original: `/gallery/${filename}`,
-  thumbnail: `/gallery/${filename}`,
-  originalAlt: `Mind Empowered Activity ${index + 1}`,
-  thumbnailAlt: `Mind Empowered Activity ${index + 1} thumbnail`,
-}));
+const BlurredImage = ({ src, alt, className }) => {
+    const [isLoaded, setIsLoaded] = useState(false);
+    
+    return (
+        <div className="relative w-full h-full overflow-hidden bg-gray-100">
+            {/* Placeholder / Skeleton */}
+            {!isLoaded && (
+                <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse" />
+            )}
+            
+            <img
+                src={src}
+                alt={alt}
+                onLoad={() => setIsLoaded(true)}
+                className={`${className} transition-all duration-1000 ease-out ${
+                    isLoaded ? "opacity-100 blur-0 scale-100" : "opacity-0 blur-2xl scale-110"
+                }`}
+                loading="lazy"
+            />
+        </div>
+    );
+};
 
 const Photogallery = ({ language }) => {
-  return (
-    <div>
-      <div className="text-center mb-12">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#461711] mb-4 leading-none">
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffdb5b] to-[#ff7612]" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
-            {translations.gallery.title[language]}
-          </span>
-        </h2>
-        <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
-          {translations.gallery.subtitle[language]}
-        </p>
-        <div className="w-20 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-4"></div>
-      </div>
+  const [visibleCount, setVisibleCount] = useState(12);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-      <div className="bg-white rounded-3xl shadow-2xl p-4 lg:p-6 border border-gray-100">
-        {photoGallery.length > 0 && (
-          <ImageGallery
-            items={photoGallery}
-            autoPlay={false}
-            slideOnThumbnailOver={false}
-            showPlayButton={false}
-            showFullscreenButton={true}
-            showNav={true}
-            showThumbnails={true}
-            showBullets={false}
-            useBrowserFullscreen={true}
-            disableKeyDown={false}
-            additionalClass="photo-gallery-enhanced"
-            renderLeftNav={(onClick, disabled) => (
-              <button
-                onClick={onClick}
-                disabled={disabled}
-                className="absolute left-2 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 rounded-full p-1 shadow-md disabled:opacity-50 disabled:cursor-not-allowed border border-gray-200"
+  // Generate random rotations once to keep them stable
+  const rotations = useMemo(() => 
+    imageFilenames.map(() => (Math.random() * 4 - 2).toFixed(2)), 
+  []);
+
+  const toggleGallery = () => {
+    if (isExpanded) {
+      setVisibleCount(12);
+      document.getElementById('photo-gallery-section')?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      setVisibleCount(imageFilenames.length);
+    }
+    setIsExpanded(!isExpanded);
+  };
+
+  const manjariFont = language === 'ml' ? { fontFamily: 'Manjari, sans-serif' } : {};
+
+  return (
+    <section id="photo-gallery-section" className="relative py-24 bg-transparent overflow-hidden">
+      {/* Texture Overlay */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `url('https://www.transparenttextures.com/patterns/linen-design.png')` }} />
+      
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
+        <div className="text-center mb-20">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#461711] mb-6" style={manjariFont}>
+            {translations.gallery.title[language]}
+          </h2>
+          <div className="w-24 h-1 bg-[#ff7612] mx-auto rounded-full mb-6" />
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto italic font-medium" style={manjariFont}>
+            {translations.gallery.subtitle[language]}
+          </p>
+        </div>
+
+        <PhotoProvider maskOpacity={0.95}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 sm:gap-12 pb-12">
+            {imageFilenames.slice(0, visibleCount).map((filename, index) => (
+              <div 
+                key={index}
+                className="group relative"
+                style={{ 
+                    transform: `rotate(${rotations[index]}deg)`,
+                    transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                }}
               >
-                <svg className="w-6 h-6 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-            )}
-            renderRightNav={(onClick, disabled) => (
-              <button
-                onClick={onClick}
-                disabled={disabled}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 bg-white/80 rounded-full p-1 shadow-md disabled:opacity-50 disabled:cursor-not-allowed border border-gray-200"
-              >
-                <svg className="w-6 h-6 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            )}
-            renderFullscreenButton={(onClick, isFullscreen) => (
-              <button
-                onClick={onClick}
-                className="absolute bottom-2 right-2 z-20 bg-white/80 rounded-full p-1 shadow-md border border-gray-200"
-              >
-                <svg className="w-6 h-6 text-[#461711]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {isFullscreen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M15 9v4.5M15 9h4.5M15 9l5.25-5.25M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 15v-4.5M15 15h4.5m0 0l5.25 5.25" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75v4.5m0-4.5h-4.5m4.5 0L15 9m5.25 11.25v-4.5m0 4.5h-4.5m4.5 0L15 15" />
-                  )}
-                </svg>
-              </button>
-            )}
-          />
-        )}
+                <div className="hover:!rotate-0 hover:z-20 transition-all duration-500 hover:scale-110">
+                  <PhotoView src={`/gallery/${filename}`}>
+                    <div className="bg-white p-3 shadow-[0_10px_30px_rgba(0,0,0,0.1)] group-hover:shadow-[0_20px_50px_rgba(70,23,17,0.2)] cursor-pointer ring-1 ring-black/5">
+                      <div className="aspect-square overflow-hidden rounded-sm">
+                        <BlurredImage
+                          src={`/gallery/${filename}`}
+                          alt={`Mind Empowered Memory ${index + 1}`}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
+                        />
+                      </div>
+                      
+                      {/* Decorative "Tape" effect */}
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-8 bg-white/40 backdrop-blur-sm shadow-sm rotate-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  </PhotoView>
+                </div>
+              </div>
+            ))}
+          </div>
+        </PhotoProvider>
+
+        <div className="mt-24 text-center">
+          <button
+            onClick={toggleGallery}
+            className="group px-12 py-4 bg-[#ff7612] text-white font-bold rounded-full shadow-lg hover:shadow-[0_10px_25px_rgba(255,118,18,0.4)] hover:-translate-y-1 transition-all duration-300 active:scale-95"
+            style={manjariFont}
+          >
+            <span className="flex items-center gap-3">
+              {isExpanded ? (language === 'ml' ? 'കുറച്ചു കാണുക' : 'Back to Top') : (language === 'ml' ? 'ബാക്കി കാണുക' : 'Explore More Memories')}
+              <svg className={`w-5 h-5 transition-transform duration-500 ${isExpanded ? 'rotate-180' : 'group-hover:translate-y-1'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 

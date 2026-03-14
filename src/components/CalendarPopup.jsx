@@ -18,17 +18,20 @@ const CalendarPopup = ({ language, scrolled }) => {
 
     // Fetch calendar data once
     useEffect(() => {
-        fetch("/calender.json")
+        fetch(`/calender.json?v=${new Date().getTime()}`)
             .then((r) => { if (!r.ok) throw new Error("Network error"); return r.json(); })
             .then((data) => {
-                const sorted = data.sort((a, b) =>
-                    b.year !== a.year ? b.year - a.year : b.month - a.month
-                );
+                const sorted = data.sort((a, b) => {
+                    const yearDiff = Number(b.year) - Number(a.year);
+                    if (yearDiff !== 0) return yearDiff;
+                    return Number(b.month) - Number(a.month);
+                });
                 setCalendarData(sorted);
-                setAvailableYears([...new Set(sorted.map((i) => i.year))].sort((a, b) => b - a));
+                const years = [...new Set(sorted.map((i) => i.year.toString()))].sort((a, b) => Number(b) - Number(a));
+                setAvailableYears(years);
                 if (sorted.length > 0) {
-                    setSelectedYear(sorted[0].year);
-                    setSelectedMonth(sorted[0].month);
+                    setSelectedYear(sorted[0].year.toString());
+                    setSelectedMonth(sorted[0].month.toString());
                     setPosterUrl(sorted[0].poster);
                 }
                 setIsLoading(false);
@@ -43,7 +46,7 @@ const CalendarPopup = ({ language, scrolled }) => {
     useEffect(() => {
         if (!calendarData.length) return;
         const entry = calendarData.find(
-            (e) => Number(e.month) === Number(selectedMonth) && e.year === selectedYear
+            (e) => Number(e.month) === Number(selectedMonth) && e.year.toString() === selectedYear.toString()
         );
         setPosterUrl(entry ? entry.poster : "");
     }, [selectedMonth, selectedYear, calendarData]);

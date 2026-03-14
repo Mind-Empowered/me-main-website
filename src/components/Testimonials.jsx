@@ -46,11 +46,11 @@ const Testimonials = ({ language }) => {
           </p>
           <div className="w-20 h-1 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto rounded-full mt-4"></div>
         </div>
-        
+
         <div className="bg-white rounded-2xl shadow-xl p-4 lg:p-6 border border-gray-100">
           {testimonials.length > 0 ? (
-            <ImageGallery 
-              items={testimonials} 
+            <ImageGallery
+              items={testimonials}
               autoPlay={true}
               slideInterval={5000}
               showPlayButton={false}

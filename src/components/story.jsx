@@ -48,7 +48,7 @@ const Story = ({ language }) => {
                                     preload="metadata"
                                     title="Mind Empowered Journey 2025"
                                 >
-                                    <source src="/ME%20Video%202025.mp4" type="video/mp4" />
+                                    <source src="/story.mp4" type="video/mp4" />
                                 </video>
                             </div>
 
