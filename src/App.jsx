@@ -112,6 +112,8 @@ function App() {
   // Refs for smooth parallax direct manipulation
   const backgroundRef = useRef(null);
   const heroContentRef = useRef(null);
+  const targetScrollY = useRef(0);
+  const currentScrollY = useRef(0);
 
   // --- State with localStorage persistence ---
   const [fontSize, setFontSize] = useState(() => localStorage.getItem('fontSize') || 'normal');
@@ -241,43 +243,56 @@ function App() {
 
   // Optimized smooth parallax and navbar scroll effect
   useEffect(() => {
-    let ticking = false;
+    if (reducedMotion) return;
 
+    let rafId;
+    
     const updateParallax = () => {
-      const y = window.scrollY;
-
-      // Update Navbar State (React state is fine here as it's infrequent)
-      if (y > 10 !== scrolled) {
-        setScrolled(y > 10);
+      // Linear interpolation (lerp) for smoother motion
+      // 0.1 is the smoothing factor (0.05 - 0.15 is usually best)
+      currentScrollY.current += (targetScrollY.current - currentScrollY.current) * 0.1;
+      
+      // Stop the loop and snap to target if the difference is very small
+      if (Math.abs(targetScrollY.current - currentScrollY.current) < 0.1) {
+        currentScrollY.current = targetScrollY.current;
       }
 
+      const y = currentScrollY.current;
+
       // 1. Background Image Parallax (Gentle constant motion)
-      if (backgroundRef.current && !reducedMotion) {
+      if (backgroundRef.current) {
         backgroundRef.current.style.transform = `translate3d(0, ${y * 0.15}px, 0)`;
       }
 
       // 2. Hero Content Parallax (Faster movement + Fade out)
-      if (heroContentRef.current && !reducedMotion) {
+      if (heroContentRef.current) {
         const opacity = Math.max(0, 1 - y / (window.innerHeight * 0.8));
         const translate = y * 0.4;
         heroContentRef.current.style.transform = `translate3d(0, ${translate}px, 0)`;
         heroContentRef.current.style.opacity = opacity;
-        heroContentRef.current.style.visibility = opacity === 0 ? 'hidden' : 'visible';
+        heroContentRef.current.style.visibility = opacity <= 0.01 ? 'hidden' : 'visible';
       }
 
-      ticking = false;
+      rafId = requestAnimationFrame(updateParallax);
     };
 
     const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(updateParallax);
-        ticking = true;
-      }
+      targetScrollY.current = window.scrollY;
+      
+      // Update Navbar State independently of the RAF loop
+      // We use a functional setter to avoid the dependency on 'scrolled'
+      const isScrolled = window.scrollY > 10;
+      setScrolled(prev => prev !== isScrolled ? isScrolled : prev);
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [scrolled, reducedMotion]);
+    rafId = requestAnimationFrame(updateParallax);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [reducedMotion]);
 
   // Sync sound state with audio element
   useEffect(() => {
@@ -365,7 +380,7 @@ function App() {
         ref={backgroundRef}
         className="fixed inset-0 -z-10 will-change-transform"
       >
-        <img src="/landing-bg.gif" alt="landing-bg" className="w-full h-screen object-cover scale-125" />
+        <img src="/landing-bg.gif" alt="Mind Empowered background animation" className="w-full h-screen object-cover scale-125" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
       </div>
 

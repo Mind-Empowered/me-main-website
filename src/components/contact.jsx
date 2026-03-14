@@ -3,18 +3,68 @@ import { translations } from "../translations";
 
 const Contact = ({ language }) => {
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+    const [isSending, setIsSending] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const { name, subject, message } = formData;
-        const mailtoLink = `mailto:Mindempowered2020@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\n\nMessage:\n${message}`)}`;
-        window.location.href = mailtoLink;
+        setIsSending(true);
+        setError(null);
+
+        try {
+            const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                setIsSuccess(true);
+                setFormData({ name: '', email: '', subject: '', message: '' });
+            } else {
+                throw new Error("Failed to send message");
+            }
+        } catch (err) {
+            setError(language === 'en' ? "Failed to send message. Please try again later." : "സന്ദേശം അയയ്ക്കുന്നതിൽ പരാജയപ്പെട്ടു. ദയവായി പിന്നീട് വീണ്ടും ശ്രമിക്കുക.");
+        } finally {
+            setIsSending(false);
+        }
     };
+
+    if (isSuccess) {
+        return (
+            <div className="relative isolate px-4 md:px-0 text-center py-20">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-64 h-64 bg-[#ff7612]/10 rounded-full blur-3xl animate-pulse" />
+                <div className="bg-white rounded-[3rem] shadow-2xl p-12 md:p-16 border border-gray-100 max-w-2xl mx-auto animate-fade-in">
+                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                        <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <h3 className="text-3xl font-black text-[#461711] mb-4" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                        {language === 'en' ? 'Thank You!' : 'നന്ദി!'}
+                    </h3>
+                    <p className="text-gray-600 text-lg mb-8" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
+                        {language === 'en' 
+                            ? "Your message has been sent successfully. We'll get back to you shortly." 
+                            : "നിങ്ങളുടെ സന്ദേശം വിജയകരമായി അയച്ചു. ഞങ്ങൾ ഉടൻ നിങ്ങളെ ബന്ധപ്പെടും."}
+                    </p>
+                    <button 
+                        onClick={() => setIsSuccess(false)}
+                        className="px-8 py-3 bg-[#461711] text-white rounded-xl font-bold hover:bg-[#ff7612] transition-colors"
+                    >
+                        {language === 'en' ? 'Send Another Message' : 'മറ്റൊരു സന്ദേശം അയയ്ക്കുക'}
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="relative isolate px-4 md:px-0">
@@ -157,14 +207,29 @@ const Contact = ({ language }) => {
                                 <textarea name="message" value={formData.message} onChange={handleChange} required rows="5"
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-4 focus:ring-orange-100 focus:border-[#ff7612] outline-none transition-all resize-none" />
                             </div>
-                            <button type="submit"
-                                className="w-full group relative overflow-hidden rounded-xl bg-[#461711] p-4 font-bold text-white transition-all shadow-lg shadow-orange-900/10"
+                            
+                            {error && <p className="text-red-500 text-sm font-bold animate-shake">{error}</p>}
+
+                            <button type="submit" disabled={isSending}
+                                className={`w-full group relative overflow-hidden rounded-xl bg-[#461711] p-4 font-bold text-white transition-all shadow-lg shadow-orange-900/10 ${isSending ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#ff7612]'}`}
                                 style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
                                 <span className="relative z-10 flex items-center justify-center gap-2">
-                                    {translations.faq.formButton[language]}
-                                    <svg className="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                    </svg>
+                                    {isSending ? (
+                                        <>
+                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            {language === 'en' ? 'Sending...' : 'അയയ്ക്കുന്നു...'}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {translations.faq.formButton[language]}
+                                            <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                            </svg>
+                                        </>
+                                    )}
                                 </span>
                             </button>
                         </form>
@@ -174,5 +239,6 @@ const Contact = ({ language }) => {
         </div>
     );
 };
+
 
 export default Contact;

@@ -157,7 +157,39 @@ const Team = ({ language }) => {
                 .animate-marquee-infinite {
                     display: flex;
                     width: max-content;
-                    animation: marquee 60s linear infinite;
+                    animation: marquee 80s linear infinite;
+                }
+                .group\/marquee:hover .animate-marquee-infinite {
+                    animation-play-state: paused;
+                }
+
+                /* ── Coach Card ── */
+                .coach-card {
+                    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+                    transform-style: preserve-3d;
+                }
+                .coach-card:hover {
+                    transform: translateY(-12px) scale(1.02);
+                    box-shadow: 0 25px 50px -12px rgba(70, 23, 17, 0.15);
+                }
+                .coach-image-container {
+                    position: relative;
+                    transition: all 0.5s ease;
+                }
+                .coach-card:hover .coach-image-container {
+                    transform: translateZ(20px);
+                }
+                .coach-image-glow {
+                    position: absolute;
+                    inset: -2px;
+                    background: linear-gradient(135deg, #ff7612, #ffdb5b);
+                    border-radius: 2rem;
+                    opacity: 0;
+                    filter: blur(8px);
+                    transition: opacity 0.5s ease;
+                }
+                .coach-card:hover .coach-image-glow {
+                    opacity: 0.3;
                 }
 
                 /* ── Team card compact ── */
@@ -499,27 +531,46 @@ const Team = ({ language }) => {
                     <div className="w-20 h-1.5 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] mx-auto mt-6 rounded-full" />
                 </div>
 
-                <div className="relative group/marquee bg-white py-12 border-y border-gray-50">
+                <div className="relative group/marquee bg-white/50 backdrop-blur-sm py-16 border-y border-orange-100/50">
                     <div className="animate-marquee-infinite">
                         {coachesExtended.map((filename, index) => {
-                            const trainerName = filename.substring(0, filename.lastIndexOf('.')).trim();
+                            const trainerFull = filename.substring(0, filename.lastIndexOf('.')).trim();
+                            const [tName, tLoc] = trainerFull.split(',').map(s => s.trim());
+                            
                             return (
                                 <div
-                                    key={`${trainerName}-${index}`}
-                                    className="flex-shrink-0 w-[45vw] sm:w-[30vw] md:w-[22vw] lg:w-[15vw] mx-4 bg-white rounded-3xl p-6 shadow-md border border-gray-100 group relative overflow-hidden"
+                                    key={`${trainerFull}-${index}`}
+                                    className="coach-card flex-shrink-0 w-[55vw] sm:w-[35vw] md:w-[25vw] lg:w-[18vw] mx-6 bg-white rounded-[2.5rem] p-6 shadow-xl shadow-[#461711]/5 border border-gray-100 group/item relative overflow-hidden"
                                 >
-                                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#ffdb5b] to-[#ff7612] origin-left" />
-                                    <div className="text-center">
-                                        <div className="relative mb-6 overflow-hidden rounded-2xl bg-gray-50 aspect-square flex items-center justify-center p-4">
-                                            <img
-                                                src={`${s3BucketURL}${filename}`}
-                                                alt={trainerName}
-                                                className="w-full h-full object-contain"
-                                            />
+                                    {/* Decorative gradient reveal on hover */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-[#ff7612]/5 to-[#ffdb5b]/5 opacity-0 group-hover/item:opacity-100 transition-opacity duration-500" />
+                                    
+                                    <div className="relative z-10 text-center">
+                                        <div className="coach-image-container mb-6">
+                                            <div className="coach-image-glow" />
+                                            <div className="relative overflow-hidden rounded-[2rem] bg-gray-50 aspect-square flex items-center justify-center p-4 ring-1 ring-gray-100 group-hover/item:ring-[#ff7612]/20 transition-all">
+                                                <img
+                                                    src={`${s3BucketURL}${filename}`}
+                                                    alt={tName}
+                                                    className="w-full h-full object-contain transition-transform duration-700 group-hover/item:scale-110"
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="text-xs md:text-sm font-black text-[#ff7612] px-2 uppercase tracking-wide">
-                                            {trainerName}
+                                        
+                                        <div className="space-y-1">
+                                            <div className="text-sm md:text-base font-black text-[#461711] group-hover/item:text-[#ff7612] transition-colors line-clamp-1">
+                                                {tName}
+                                            </div>
+                                            {tLoc && (
+                                                <div className="text-[10px] md:text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] flex items-center justify-center gap-1.5">
+                                                    <span className="w-1 h-1 rounded-full bg-[#ffdb5b]" />
+                                                    {tLoc}
+                                                </div>
+                                            )}
                                         </div>
+                                        
+                                        {/* Badge pattern */}
+                                        <div className="absolute -bottom-4 -right-4 w-12 h-12 border-4 border-orange-50 rounded-full opacity-20 group-hover/item:scale-150 transition-transform duration-700" />
                                     </div>
                                 </div>
                             );
