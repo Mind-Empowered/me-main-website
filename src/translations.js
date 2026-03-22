@@ -204,8 +204,16 @@ export const translations = {
     footer: {
         subtitle: { en: 'Illuminating minds, transforming lives. Championing the cause of mental health through awareness, education, and advocacy.', ml: 'മനസ്സുകളെ പ്രകാശിപ്പിക്കുന്നു, ജീവിതങ്ങളെ രൂപാന്തരപ്പെടുത്തുന്നു. ബോധവൽക്കരണം, വിദ്യാഭ്യാസം, હિમાയത്ത് എന്നിവയിലൂടെ മാനസികാരോഗ്യത്തിന്റെ ലക്ഷ്യത്തിനായി നിലകൊള്ളുന്നു.' },
         connect: { en: 'Connect', ml: 'ബന്ധപ്പെടുക' },
-    }
-    ,
+    },
+    whoAmI: {
+        title: { en: 'Who Am I?', ml: 'ആരാണ് ഞാൻ?' },
+        subtitle: { en: 'A Journey of Self-Discovery and Empowerment', ml: 'സ്വയം കണ്ടെത്തലിന്റെയും ശാക്തീകരണത്തിന്റെയും ഒരു യാത്ര' },
+        description: {
+            en: 'Understanding your true self is the foundation of mental well-being. "Who Am I?" is more than a question—it\'s an exploration of your identity, your strengths, and the unique light you bring to the world. Join us in this empowering journey to unlock your full potential and navigate life with emotional resilience.',
+            ml: 'നിങ്ങളുടെ യഥാർത്ഥ വ്യക്തിത്വത്തെ മനസ്സിലാക്കുക എന്നത് മാനസികാരോഗ്യത്തിന്റെ അടിസ്ഥാനമാണ്. "ആരാണ് ഞാൻ?" എന്നത് ഒരു ചോദ്യത്തേക്കാൾ ഉപരിയാണ്—ഇത് നിങ്ങളുടെ ഐഡന്റിറ്റി, നിങ്ങളുടെ കരുത്തുകൾ, നിങ്ങൾ ലോകത്തിന് നൽകുന്ന സവിശേഷമായ വെളിച്ചം എന്നിവയുടെ പര്യവേക്ഷണമാണ്. നിങ്ങളുടെ പൂർണ്ണമായ കഴിവുകൾ കണ്ടെത്താനും വൈകാരികമായ പ്രതിരോധശേഷിയോടെ ജീവിതം നയിക്കാനും ഈ ശാക്തീകരണ യാത്രയിൽ ഞങ്ങളോടൊപ്പം ചേരുക.'
+        },
+        button: { en: 'Explore More', ml: 'കൂടുതൽ അറിയുക' }
+    },
     accessibility: {
         title: { en: 'Accessibility', ml: 'പ്രവേശനക്ഷമത' },
         fontSize: { en: 'Font Size', ml: 'അക്ഷരവലിപ്പം' },
