@@ -10,3 +10,4 @@ export { default as EventHighlight } from './EventHighlight';
 export { default as FAQ } from './faq';
 export { default as Contact } from './contact';
 export { default as DonateModal } from './DonateModal';
+export { default as WhoAmI } from './WhoAmI';
