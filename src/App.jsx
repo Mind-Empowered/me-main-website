@@ -17,6 +17,7 @@ import {
   FAQ,
   Contact,
   DonateModal,
+  WhoAmI,
 } from "./components";
 import { translations } from "./translations";
 
@@ -716,6 +717,11 @@ function App() {
         {/* 3.5 Dhriti Highlight Showcase */}
         <section className="bg-transparent">
           <EventHighlight language={language} />
+        </section>
+
+        {/* 3.6 Who Am I Showcase */}
+        <section className="bg-transparent">
+          <WhoAmI language={language} />
         </section>
 
         {/* 4. Meet Our Team */}
