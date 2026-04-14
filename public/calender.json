@@ -295,8 +295,23 @@
         "poster": "/calendar/2025/12.png"
     },
     {
+        "month": "4",
+        "year": "2026",
+        "poster": "/calendar/2026/4.png"
+    },
+    {
+        "month": "3",
+        "year": "2026",
+        "poster": "/calendar/2026/3.png"
+    },
+    {
         "month": "2",
         "year": "2026",
         "poster": "/calendar/2026/2.png"
+    },
+    {
+        "month": "1",
+        "year": "2026",
+        "poster": "/calendar/2026/1.png"
     }
 ]
