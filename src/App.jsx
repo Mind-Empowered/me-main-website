@@ -18,6 +18,8 @@ import {
   Contact,
   DonateModal,
   WhoAmI,
+  SponsorSection,
+  SponsorModal,
 } from "./components";
 import { translations } from "./translations";
 
@@ -40,6 +42,7 @@ function App() {
   const eventsRef = useRef(null);
   const galleryRef = useRef(null);
   const newsletterRef = useRef(null);
+  const sponsorRef = useRef(null);
 
 
 
@@ -55,6 +58,7 @@ function App() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isVolunteerModalOpen, setIsVolunteerModalOpen] = useState(false);
+  const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState(null);
 
   const handleLanguageSelect = (lang) => {
@@ -82,6 +86,7 @@ function App() {
     { name: translations?.nav?.team?.[language] || 'Team', ref: teamRef, key: 'team' },
     { name: translations?.nav?.gallery?.[language] || 'Gallery', ref: galleryRef, key: 'gallery' },
     { name: translations?.nav?.newsletter?.[language] || 'Newsletter', ref: newsletterRef, key: 'newsletter' },
+    { name: translations?.nav?.sponsor?.[language] || 'Sponsor', ref: sponsorRef, key: 'sponsor' },
     { name: translations?.nav?.contact?.[language] || 'Contact', ref: contactRef, key: 'contact' },
   ];
 
@@ -613,10 +618,16 @@ function App() {
       )}
 
 
-      {/* Donate Modal */}
       <DonateModal
         isOpen={isDonateModalOpen}
         onClose={() => setIsDonateModalOpen(false)}
+        language={language}
+      />
+
+      {/* Sponsor Modal */}
+      <SponsorModal
+        isOpen={isSponsorModalOpen}
+        onClose={() => setIsSponsorModalOpen(false)}
         language={language}
       />
 
@@ -697,6 +708,16 @@ function App() {
         <section ref={missionRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <VisionMission language={language} />
+          </div>
+        </section>
+
+        {/* 1.5 Sponsor A Girl Section */}
+        <section ref={sponsorRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <SponsorSection 
+              language={language} 
+              onSponsorClick={() => setIsSponsorModalOpen(true)} 
+            />
           </div>
         </section>
 

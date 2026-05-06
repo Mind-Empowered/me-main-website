@@ -12,6 +12,7 @@ export const translations = {
         off: { en: 'OFF', ml: 'ഓഫ്' },
         donate: { en: 'Donate for ME', ml: 'സംഭാവന നൽകുക' },
         newsletter: { en: 'Newsletters', ml: 'വാർത്താക്കുറിപ്പ്' },
+        sponsor: { en: 'Sponsor', ml: 'സ്പോൺസർ' },
     },
     dhritiHighlight: {
         title: { en: 'Dhriti: Relive the Magic', ml: 'ധൃതി: ആവേശം വീണ്ടും' },
@@ -21,9 +22,22 @@ export const translations = {
             ml: 'ഒരു ഇവന്റിന് അപ്പുറം, മാനസികാരോഗ്യം, സർഗ്ഗാത്മകത, യുവശക്തി എന്നിവയുടെ ആഘോഷമായിരുന്നു ധൃതി. ഞങ്ങളുടെ ഏറ്റവും ശ്രദ്ധേയമായ പരിപാടിയുടെ ദൃശ്യങ്ങൾ കാണുക.'
         },
         stats: {
-            attendees: { en: '10,000+ Reached', ml: '10,000+ ആളുകൾ' },
+            attendees: { en: '1,000+ Reached', ml: '1,000+ ആളുകൾ' },
             impact: { en: '50+ Activities', ml: '50+ പ്രവർത്തനങ്ങൾ' },
             energy: { en: '100% Inclusive', ml: '100% ഉൾക്കൊള്ളുന്നതും' }
+        }
+    },
+    starletHighlight: {
+        title: { en: 'Starlet: Code & Create', ml: 'സ്റ്റാർലെറ്റ്: കോഡ് & ക്രിയേറ്റ്' },
+        subtitle: { en: 'Empowering Girls through Technology', ml: 'സാങ്കേതികവിദ്യയിലൂടെ പെൺകുട്ടികളെ ശാക്തീകരിക്കുന്നു' },
+        description: {
+            en: 'Starlet is an inclusive all-girls hackathon designed to encourage creativity and confidence in technology. From a small beginning, it has grown into a major initiative reaching hundreds of young innovators.',
+            ml: 'പെൺകുട്ടികളിൽ സാങ്കേതിക വിദ്യയിലുള്ള സർഗ്ഗാത്മകതയും ആത്മവിശ്വാസവും വളർത്തുന്നതിനായി രൂപകൽപ്പന ചെയ്ത ഹാക്കത്തോൺ ആണ് സ്റ്റാർലെറ്റ്.'
+        },
+        stats: {
+            participants: { en: '500+ Girls', ml: '500+ പെൺകുട്ടികൾ' },
+            projects: { en: '100+ Projects', ml: '100+ പ്രോജക്ടുകൾ' },
+            innovation: { en: 'Creative Minds', ml: 'സർഗ്ഗാത്മക ചിന്തകൾ' }
         }
     },
     hero: {
@@ -230,6 +244,16 @@ export const translations = {
         bigCursor: { en: 'Big Cursor', ml: 'വലിയ കഴ്സർ' },
         darkMode: { en: 'Dark Mode', ml: 'ഡാർക്ക് മോഡ്' },
         backgroundMusic: { en: 'Background Music', ml: 'പശ്ചാത്തല സംഗീതം' },
+    },
+    sponsor: {
+        title: { en: 'Sponsor a Girl', ml: 'ഒരു പെൺകുട്ടിയെ സ്പോൺസർ ചെയ്യുക' },
+        subtitle: { en: 'Empower the leaders of tomorrow', ml: 'നാളത്തെ നേതാക്കളെ ശാക്തീകരിക്കുക' },
+        description: { 
+            en: 'Mind Empowered conducts an inclusive all girls hackathon, Starlet, every year to encourage girls to come together and code, create and communicate with confidence. From 30 girls in our first edition to 200 girls in our fourth edition, we have come a long way. The theme for this year is Assistive technology to help create solutions for children with disabilities. This year we are also planning to have girls from fisherman communities and polytechnic colleges and ITIs who usually don\'t get such opportunities. Your contribution can help transform their lives. Please do support our initiative and share it so that our girls can get a Better Tomorrow. Thank you for always believing in ME! 😊✨', 
+            ml: 'പെൺകുട്ടികളെ ആത്മവിശ്വാസത്തോടെ കോഡ് ചെയ്യാനും സൃഷ്ടിക്കാനും ആശയവിനിമയം നടത്താനും പ്രോത്സാഹിപ്പിക്കുന്നതിനായി മൈൻഡ് എംപവേർഡ് എല്ലാ വർഷവും സ്റ്റാർലെറ്റ് എന്ന പേരിൽ ഒരു പെൺകുട്ടികളുടെ ഹാക്കത്തോൺ നടത്തുന്നു. ഈ വർഷത്തെ പ്രമേയം ഭിന്നശേഷിയുള്ള കുട്ടികൾക്കായി പരിഹാരങ്ങൾ കണ്ടെത്താൻ സഹായിക്കുന്ന അസിസ്റ്റീവ് ടെക്നോളജിയാണ്. മത്സ്യത്തൊഴിലാളി കമ്മ്യൂണിറ്റികളിൽ നിന്നും പോളിടെക്നിക് കോളേജുകളിൽ നിന്നുമുള്ള പെൺകുട്ടികളെ ഞങ്ങൾ ഇതിൽ ഉൾപ്പെടുത്തുന്നു. നിങ്ങളുടെ സംഭാവന അവരുടെ ജീവിതത്തെ മാറ്റിമറിക്കാൻ സഹായിക്കും. ഞങ്ങളെ പിന്തുണച്ചതിന് നന്ദി! 😊✨' 
+        },
+        button: { en: 'Sponsor a Girl', ml: 'സ്പോൺസർ ചെയ്യുക' },
+        campaignButton: { en: 'Support Campaign', ml: 'കാമ്പെയ്‌നെ പിന്തുണയ്ക്കുക' }
     }
 };
 
