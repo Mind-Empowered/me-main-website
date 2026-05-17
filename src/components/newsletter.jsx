@@ -4,6 +4,7 @@ import 'react-photo-view/dist/react-photo-view.css';
 import { translations } from '../translations';
 
 const newsletters = [
+  { src: "/NL/2026/4.png", alt: "April 2026 Newsletter", date: "Apr 2026" },
   { src: "/NL/2026/3.png", alt: "March 2026 Newsletter", date: "Mar 2026" },
   { src: "/NL/2026/1.png", alt: "January 2026 Newsletter", date: "Jan 2026" },
   { src: "/NL/2025/12.png", alt: "December 2025 Newsletter", date: "Dec 2025" },
