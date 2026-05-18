@@ -37,8 +37,8 @@ const EventHighlight = ({ language }) => {
             id: 'starlet',
             t: translations.starletHighlight,
             media: {
-                type: 'image',
-                src: '/starlet/Starlet.gif',
+                type: 'video',
+                src: '/starlet/Starlet.mp4',
             },
             theme: {
                 bg: 'bg-blue-50/50',
@@ -229,6 +229,9 @@ const EventHighlight = ({ language }) => {
                                                 src={current.media.src}
                                                 poster={current.media.poster}
                                                 controls
+                                                autoPlay
+                                                loop
+                                                muted
                                                 playsInline
                                             ></video>
                                         ) : (
