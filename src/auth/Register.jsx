@@ -58,14 +58,17 @@ const Register = () => {
 				{/* heading */}
 				<h1 className="text-6xl font-bold bg-gradient-to-r from-[#A64200] to-[#F0B04C] bg-clip-text text-transparent leading-tight">Registration</h1>
 
+				{/* add back button */}
+
 				{/* name container */}
 				<div className="flex gap-4 w-full">
 					{/* first name */}
 					<div className="flex flex-col gap-2 w-full">
-						<label htmlFor="">First Name</label>
+						<label htmlFor="firstName">First Name</label>
 						<input
 							type="text"
 							name="firstName"
+							id="firstName"
 							value={form.firstName}
 							onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
 							placeholder="Your first name"
@@ -73,8 +76,9 @@ const Register = () => {
 					</div>
 					{/* last name */}
 					<div className="flex flex-col gap-2 w-full">
-						<label htmlFor="">Last Name</label>
+						<label htmlFor="lastName">Last Name</label>
 						<input
+							id="lastName"
 							type="text"
 							name="lastName"
 							value={form.lastName}
@@ -86,10 +90,11 @@ const Register = () => {
 
 				{/* email address container */}
 				<div className="w-full flex flex-col gap-2">
-					<label htmlFor="">Email address</label>
+					<label htmlFor="email">Email address</label>
 					<input
 						type="email"
 						name="email"
+						id="email"
 						value={form.email}
 						onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
 						placeholder="Your email"
@@ -98,10 +103,11 @@ const Register = () => {
 
 				{/* phone number container */}
 				<div className="w-full flex flex-col gap-2">
-					<label htmlFor="">Phone Number</label>
+					<label htmlFor="phone">Phone Number</label>
 					<input
 						type="text"
 						name="phone"
+						id="phone"
 						value={form.phone}
 						onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
 						placeholder="Your phone number"
@@ -110,10 +116,11 @@ const Register = () => {
 
 				{/* password container */}
 				<div className="w-full flex flex-col gap-2">
-					<label htmlFor="">Password</label>
+					<label htmlFor="password">Password</label>
 					<input
 						type="password"
 						name="password"
+						id="password"
 						value={form.password}
 						onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
 						placeholder="Create a password"
@@ -122,10 +129,11 @@ const Register = () => {
 
 				{/* confirm password container */}
 				<div className="w-full flex flex-col gap-2">
-					<label htmlFor="">Confirm Password</label>
+					<label htmlFor="confirmPassword">Confirm Password</label>
 					<input
 						type="password"
 						name="confirmPassword"
+						id="confirmPassword"
 						value={form.confirmPassword}
 						onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
 						placeholder="Confirm your password"
