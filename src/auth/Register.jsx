@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaArrowLeft } from "react-icons/fa";
 
 const Register = () => {
 
@@ -55,6 +56,15 @@ const Register = () => {
 			</div>
 			{/* right panel */}
 			<div className="relative z-10 flex w-3/5 flex-col items-start justify-center gap-6 p-20  bg-white/20 text-white overflow-visible">
+				
+				{/* back button */}
+				<button 
+					onClick={() => window.history.back()}
+					className="absolute top-10 left-10 flex items-center gap-2 text-sm font-medium text-white/75 hover:text-white transition"
+				>
+					<FaArrowLeft />
+					Back
+				</button>
 
 				{/* heading */}
 				<h1 className="text-6xl font-bold bg-gradient-to-r from-[#A64200] to-[#F0B04C] bg-clip-text text-transparent leading-tight">Registration</h1>
