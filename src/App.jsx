@@ -23,6 +23,10 @@ import {
 } from "./components";
 import { translations } from "./translations";
 
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Register from "./auth/Register";
+
+
 // --- Accessibility Constants for maintainability ---
 const FONT_SIZE_KEYS = ['small', 'normal', 'large', 'xlarge'];
 const FONT_SIZE_CLASSES = {
@@ -33,7 +37,7 @@ const FONT_SIZE_CLASSES = {
 };
 // ----------------------------------------------------
 
-function App() {
+function HomePage() {
   const missionRef = useRef(null);
   const faqsRef = useRef(null);
   const contactRef = useRef(null);
@@ -816,6 +820,17 @@ function App() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
