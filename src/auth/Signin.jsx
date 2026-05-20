@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaGoogle } from "react-icons/fa";
+import { FaGoogle, FaArrowLeft } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 
 const Signin = () => {
@@ -48,8 +48,17 @@ const Signin = () => {
             </div>
             {/* right panel */}
             <div className="relative z-10 w-1/2 text-white flex items-center justify-center">
+            
                 {/* signin card */}
                 <div className="bg-white/20 text-white p-10 rounded-xl w-full max-w-md flex flex-col gap-6">
+                {/* back button */}
+                            <button 
+                                onClick={() => window.history.back()}
+                                className="top-10 left-10 flex items-center gap-2 text-sm font-medium text-white/75 hover:text-white transition"
+                            >
+                                <FaArrowLeft />
+                                Back
+                            </button>
                     {/* email field */}
                     <div className="flex flex-col gap-2">
                         <label htmlFor="email">Email address</label>
