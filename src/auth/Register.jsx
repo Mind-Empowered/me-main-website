@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 const Register = () => {
+
+	// form state
 	const [form, setForm] = useState({
 		firstName: "",
 		lastName: "",
@@ -10,13 +12,12 @@ const Register = () => {
 		confirmPassword: ""
 	});
 
-	console.log(form); //for debugging
-
 	// Function to validate the form data before submission
 	const validate = () => {
+		// format email validation properly
 		if (!form.firstName.trim()) return 'First name is required';
 		if (!form.lastName.trim()) return 'Last name is required';
-		if (!form.email.includes("@")) return 'Email is required';
+		if (!form.email.includes("@")) return 'Enter a valid email address';
 		if (!form.phone.trim()) return 'Phone number is required';
 		const password = form.password.trim();
 		const confirmPassword = form.confirmPassword.trim();
