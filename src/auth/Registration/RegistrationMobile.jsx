@@ -31,12 +31,13 @@ const RegistrationMobile = ({ form, setForm, error, handleSubmit }) => {
         <>
             <div className="h-screen flex flex-col">
                 {/* top panel */}
-                <div className=" w-full h-1/4">
+                <div className="relative w-full h-1/2 overflow-hidden">
                     <img src="/mobile.png" alt="" className="w-full h-full object-cover " />
+                    <div className="absolute -bottom-12 left-0 w-full h-24 bg-white rounded-l-[100%]" />
                 </div>
                 {/* first form */}
                 {step === 1 && (
-                    <div className="bg-white w-full h-3/4 px-10 py-5 flex flex-col gap-4 text-[#A64200]">
+                    <div className="bg-white w-full h-2/3 px-10 py-5 flex flex-col gap-4 text-[#A64200]">
                         {/* heading */}
                         <h1 className="text-4xl font-bold bg-gradient-to-r from-[#A64200] to-[#F0B04C] bg-clip-text text-transparent leading-tight">Registration</h1>
                         {/* email field */}

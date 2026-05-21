@@ -16,12 +16,14 @@ const SigninMobile = ({ form, setForm, error, handleSubmit }) => {
                         onClick={() => setStep(2)}
                         className="relative z-10 w-2/3 rounded-xl bg-gradient-to-r from-[#A64200] to-[#F0B04C] px-4 py-2 outline-none focus:ring-2 focus:ring-orange-400 text-white font-medium">Sign In</button>
                 </div>
-            )}  
+            )}
             {step === 2 && (
                 <div className="h-screen flex flex-col">
                     {/* top panel */}
-                    <div className=" w-full h-1/4">
+                    <div className="relative w-full h-1/4 overflow-hidden">
                         <img src="/mobile.png" alt="" className="w-full h-full object-cover " />
+                        {/* curve */}
+                        <div className="absolute -bottom-12 left-0 w-full h-24 bg-white rounded-l-[100%]" />
                     </div>
                     {/* signin form */}
                     <div className="bg-white  w-full h-3/4 px-10 py-5 flex flex-col gap-2 text-[#A64200]">
@@ -71,7 +73,7 @@ const SigninMobile = ({ form, setForm, error, handleSubmit }) => {
                                 </Link></p>
                             </div>
                         </div>
-                       {/* error message */}
+                        {/* error message */}
                         {error && (
                             <div className="text-red-500 text-sm">
                                 {error}
