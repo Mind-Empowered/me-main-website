@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FaGoogle, FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../backend_sb/supabase-client'
 
 const Signin = () => {
     const navigate = useNavigate();
@@ -22,6 +23,18 @@ const Signin = () => {
 
     const [error, setError] = useState(null); // State to hold validation error messages
 
+    const loginBackend = () => {
+        const {error} = supabase.auth.signInWithPassword({
+            email: form.email,
+            password: form.password
+        });
+
+        if (error){
+            console.log("An error has occured");
+        }
+        else console.log("Logged in successfully");
+    }
+
     // Handle form submission
     const handleSubmit = (e) => {
         e?.preventDefault();
@@ -30,6 +43,7 @@ const Signin = () => {
             setError(validationError);
             return;
         }
+        loginBackend();
         setError(null);
     };
 

@@ -20,24 +20,20 @@ const Register = () => {
 		const {error: SignUpError} = await supabase.auth.signUp({
 			email: form.email,
 			password: form.password,
+			options: {
+				data: {
+					firstName: form.firstName,
+					lastName: form.lastName,
+					phone: form.phone,
+					role: "MENTOR"
+				}
+			}
 		});
 
 		if (SignUpError){
 			console.log("Error registering user: ", SignUpError);
 		}
-		else {
-			const {error: DatabaseError} = await supabase.schema("me_dataspace").from("users").insert({
-				firstName: form.firstName,
-				lastName: form.lastName,
-				emailID: form.email,
-				phone: form.phone,
-				role: "MENTOR"
-			}).single();
-
-			if (DatabaseError){ 
-				console.log("Error adding user to table: ", DatabaseError);
-			}
-		}
+		else console.log("User registered successfully");
 	}
 
 	// Function to validate the form data before submission
