@@ -30,7 +30,7 @@ const Signin = () => {
         });
 
         if (error){
-            console.log("An error has occured");
+            console.log("An error has occurred");
         }
         else console.log("Logged in successfully");
     }
