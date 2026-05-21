@@ -23,8 +23,8 @@ const Signin = () => {
 
     const [error, setError] = useState(null); // State to hold validation error messages
 
-    const loginBackend = () => {
-        const {error} = supabase.auth.signInWithPassword({
+    const loginBackend = async () => {
+        const {error} = await supabase.auth.signInWithPassword({
             email: form.email,
             password: form.password
         });
@@ -36,7 +36,7 @@ const Signin = () => {
     }
 
     // Handle form submission
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e?.preventDefault();
         const validationError = validate();
         if (validationError) {
