@@ -1,9 +1,51 @@
 import { useState } from "react";
 import { FaGoogle, FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../backend_sb/supabase-client'
 
 const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
     const navigate = useNavigate();
+
+    // form state
+    const [form, setForm] = useState({
+        email: "",
+        password: "",
+        rememberMe: false,
+    });
+
+    //validate form data
+    const validate = () => {
+        // format email validation properly
+        if (!form.email.includes("@")) return 'Enter a valid email address';
+        if (!form.password.trim()) return 'Password is required';
+        return null; // No errors
+    };
+
+    const [error, setError] = useState(null); // State to hold validation error messages
+
+    const loginBackend = async () => {
+        const {error} = await supabase.auth.signInWithPassword({
+            email: form.email,
+            password: form.password
+        });
+
+        if (error){
+            console.log("An error has occurred");
+        }
+        else console.log("Logged in successfully");
+    }
+
+    // Handle form submission
+    const handleSubmit = async (e) => {
+        e?.preventDefault();
+        const validationError = validate();
+        if (validationError) {
+            setError(validationError);
+            return;
+        }
+        loginBackend();
+        setError(null);
+    };
 
     return (
         <div className="relative flex h-screen overflow-hidden">
