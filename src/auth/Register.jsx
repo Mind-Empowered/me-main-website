@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
+import {  useNavigate } from 'react-router-dom';
 
 const Register = () => {
+    const navigate = useNavigate();
 
 	// form state
 	const [form, setForm] = useState({
@@ -38,7 +40,6 @@ const Register = () => {
 			return;
 		}
 		setError(null);
-		console.log("Form is valid:", form);
 	};
 
 	return (
@@ -59,8 +60,8 @@ const Register = () => {
 				
 				{/* back button */}
 				<button 
-					onClick={() => window.history.back()}
-					className="absolute top-10 left-10 flex items-center gap-2 text-sm font-medium text-white/75 hover:text-white transition"
+					onClick={() => navigate(-1)}
+					className="absolute top-10 left-10 flex items-center gap-2 text-sm font-medium text-white/75 hover:text-white transition outline-none focus:ring-2 focus:ring-orange-400"
 				>
 					<FaArrowLeft />
 					Back
