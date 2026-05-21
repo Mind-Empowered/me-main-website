@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "../backend_sb/supabase-client"
 import { FaArrowLeft } from "react-icons/fa";
 import {  useNavigate } from 'react-router-dom';
 
@@ -14,6 +15,31 @@ const Register = () => {
 		password: "",
 		confirmPassword: ""
 	});
+
+	const registerForm = async (e) => {
+
+		const {error: SignUpError} = await supabase.auth.signUp({
+			email: form.email,
+			password: form.password,
+		});
+
+		if (error){
+			console.log("Error registering user: ", error);
+		}
+		else {
+			const {error: DatabaseError} = await supabase.schema("me_dataspace").from("users").insert({
+				firstName: form.firstName,
+				lastName: form.lastName,
+				emailID: form.email,
+				phone: form.phone,
+				role: "MENTOR"
+			}).single();
+
+			if (error){ 
+				console.log("Error adding user to table: ", error);
+			}
+		}
+	}
 
 	// Function to validate the form data before submission
 	const validate = () => {
