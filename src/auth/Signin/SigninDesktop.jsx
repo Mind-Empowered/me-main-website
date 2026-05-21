@@ -2,36 +2,8 @@ import { useState } from "react";
 import { FaGoogle, FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 
-const Signin = () => {
+const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
     const navigate = useNavigate();
-
-    // form state
-    const [form, setForm] = useState({
-        email: "",
-        password: "",
-        rememberMe: false,
-    });
-
-    //validate form data
-    const validate = () => {
-        // format email validation properly
-        if (!form.email.includes("@")) return 'Enter a valid email address';
-        if (!form.password.trim()) return 'Password is required';
-        return null; // No errors
-    };
-
-    const [error, setError] = useState(null); // State to hold validation error messages
-
-    // Handle form submission
-    const handleSubmit = (e) => {
-        e?.preventDefault();
-        const validationError = validate();
-        if (validationError) {
-            setError(validationError);
-            return;
-        }
-        setError(null);
-    };
 
     return (
         <div className="relative flex h-screen overflow-hidden">
@@ -132,11 +104,10 @@ const Signin = () => {
                             Create an account
                         </Link></p>
                     </div>
-
                 </div>
             </div>
         </div>
     );
 };
 
-export default Signin;
+export default SigninDesktop;
