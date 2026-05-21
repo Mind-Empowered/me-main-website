@@ -13,14 +13,25 @@ const ResetPassMobile = ({ form, setForm, error, setError, handleSubmit }) => {
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-[#A64200] to-[#F0B04C] bg-clip-text text-transparent leading-tight">Reset Password</h1>
                 {/* email field */}
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="email">Enter the new password</label>
                     <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={form.email}
+                        type="password"
+                        id="newPass"
+                        name="newPass"
+                        value={form.newPass}
                         onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
-                        placeholder="Your email address"
+                        placeholder="New Password"
+                        className="w-full rounded-xl bg-[#F5EFE6] px-4 py-2 placeholder-black/20 outline-none focus:ring-2 focus:ring-orange-400" />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="email">Confirm Password</label>
+                    <input
+                        type="password"
+                        id="confirmPass"
+                        name="confirmPass"
+                        value={form.confirmPass}
+                        onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+                        placeholder="Confirm Password"
                         className="w-full rounded-xl bg-[#F5EFE6] px-4 py-2 placeholder-black/20 outline-none focus:ring-2 focus:ring-orange-400" />
                 </div>
 
@@ -34,7 +45,7 @@ const ResetPassMobile = ({ form, setForm, error, setError, handleSubmit }) => {
                         className="w-full rounded-xl bg-gradient-to-r from-[#A64200] to-[#F0B04C] px-4 py-2 outline-none focus:ring-2 focus:ring-orange-400 text-white"
 
                     >
-                        Send Reset Link
+                        Continue Reset
                     </button>
                 </div>
 

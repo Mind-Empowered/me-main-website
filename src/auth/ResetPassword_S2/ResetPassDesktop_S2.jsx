@@ -42,7 +42,7 @@ const ResetPassDesktop = ({ form, setForm, error, setError, handleSubmit }) => {
                         <input
 						type="password"
 						name="newPass"
-						id="password"
+						id="newPass"
 						value={form.newPass}
                             placeholder="Your New Password"
                             onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
@@ -53,7 +53,7 @@ const ResetPassDesktop = ({ form, setForm, error, setError, handleSubmit }) => {
                         <input
 						type="password"
 						name="confirmPass"
-						id="password"
+						id="confirmPass"
 						value={form.confirmPass}
                             placeholder="Confirm Password"
                             onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
