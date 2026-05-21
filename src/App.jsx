@@ -26,7 +26,7 @@ import { translations } from "./translations";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./auth/Registration/Register";
 import Signin from "./auth/Signin/Signin"; 
-import Forgotpass from "./auth/Forgotpass";
+import ResetPass from "./auth/ResetPassword/ResetPass";
 
 
 // --- Accessibility Constants for maintainability ---
@@ -832,7 +832,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/signin" element={<Signin />} />
-        <Route path="/forgot-password" element={<Forgotpass />} />
+        <Route path="/reset-password" element={<ResetPass />} />
       </Routes>
     </BrowserRouter>
   );
