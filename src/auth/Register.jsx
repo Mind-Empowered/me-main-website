@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { supabase } from "../backend_sb/supabase-client"
+import { FaArrowLeft } from "react-icons/fa";
+import {  useNavigate } from 'react-router-dom';
 
 const Register = () => {
+    const navigate = useNavigate();
 
 	// form state
 	const [form, setForm] = useState({
@@ -63,9 +66,6 @@ const Register = () => {
 			return;
 		}
 		setError(null);
-		console.log("Form is valid:", form);
-		registerForm(e);
-
 	};
 
 	return (
@@ -83,6 +83,15 @@ const Register = () => {
 			</div>
 			{/* right panel */}
 			<div className="relative z-10 flex w-3/5 flex-col items-start justify-center gap-6 p-20  bg-white/20 text-white overflow-visible">
+				
+				{/* back button */}
+				<button 
+					onClick={() => navigate(-1)}
+					className="absolute top-10 left-10 flex items-center gap-2 text-sm font-medium text-white/75 hover:text-white transition outline-none focus:ring-2 focus:ring-orange-400"
+				>
+					<FaArrowLeft />
+					Back
+				</button>
 
 				{/* heading */}
 				<h1 className="text-6xl font-bold bg-gradient-to-r from-[#A64200] to-[#F0B04C] bg-clip-text text-transparent leading-tight">Registration</h1>
