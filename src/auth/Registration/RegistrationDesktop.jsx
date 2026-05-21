@@ -1,73 +1,10 @@
 import { useState } from "react";
-import { supabase } from "../backend_sb/supabase-client"
+import { supabase } from "../../backend_sb/supabase-client"
 import { FaArrowLeft } from "react-icons/fa";
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const Register = () => {
-    const navigate = useNavigate();
-
-	// form state
-	const [form, setForm] = useState({
-		firstName: "",
-		lastName: "",
-		email: "",
-		phone: "",
-		password: "",
-		confirmPassword: ""
-	});
-
-	const registerForm = async (e) => {
-
-		const {error: SignUpError} = await supabase.auth.signUp({
-			email: form.email,
-			password: form.password,
-		});
-
-		if (error){
-			console.log("Error registering user: ", error);
-		}
-		else {
-			const {error: DatabaseError} = await supabase.schema("me_dataspace").from("users").insert({
-				firstName: form.firstName,
-				lastName: form.lastName,
-				emailID: form.email,
-				phone: form.phone,
-				role: "MENTOR"
-			}).single();
-
-			if (error){ 
-				console.log("Error adding user to table: ", error);
-			}
-		}
-	}
-
-	// Function to validate the form data before submission
-	const validate = () => {
-		// format email validation properly
-		if (!form.firstName.trim()) return 'First name is required';
-		if (!form.lastName.trim()) return 'Last name is required';
-		if (!form.email.includes("@")) return 'Enter a valid email address';
-		if (!form.phone.trim()) return 'Phone number is required';
-		const password = form.password.trim();
-		const confirmPassword = form.confirmPassword.trim();
-		if (password.length < 8) return 'Password must be at least 8 characters long';
-		if (password !== confirmPassword) return 'Passwords do not match';
-		return null; // No errors
-	};
-
-	const [error, setError] = useState(null); // State to hold validation error messages
-
-	// Handle form submission
-	const handleSubmit = (e) => {
-		e?.preventDefault();
-		const validationError = validate();
-		if (validationError) {
-			setError(validationError);
-			return;
-		}
-		setError(null);
-	};
-
+const RegistrationDesktop = ({ form, setForm, error, handleSubmit }) => {
+	const navigate = useNavigate();
 	return (
 		<div className="relative flex h-screen overflow-hidden">
 			{/* background gif */}
@@ -83,18 +20,19 @@ const Register = () => {
 			</div>
 			{/* right panel */}
 			<div className="relative z-10 flex w-3/5 flex-col items-start justify-center gap-6 p-20  bg-white/20 text-white overflow-visible">
-				
-				{/* back button */}
-				<button 
-					onClick={() => navigate(-1)}
-					className="absolute top-10 left-10 flex items-center gap-2 text-sm font-medium text-white/75 hover:text-white transition outline-none focus:ring-2 focus:ring-orange-400"
-				>
-					<FaArrowLeft />
-					Back
-				</button>
+				<div>
+					{/* back button */}
+					<button
+						onClick={() => navigate(-1)}
+						className=" flex items-center gap-2 text-sm font-medium text-white/75 hover:text-white transition outline-none focus:ring-2 focus:ring-orange-400"
+					>
+						<FaArrowLeft />
+						Back
+					</button>
 
-				{/* heading */}
-				<h1 className="text-6xl font-bold bg-gradient-to-r from-[#A64200] to-[#F0B04C] bg-clip-text text-transparent leading-tight">Registration</h1>
+					{/* heading */}
+					<h1 className="text-6xl font-bold bg-gradient-to-r from-[#A64200] to-[#F0B04C] bg-clip-text text-transparent leading-tight">Registration</h1>
+				</div>
 
 				{/* add back button */}
 
@@ -191,4 +129,4 @@ const Register = () => {
 
 };
 
-export default Register;
+export default RegistrationDesktop;
