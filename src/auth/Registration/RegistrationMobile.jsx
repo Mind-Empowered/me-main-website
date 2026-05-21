@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { FaArrowLeft } from "react-icons/fa";
+
 
 const RegistrationMobile = ({ form, setForm, error, handleSubmit }) => {
 
@@ -94,7 +96,7 @@ const RegistrationMobile = ({ form, setForm, error, handleSubmit }) => {
                 {step === 2 && (
                     <div className="bg-white w-full h-3/4 px-10 py-5 flex flex-col gap-4 text-[#A64200]">
                         <button onClick={() => setStep(1)} className="flex items-center gap-2 text-sm text-[#A64200]">
-                            ← Back
+                            <FaArrowLeft /> Back
                         </button>
                         {/* heading */}
                         <h1 className="text-4xl font-bold bg-gradient-to-r from-[#A64200] to-[#F0B04C] bg-clip-text text-transparent leading-tight">Registration</h1>
