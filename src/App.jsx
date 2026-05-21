@@ -24,7 +24,7 @@ import {
 import { translations } from "./translations";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Register from "./auth/Register";
+import Register from "./auth/Registration/Register";
 import Signin from "./auth/Signin"; 
 import Forgotpass from "./auth/Forgotpass";
 
