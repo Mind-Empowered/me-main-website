@@ -27,6 +27,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./auth/Registration/Register";
 import Signin from "./auth/Signin/Signin"; 
 import ResetPass from "./auth/ResetPassword/ResetPass";
+import ResetPass_S2 from "./auth/ResetPassword_S2/ResetPass_S2";
 
 
 // --- Accessibility Constants for maintainability ---
@@ -833,6 +834,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/reset-password" element={<ResetPass />} />
+        <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
       </Routes>
     </BrowserRouter>
   );
