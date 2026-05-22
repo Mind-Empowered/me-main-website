@@ -68,7 +68,7 @@ const SigninMobile = ({ form, setForm, error, handleSubmit }) => {
                             </div>
                             {/* forgot password */}
                             <div>
-                                <p><Link to="/forgot-password" className="inline-block rounded px-2 py-1  hover:underline focus:outline-none focus:ring-2 focus:ring-orange-400">
+                                <p><Link to="/reset-password" className="inline-block rounded px-2 py-1  hover:underline focus:outline-none focus:ring-2 focus:ring-orange-400">
                                     Forgot your password?
                                 </Link></p>
                             </div>
