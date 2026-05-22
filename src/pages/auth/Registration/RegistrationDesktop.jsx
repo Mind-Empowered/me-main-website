@@ -2,130 +2,404 @@ import { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 
-const RegistrationDesktop = ({ form, setForm, error, handleSubmit }) => {
+const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterStep2 }) => {
+
+	const [step, setStep] = useState(1);//track current step of registration
+	const [photoPreview, setPhotoPreview] = useState(null);
+	const [photoFile, setPhotoFile] = useState(null);
+	const [localError, setLocalError] = useState(null);
+	const [step2Error, setStep2Error] = useState(null);
+
+	const validate = () => {
+		// format email validation properly
+		if (!form.firstName.trim()) return 'First name is required';
+		if (!form.lastName.trim()) return 'Last name is required';
+		if (!form.email.includes("@")) return 'Enter a valid email address';
+		if (!form.phone.trim()) return 'Phone number is required';
+		
+		// Validate phone number - must be at least 10 digits
+		const phoneDigitsOnly = form.phone.replace(/\D/g, '');
+		if (phoneDigitsOnly.length < 10) return 'Phone number must have at least 10 digits';
+		if (phoneDigitsOnly.length > 10) return 'Phone number must not exceed 10 digits';
+		if (!/^\d+[-.\s]?\d+[-.\s]?\d+/.test(phoneDigitsOnly)) return 'Enter a valid phone number';
+		
+		const password = form.password.trim();
+		const confirmPassword = form.confirmPassword.trim();
+		
+		// Password validation - must be at least 8 characters
+		if (password.length < 8) return 'Password must be at least 8 characters long';
+		
+		// Password must contain at least one uppercase letter
+		if (!/[A-Z]/.test(password)) return 'Password must contain at least one uppercase letter';
+		
+		// Password must contain at least one digit
+		if (!/[0-9]/.test(password)) return 'Password must contain at least one digit';
+		
+		// Password must contain at least one special character
+		if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) return 'Password must contain at least one special character (!@#$%^&*)';
+		
+		if (password !== confirmPassword) return 'Passwords do not match';
+		return null; // No errors
+	};
+
+	const validateStep2 = () => {
+		// Photo upload validation
+		if (!photoFile) return 'Please upload a profile photo';
+
+		// GitHub URL validation - only validate if provided
+		if (form.github && form.github.trim()) {
+			if (!form.github.includes('github.com')) return 'Please enter a valid GitHub profile URL (must include github.com)';
+			try {
+				new URL(form.github);
+			} catch (e) {
+				return 'Please enter a valid GitHub profile URL';
+			}
+		}
+
+		// LinkedIn URL validation - only validate if provided
+		if (form.linkedin && form.linkedin.trim()) {
+			if (!form.linkedin.includes('linkedin.com')) return 'Please enter a valid LinkedIn profile URL (must include linkedin.com)';
+			try {
+				new URL(form.linkedin);
+			} catch (e) {
+				return 'Please enter a valid LinkedIn profile URL';
+			}
+		}
+
+		return null; // No errors
+	};
+
+	const handleNext = () => {
+		const validationError = validate();
+		if (validationError) {
+			setLocalError(validationError);
+			return;
+		}
+		setLocalError(null);
+		setStep(2);
+	};
+
+	const handlePhotoUpload = (e) => {
+		const file = e.target.files[0];
+		if (file) {
+			setPhotoFile(file);
+			const reader = new FileReader();
+			reader.onload = (event) => {
+				setPhotoPreview(event.target.result);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
+	const triggerPhotoUpload = () => {
+		document.getElementById("photoInput").click();
+	};
+
 	const navigate = useNavigate();
+
 	return (
-		<div className="relative flex h-screen overflow-hidden">
-			{/* background gif */}
-			<div
-				className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-				style={{ backgroundImage: "url('/landing-bg.gif')" }}
-			></div>
-			{/* overlay */}
-			<div className="absolute inset-0 bg-black/80"></div>
-			{/* left panel */}
-			<div className="relative z-10 w-2/5 p-6 pt-20">
-				<img src="/brand/logo.jpeg" alt="Logo" className="w-28 rounded-full" />
-			</div>
-			{/* right panel */}
-			<div className="relative z-10 flex w-3/5 flex-col items-start justify-center gap-6 p-20  bg-white/20 text-white overflow-visible">
-				<div>
-					{/* back button */}
-					<button
-						onClick={() => navigate(-1)}
-						className=" flex items-center gap-2 text-sm font-medium text-white/75 hover:text-white transition outline-none focus:ring-2 focus:ring-orange-400"
-					>
-						<FaArrowLeft />
-						Back
-					</button>
-
-					{/* heading */}
-					<h1 className="text-6xl font-bold bg-gradient-to-r from-[#A64200] to-[#F0B04C] bg-clip-text text-transparent leading-tight">Registration</h1>
-				</div>
-
-				{/* add back button */}
-
-				{/* name container */}
-				<div className="flex gap-4 w-full">
-					{/* first name */}
-					<div className="flex flex-col gap-2 w-full">
-						<label htmlFor="firstName">First Name</label>
-						<input
-							type="text"
-							name="firstName"
-							id="firstName"
-							value={form.firstName}
-							onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
-							placeholder="Your first name"
-							className="w-full rounded-xl bg-white/20 px-4 py-2 placeholder-white/50 outline-none focus:ring-2 focus:ring-orange-400" />
+		<>
+			{step === 1 && (
+				<div className="relative flex h-screen overflow-hidden">
+					{/* overlay */}
+					<div className="absolute inset-0 bg-black/80"></div>
+					{/* left panel */}
+					<div className="relative z-10 w-1/2 p-6 pt-20">
+						{/* background gif */}
+						<div
+							className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+							style={{ backgroundImage: "url('/landing-bg.gif')" }}
+						></div>
+						<img src="/brand/logo.jpeg" alt="Logo" className="w-28 rounded-full" />
 					</div>
-					{/* last name */}
-					<div className="flex flex-col gap-2 w-full">
-						<label htmlFor="lastName">Last Name</label>
-						<input
-							id="lastName"
-							type="text"
-							name="lastName"
-							value={form.lastName}
-							onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
-							placeholder="Your last name"
-							className="w-full rounded-xl bg-white/20 px-4 py-2 placeholder-white/50 outline-none focus:ring-2 focus:ring-orange-400" />
-					</div>
-				</div>
+					{/* right panel */}
+					<div className="relative z-10 flex w-1/2 flex-col items-start justify-center gap-6 p-20  bg-[#FAF6F1]  overflow-visible">
+						<div className="w-full flex items-center justify-evenly ">
 
-				{/* email address container */}
-				<div className="w-full flex flex-col gap-2">
-					<label htmlFor="email">Email address</label>
-					<input
-						type="email"
-						name="email"
-						id="email"
-						value={form.email}
-						onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
-						placeholder="Your email"
-						className="w-full rounded-xl bg-white/20 px-4 py-2 placeholder-white/50 outline-none focus:ring-2 focus:ring-orange-400" />
-				</div>
+							{/* heading */}
+							<h1 className="font-playfairdisplay font-normal text-[48px] leading-[120%] w-[565px] h-[98px] bg-[#1A0D00] bg-clip-text text-transparent">
+								Register as a Volunteer
+							</h1>
+							{/* back button */}
+							<button
+								onClick={() => navigate(-1)}
+								className="
+							inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#7A3A00] hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase
+							transition-all duration-300 shadow-md hover:scale-105 outline-none focus:ring-2
+							focus:ring-orange-400 right-10 top-14 absolute"
+							>
+								<FaArrowLeft />
+								Back
+							</button>
+						</div>
 
-				{/* phone number container */}
-				<div className="w-full flex flex-col gap-2">
-					<label htmlFor="phone">Phone Number</label>
-					<input
-						type="text"
-						name="phone"
-						id="phone"
-						value={form.phone}
-						onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
-						placeholder="Your phone number"
-						className="w-full rounded-xl bg-white/20 px-4 py-2 placeholder-white/50 outline-none focus:ring-2 focus:ring-orange-400" />
-				</div>
+						{/* name container */}
+						<div className="flex gap-4 w-full">
+							{/* first name */}
+							<div className="flex flex-col gap-2 w-full">
+								<label htmlFor="firstName" className="text-[#7A6A5A]">
+									First Name
+								</label>
+								<input
+									type="text"
+									name="firstName"
+									id="firstName"
+									value={form.firstName}
+									onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+									placeholder="Your first name"
+									className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] outline-none focus:ring-2 focus:ring-orange-400" />
+							</div>
+							{/* last name */}
+							<div className="flex flex-col gap-2 w-full">
+								<label htmlFor="lastName" className="text-[#7A6A5A]">
+									Last Name
+								</label>
+								<input
+									id="lastName"
+									type="text"
+									name="lastName"
+									value={form.lastName}
+									onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+									placeholder="Your last name"
+									className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] outline-none focus:ring-2 focus:ring-orange-400" />
+							</div>
+						</div>
 
-				{/* password container */}
-				<div className="w-full flex flex-col gap-2">
-					<label htmlFor="password">Password</label>
-					<input
-						type="password"
-						name="password"
-						id="password"
-						value={form.password}
-						onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
-						placeholder="Create a password"
-						className="w-full rounded-xl bg-white/20 px-4 py-2 placeholder-white/50 outline-none focus:ring-2 focus:ring-orange-400" />
-				</div>
+						{/* email address container */}
+						<div className="w-full flex flex-col gap-2">
+							<label htmlFor="email" className="text-[#7A6A5A]">
+								Email address
+							</label>
+							<input
+								type="email"
+								name="email"
+								id="email"
+								value={form.email}
+								onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+								placeholder="Your email"
+								className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] outline-none focus:ring-2 focus:ring-orange-400" />
+						</div>
 
-				{/* confirm password container */}
-				<div className="w-full flex flex-col gap-2">
-					<label htmlFor="confirmPassword">Confirm Password</label>
-					<input
-						type="password"
-						name="confirmPassword"
-						id="confirmPassword"
-						value={form.confirmPassword}
-						onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
-						placeholder="Confirm your password"
-						className="w-full rounded-xl bg-white/20 px-4 py-2 placeholder-white/50 outline-none focus:ring-2 focus:ring-orange-400" />
+						{/* phone number container */}
+						<div className="w-full flex flex-col gap-2">
+							<label htmlFor="phone" className="text-[#7A6A5A]">
+								Phone Number
+							</label>
+							<input
+								type="text"
+								name="phone"
+								id="phone"
+								value={form.phone}
+								onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+								placeholder="Your phone number"
+								className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] outline-none focus:ring-2 focus:ring-orange-400" />
+						</div>
+
+						{/* password container */}
+						<div className="w-full flex flex-col gap-2">
+							<label htmlFor="password" className="text-[#7A6A5A]">
+								Password
+							</label>
+							<input
+								type="password"
+								name="password"
+								id="password"
+								value={form.password}
+								onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+								placeholder="Create a password"
+								className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] outline-none focus:ring-2 focus:ring-orange-400" />
+						</div>
+
+						{/* confirm password container */}
+						<div className="w-full flex flex-col gap-2">
+							<label htmlFor="confirmPassword" className="text-[#7A6A5A]">
+								Confirm Password
+							</label>
+							<input
+								type="password"
+								name="confirmPassword"
+								id="confirmPassword"
+								value={form.confirmPassword}
+								onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+								placeholder="Confirm your password"
+						className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] outline-none focus:ring-2 focus:ring-orange-400" />
 				</div>
 
 				{/* form error message */}
-				{error && <p className="text-red-400 text-sm">{error}</p>}
+				{localError && <p className="text-red-400 text-sm font-semibold">{localError}</p>}
 
-				{/* register button */}
+				{/* next button */}
 				<button
-					onClick={handleSubmit}
-					className="w-full rounded-xl bg-gradient-to-r from-[#A64200] to-[#F0B04C] px-4 py-2 outline-none focus:ring-2 focus:ring-orange-400">Register</button>
-			</div>
-		</div>
-	);
+					onClick={handleNext}
+							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] tracking-wide text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300
+					shadow-lg hover:scale-105 outline-none ">Next</button>
+					</div>
+				</div>
+			)}
 
+			{/* second form */}
+			{step === 2 && (
+				<div className="relative flex h-screen overflow-hidden">
+					{/* overlay */}
+					<div className="absolute inset-0 bg-black/80"></div>
+					{/* left panel */}
+					<div className="relative z-10 w-1/2 p-6 pt-20">
+						{/* background gif */}
+						<div
+							className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+							style={{ backgroundImage: "url('/landing-bg.gif')" }}
+						></div>
+						<img src="/brand/logo.jpeg" alt="Logo" className="w-28 rounded-full" />
+					</div>
+					{/* right panel */}
+					<div className="relative z-10 flex w-1/2 flex-col items-start justify-center gap-6 p-20 bg-[#FAF6F1] overflow-visible">
+						<div className="w-full flex items-center justify-between">
+							{/* heading */}
+							<h1 className="font-playfairdisplay font-normal text-[48px] leading-[120%] w-[565px] h-[58px] bg-[#1A0D00] bg-clip-text text-transparent">
+								Complete Your Profile
+							</h1>
+							{/* back button */}
+							<button
+								onClick={() => setStep(1)}
+								className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#7A3A00] hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-md hover:scale-105 outline-none focus:ring-2 focus:ring-orange-400 right-10 top-14 absolute"
+							>
+								<FaArrowLeft />
+								Back
+							</button>
+
+						</div>
+
+						{/* Upload Section */}
+						<div className="w-full">
+							<label className="text-[#7A6A5A] font-semibold mb-2 block">
+								Upload Your Photo
+							</label>
+
+							{photoPreview && (
+								<div className="mb-4">
+									<img
+										src={photoPreview}
+										alt="Preview"
+										className="w-32 h-32 rounded-xl object-cover border border-[#E0D4C4]"
+									/>
+								</div>
+							)}
+
+							<input
+								id="photoInput"
+								type="file"
+								accept="image/*"
+								onChange={handlePhotoUpload}
+								className="hidden"
+							/>
+
+							<button
+								onClick={triggerPhotoUpload}
+								type="button"
+								className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#7A3A00] hover:bg-[#8B3D00] text-white text-sm font-semibold transition-all duration-300"
+							>
+								{photoPreview ? 'Change Photo' : 'Upload Photo'}
+							</button>
+						</div>
+
+						{/* Github */}
+						<div className="w-full">
+							<div className="flex items-center gap-2 mb-2">
+								<label className="text-[#7A6A5A] font-semibold">
+									Github Profile
+								</label>
+								<span className="text-[#BBA898] text-sm">
+									Optional
+								</span>
+							</div>
+							<input
+								type="text"
+								name="github"
+								value={form.github || ''}
+								onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+								placeholder="Profile URL"
+								className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] text-[#1A0D00] outline-none focus:ring-2 focus:ring-orange-400"
+							/>
+						</div>
+
+						{/* Linkedin */}
+						<div className="w-full">
+							<div className="flex items-center gap-2 mb-2">
+								<label className="text-[#7A6A5A] font-semibold">
+									Linkedin Profile
+								</label>
+								<span className="text-[#BBA898] text-sm">
+									Optional
+								</span>
+							</div>
+							<input
+								type="text"
+								name="linkedin"
+								value={form.linkedin || ''}
+								onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+								placeholder="Profile URL"
+								className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] text-[#1A0D00] outline-none focus:ring-2 focus:ring-orange-400"
+							/>
+						</div>
+
+						{/* Bio */}
+						<div className="w-full">
+							<div className="flex items-center gap-2 mb-2">
+								<label className="text-[#7A6A5A] font-semibold">
+									Profile Bio
+								</label>
+								<span className="text-[#BBA898] text-sm">
+									Optional
+								</span>
+							</div>
+							<textarea
+								name="bio"
+								rows="4"
+								value={form.bio || ''}
+								onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+								placeholder="Tell more about yourself"
+								className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] text-[#1A0D00] outline-none resize-none focus:ring-2 focus:ring-orange-400"
+							></textarea>
+						</div>
+
+						{/* Register Button */}
+						<button
+							onClick={() => {
+								const validationError = validateStep2();
+								if (validationError) {
+									setStep2Error(validationError);
+									return;
+								}
+								// Debug: Log current form data
+							console.log("=== REGISTRATION FORM DATA ===");
+							console.log("Step 1 Data:", {
+								firstName: form.firstName,
+								lastName: form.lastName,
+								email: form.email,
+								phone: form.phone
+							});
+							console.log("Step 2 Data:", {
+								github: form.github,
+								linkedin: form.linkedin,
+								bio: form.bio,
+								photoFile: photoFile ? photoFile.name : 'No file'
+							});
+							console.log("==============================");
+								setStep2Error(null);
+								onRegisterStep2(photoFile);
+							}}
+							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none"
+						>
+							Register
+						</button>
+
+						{/* form error message */}
+						{step2Error && <p className="text-red-400 text-sm font-semibold">{step2Error}</p>}
+					</div>
+				</div>
+			)}
+		</>
+	);
 };
 
 export default RegistrationDesktop;
