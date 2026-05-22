@@ -28,6 +28,7 @@ import Register from "./pages/auth/Registration/Register";
 import Signin from "./pages/auth/Signin/Signin"; 
 import ResetPass from "./pages/auth/ResetPassword/ResetPass";
 import ResetPass_S2 from "./pages/auth/ResetPassword_S2/ResetPass_S2";
+import MentorDashboard from "./pages/dashboard/MentorDashboard";
 
 
 // --- Accessibility Constants for maintainability ---
@@ -833,6 +834,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/signin" element={<Signin />} />
+        <Route path="/mentor-dashboard" element={<MentorDashboard />} />
         <Route path="/reset-password" element={<ResetPass />} />
         <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
       </Routes>

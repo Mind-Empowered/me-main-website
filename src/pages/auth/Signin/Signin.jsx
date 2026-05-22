@@ -1,8 +1,10 @@
 import SigninDesktop from "./SigninDesktop";
 import SigninMobile from "./SigninMobile";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../../services/supabase-client";
 const Signin = () => {
+    const navigate = useNavigate();
 
     // form state
         const [form, setForm] = useState({
@@ -31,7 +33,10 @@ const Signin = () => {
                 console.log("An error has occured: ", error);
                 return;
             }
-            else console.log("Logged in successfully!");
+            else {
+                console.log("Logged in successfully!");
+                navigate("/mentor-dashboard");
+            }
         }
 
         // Handle form submission
