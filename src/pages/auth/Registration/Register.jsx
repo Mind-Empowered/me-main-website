@@ -25,7 +25,7 @@ const Register = () => {
 					firstName: form.firstName,
 					lastName: form.lastName,
 					phone: form.phone,
-					role: "MENTOR"
+					role: "VOLUNTEER"
 				}
 			}
 		});
