@@ -49,10 +49,10 @@ const Signin = () => {
 
     return (
         <>
-            <div className="hidden md:block">
+            <div className="block">
                 <SigninDesktop form={form} setForm={setForm} error={error} handleSubmit={handleSubmit}  />
             </div>
-            <div className="block md:hidden">
+            <div className="hidden">
                 <SigninMobile form={form} setForm={setForm} error={error} handleSubmit={handleSubmit}/>
             </div>
         </>

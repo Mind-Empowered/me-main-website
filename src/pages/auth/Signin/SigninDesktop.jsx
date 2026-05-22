@@ -5,34 +5,47 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
     const navigate = useNavigate();
 
     return (
-        <div className="relative flex h-screen overflow-hidden">
+        <div className="relative h-screen overflow-hidden flex items-center justify-center">
             {/* background gif */}
             <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: "url('/landing-bg.gif')" }}
             ></div>
             {/* overlay */}
-            <div className="absolute inset-0 bg-black/80"></div>
+            <div className="absolute inset-0 bg-white/20"></div>
             {/* left panel */}
-            <div className="relative z-10 w-1/2 p-6 pt-20">
+            {/* <div className="relative z-10 w-1/2 p-6 pt-20">
                 <img src="/brand/logo.jpeg" alt="Logo" className="w-28 rounded-full" />
-            </div>
+            </div> */}
             {/* right panel */}
-            <div className="relative z-10 w-1/2 text-white flex items-center justify-center">
-            
+            <div className="relative z-10 w-full flex items-center justify-center">
+
                 {/* signin card */}
-                <div className="bg-white/20 text-white p-10 rounded-xl w-full max-w-md flex flex-col gap-6">
-                {/* back button */}
-                            <button 
-                                onClick={() => navigate(-1)}
-                                className="flex items-center gap-2 text-sm font-medium text-white/75 hover:text-white transition outline-none focus:ring-2 focus:ring-orange-400"
-                            >
-                                <FaArrowLeft />
-                                Back
-                            </button>
+                <div className="bg-white/10 backdrop-blur-lg text-[#A64200] px-20 py-10  w-full max-w-xl flex flex-col gap-6">
+                <div>
+                    {/* back button */}
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-2 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-400"
+                    >
+                        <FaArrowLeft />
+                        Back
+                    </button>
+                    {/* logo */}
+                    <div className="flex justify-center">
+                        <img src="/brand/logo.jpeg" alt="Logo" className="w-28 rounded-full" />
+                    </div>
+                </div>
+                    
+                    {/* welcome text */}
+                    <h1 className="text-4xl font-bold text-center">Welcome Back!</h1>
+                    <p className="text-center">Sign in to your account to continue</p>
                     {/* email field */}
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="email">Email address</label>
+                        <label htmlFor="email" 
+                        >
+                            Email address
+                        </label>
                         <input
                             type="email"
                             name="email"
@@ -40,7 +53,7 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                             value={form.email}
                             onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
                             placeholder="Email"
-                            className="w-full rounded-xl bg-white/20 px-4 py-2 placeholder-white/50 outline-none focus:ring-2 focus:ring-orange-400" />
+                            className="w-full rounded-xl bg-white px-4 py-2 placeholder-white/50 border border-[#A64200] outline-none focus:ring-2 focus:ring-orange-400" />
                     </div>
                     {/* password field */}
                     <div className="flex flex-col gap-2">
@@ -52,24 +65,18 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                             value={form.password}
                             onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
                             placeholder="Password"
-                            className="w-full rounded-xl bg-white/20 px-4 py-2 placeholder-white/50 outline-none focus:ring-2 focus:ring-orange-400" />
+                            className="w-full rounded-xl bg-white px-4 py-2 placeholder-white/50 border border-[#A64200] outline-none focus:ring-2 focus:ring-orange-400" />
                     </div>
-                    {/* remember me checkbox and forgot password */}
                     <div className="flex items-center justify-between">
-                        {/* remember me */}
-                        <div>
-                            <input
-                                type="checkbox"
-                                id="remember"
-                                checked={form.rememberMe}
-                                onChange={(e) => setForm(prev => ({ ...prev, rememberMe: e.target.checked }))}
-                                className="inline-block rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
-                            />
-                            <label htmlFor="remember">Remember me</label>
+                        {/* redirect to register page field */}
+                        <div >
+                            <p><Link to="/register" className="inline-block rounded px-2 py-1  hover:underline focus:outline-none focus:ring-2 focus:ring-orange-400 ">
+                                Create an account
+                            </Link></p>
                         </div>
                         {/* forgot password */}
                         <div>
-                            <p><Link to="/reset-password" className="inline-block rounded px-2 py-1 text-white hover:underline focus:outline-none focus:ring-2 focus:ring-orange-400">
+                            <p><Link to="/reset-password" className="inline-block rounded px-2 py-1 hover:underline focus:outline-none focus:ring-2 focus:ring-orange-400">
                                 Forgot your password?
                             </Link></p>
                         </div>
@@ -78,31 +85,13 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                     {error && <p className="text-red-400 text-sm">{error}</p>}
                     {/* signin button */}
                     <div>
-                        <button 
-                        onClick={handleSubmit}
-                        className="w-full rounded-xl bg-gradient-to-r from-[#A64200] to-[#F0B04C] px-4 py-2 outline-none focus:ring-2 focus:ring-orange-400">
+                        <button
+                            onClick={handleSubmit}
+                            className="w-full rounded-xl bg-gradient-to-r from-[#A64200] to-[#F0B04C] px-4 py-2 outline-none focus:ring-2 focus:ring-orange-400 text-white">
                             Sign In
                         </button>
                     </div>
-                    {/* or separator with lines */}
-                    <div className="flex items-center gap-4">
-                        <hr className="flex-1 border-t border-white/30" />
-                        <span className="text-white/70">or</span>
-                        <hr className="flex-1 border-t border-white/30" />
-                    </div>
-                    {/* google signin field */}
-                    <div>
-                        <button className="flex items-center justify-center gap-2 w-full rounded-xl bg-white/20 px-4 py-2 outline-none focus:ring-2 focus:ring-orange-400">
-                            <FaGoogle /> Sign in with Google
-                        </button>
-                    </div>
-                    {/* redirect to register page field */}
-                    <div className="text-center flex flex-col gap-2">
-                        <p>Don't have an account ?</p>
-                        <p><Link to="/register" className="inline-block rounded px-2 py-1 text-white hover:underline focus:outline-none focus:ring-2 focus:ring-orange-400 ">
-                            Create an account
-                        </Link></p>
-                    </div>
+
                 </div>
             </div>
         </div>
