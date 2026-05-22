@@ -28,6 +28,8 @@ import Register from "./pages/auth/Registration/Register";
 import Signin from "./pages/auth/Signin/Signin"; 
 import ResetPass from "./pages/auth/ResetPassword/ResetPass";
 import ResetPass_S2 from "./pages/auth/ResetPassword_S2/ResetPass_S2";
+import ProtectedRoute from "./routes/ProctectedRoute";
+import VolunteerProfile from "./pages/VolunteerProfile";
 
 
 // --- Accessibility Constants for maintainability ---
@@ -835,6 +837,7 @@ function App() {
         <Route path="/signin" element={<Signin />} />
         <Route path="/reset-password" element={<ResetPass />} />
         <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
+        <Route path="/volunteer-profile" element={ <ProtectedRoute><VolunteerProfile /></ProtectedRoute>  } />
       </Routes>
     </BrowserRouter>
   );

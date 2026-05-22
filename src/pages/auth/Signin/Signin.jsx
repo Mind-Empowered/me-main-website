@@ -1,7 +1,10 @@
 import SigninDesktop from "./SigninDesktop";
 import { useState } from "react";
 import { supabase } from "../../../services/supabase-client";
+import { useNavigate } from "react-router-dom";
 const Signin = () => {
+
+    const navigate = useNavigate();
 
     // form state
         const [form, setForm] = useState({
@@ -31,6 +34,7 @@ const Signin = () => {
                 return;
             }
             else console.log("Logged in successfully!");
+            navigate("/volunteer-profile");
         }
 
         // Handle form submission
