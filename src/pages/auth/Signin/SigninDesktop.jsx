@@ -13,36 +13,33 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
             ></div>
             {/* overlay */}
             <div className="absolute inset-0 bg-white/20"></div>
-            {/* left panel */}
-            {/* <div className="relative z-10 w-1/2 p-6 pt-20">
-                <img src="/brand/logo.jpeg" alt="Logo" className="w-28 rounded-full" />
-            </div> */}
             {/* right panel */}
             <div className="relative z-10 w-full flex items-center justify-center">
 
                 {/* signin card */}
-                <div className="bg-white/10 backdrop-blur-lg text-[#A64200] px-20 py-10  w-full max-w-xl flex flex-col gap-6">
-                <div>
-                    {/* back button */}
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-400"
-                    >
-                        <FaArrowLeft />
-                        Back
-                    </button>
-                    {/* logo */}
-                    <div className="flex justify-center">
-                        <img src="/brand/logo.jpeg" alt="Logo" className="w-28 rounded-full" />
+                <div
+                    className="bg-white/10 backdrop-blur-lg text-[#A64200] w-[90%] sm:w-[80%] md:w-full max-w-xl px-6 sm:px-10 md:px-16 lg:px-20 py-8 sm:py-10 flex flex-col gap-2 sm:gap-4  md:gap-6 rounded-2xl">
+                    <div>
+                        {/* back button */}
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="flex items-center gap-2 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-400"
+                        >
+                            <FaArrowLeft />
+                            Back
+                        </button>
+                        {/* logo */}
+                        <div className="flex justify-center">
+                            <img src="/brand/logo.jpeg" alt="Logo" className="w-20 sm:w-24 md:w-28 rounded-full" />
+                        </div>
                     </div>
-                </div>
-                    
+
                     {/* welcome text */}
-                    <h1 className="text-4xl font-bold text-center">Welcome Back!</h1>
-                    <p className="text-center">Sign in to your account to continue</p>
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">Welcome Back</h1>
+                    <p className="text-sm sm:text-base text-center">Sign in to your account to continue</p>
                     {/* email field */}
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="email" 
+                        <label htmlFor="email"
                         >
                             Email address
                         </label>
@@ -53,7 +50,7 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                             value={form.email}
                             onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
                             placeholder="Email"
-                            className="w-full rounded-xl bg-white px-4 py-2 placeholder-white/50 border border-[#A64200] outline-none focus:ring-2 focus:ring-orange-400" />
+                            className="w-full rounded-xl bg-white px-4 py-2 text-sm sm:text-base placeholder-[#BBA898] border border-[#A64200] outline-none focus:ring-2 focus:ring-orange-400" />
                     </div>
                     {/* password field */}
                     <div className="flex flex-col gap-2">
@@ -65,9 +62,10 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                             value={form.password}
                             onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
                             placeholder="Password"
-                            className="w-full rounded-xl bg-white px-4 py-2 placeholder-white/50 border border-[#A64200] outline-none focus:ring-2 focus:ring-orange-400" />
+                            className="w-full rounded-xl bg-white px-4 py-2 text-sm sm:text-base placeholder-[#BBA898] border border-[#A64200] outline-none focus:ring-2 focus:ring-orange-400" />
                     </div>
-                    <div className="flex items-center justify-between">
+                    {/*redirect to register page field and forgot password */}
+                    <div className="flex flex-col sm:flex-row items-center justify-between">
                         {/* redirect to register page field */}
                         <div >
                             <p><Link to="/register" className="inline-block rounded px-2 py-1  hover:underline focus:outline-none focus:ring-2 focus:ring-orange-400 ">
