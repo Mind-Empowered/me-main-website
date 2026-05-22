@@ -1,7 +1,7 @@
 import ResetPassMobile from "./ResetPassMobile";
 import ResetPassDesktop from "./ResetPassDesktop";
 import { useState } from "react";
-import { supabase } from "../../backend_sb/supabase-client";
+import { supabase } from "../../../services/supabase-client";
 
 const ResetPass = () => {
 

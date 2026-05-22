@@ -2,7 +2,7 @@ import ResetPassMobile from "./ResetPassMobile_S2";
 import ResetPassDesktop from "./ResetPassDesktop_S2";
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { supabase } from "../../backend_sb/supabase-client";
+import { supabase } from "../../../services/supabase-client";
 
 const ResetPass_S2 = () => {
 

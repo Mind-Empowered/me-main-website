@@ -24,10 +24,10 @@ import {
 import { translations } from "./translations";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Register from "./auth/Registration/Register";
-import Signin from "./auth/Signin/Signin"; 
-import ResetPass from "./auth/ResetPassword/ResetPass";
-import ResetPass_S2 from "./auth/ResetPassword_S2/ResetPass_S2";
+import Register from "./pages/auth/Registration/Register";
+import Signin from "./pages/auth/Signin/Signin"; 
+import ResetPass from "./pages/auth/ResetPassword/ResetPass";
+import ResetPass_S2 from "./pages/auth/ResetPassword_S2/ResetPass_S2";
 
 
 // --- Accessibility Constants for maintainability ---
