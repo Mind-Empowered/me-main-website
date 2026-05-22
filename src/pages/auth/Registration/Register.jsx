@@ -1,5 +1,4 @@
 import  RegistrationDesktop  from './RegistrationDesktop';
-import  RegistrationMobile from './RegistrationMobile';
 import { useState } from 'react';
 import { supabase } from "../../../services/supabase-client";
 
