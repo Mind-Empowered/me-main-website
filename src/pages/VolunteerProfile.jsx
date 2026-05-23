@@ -53,7 +53,7 @@ const VolunteerProfile = () => {
 
     return (
         <div className="min-h-screen bg-[#F5EDE0] overflow-hidden">
-            <Header user={user} />
+            <Header user={user} bgcolour="bg-[#FAF7F2]" tcolour="text-[#A64200]"/>
             <main className="flex">
                 <div className="p-6 w-2/3 mx-auto space-y-6">
                     <ProfileCard user={user} onUserUpdate={setUser} />
