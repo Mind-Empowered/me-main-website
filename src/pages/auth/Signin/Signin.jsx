@@ -1,8 +1,10 @@
 import SigninDesktop from "./SigninDesktop";
-import SigninMobile from "./SigninMobile";
 import { useState } from "react";
 import { supabase } from "../../../services/supabase-client";
+import { useNavigate } from "react-router-dom";
 const Signin = () => {
+
+    const navigate = useNavigate();
 
     // form state
         const [form, setForm] = useState({
@@ -32,6 +34,7 @@ const Signin = () => {
                 return;
             }
             else console.log("Logged in successfully!");
+            navigate("/volunteer-profile");
         }
 
         // Handle form submission
@@ -49,12 +52,10 @@ const Signin = () => {
 
     return (
         <>
-            <div className="hidden md:block">
+            <div>
                 <SigninDesktop form={form} setForm={setForm} error={error} handleSubmit={handleSubmit}  />
             </div>
-            <div className="block md:hidden">
-                <SigninMobile form={form} setForm={setForm} error={error} handleSubmit={handleSubmit}/>
-            </div>
+            
         </>
     );
 };
