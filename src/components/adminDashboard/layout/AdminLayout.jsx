@@ -1,15 +1,15 @@
 import Sidebar from "../Sidebar";
 import Header from "../../profile/Header";
+import { Outlet } from "react-router-dom";
 
-const AdminLayout = ({ children }) => {
+const AdminLayout = () => {
     return (
         <div className="flex">
             <Sidebar />
-            <div className="flex-1">
+            <main className="flex-1">
                 <Header bgcolour="bg-gradient-to-r from-[#C1622A] to-[#E49E5F]" tcolour="text-white"/>
-                {children}
-            </div>
-            {/* <Outlet /> */}
+                <Outlet />
+            </main>
         </div>
     );
 };
