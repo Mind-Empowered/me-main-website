@@ -844,13 +844,16 @@ function App() {
         <Route path="/reset-password" element={<ResetPass />} />
         <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
         <Route path="/volunteer-profile" element={ <ProtectedRoute><VolunteerProfile /></ProtectedRoute>  } />
-        <Route element={<AdminLayout />}>
-          <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/admin/volunteers" element={<Volunteers />} />
-          <Route path="/admin/events" element={<AdminEvents />} />
-          <Route path="/admin/newsletter" element={<NewsLetter />} />
-          <Route path="/admin/photogallery" element={<PhotoGallery />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="volunteers" element={<Volunteers />} />
+          <Route path="events" element={<AdminEvents />} />
+          <Route path="newsletter" element={<NewsLetter />} />
+          <Route path="photogallery" element={<PhotoGallery />} />
         </Route>
+
+        {/* temporary route for testing admin layout and components, remove after testing */}
+        {/* <Route path="/hi" element={<AdminLayout />} /> */}
       </Routes>
     </BrowserRouter>
   );

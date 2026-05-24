@@ -9,7 +9,7 @@ const Sidebar = () => {
                 {
                     label: "Dashboard",
                     icon: <FaThLarge />,
-                    path: "../../pages/admin/Dashboard.jsx",
+                    path: "/admin/dashboard",
                 },
             ],
         },
@@ -19,17 +19,17 @@ const Sidebar = () => {
                 {
                     label: "Photo Gallery",
                     icon: <FaImages />,
-                    path: "../../pages/admin/PhotoGallery.jsx",
+                    path: "/admin/photogallery",
                 },
                 {
                     label: "Events",
                     icon: <FaCalendarAlt />,
-                    path: "../../pages/admin/AdminEvents.jsx",
+                    path: "/admin/events",
                 },
                 {
                     label: "News Letter",
                     icon: <FaEnvelope />,
-                    path: "../../pages/admin/NewsLetter.jsx",
+                    path: "/admin/newsletter",
                 },
             ],
         },
@@ -39,7 +39,7 @@ const Sidebar = () => {
                 {
                     label: "Volunteers",
                     icon: <FaUsers />,
-                    path: "../../pages/admin/Volunteers.jsx",
+                    path: "/admin/volunteers",
                 },
             ],
         },
