@@ -30,6 +30,12 @@ import ResetPass from "./pages/auth/ResetPassword/ResetPass";
 import ResetPass_S2 from "./pages/auth/ResetPassword_S2/ResetPass_S2";
 import ProtectedRoute from "./routes/ProctectedRoute";
 import VolunteerProfile from "./pages/VolunteerProfile";
+import AdminLayout from "./components/adminDashboard/layout/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import Volunteers from "./pages/admin/Volunteers";
+import AdminEvents from "./pages/admin/AdminEvents";
+import NewsLetter from "./pages/admin/NewsLetter";
+import PhotoGallery from "./pages/admin/PhtotoGallery";
 
 
 // --- Accessibility Constants for maintainability ---
@@ -838,6 +844,16 @@ function App() {
         <Route path="/reset-password" element={<ResetPass />} />
         <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
         <Route path="/volunteer-profile" element={ <ProtectedRoute><VolunteerProfile /></ProtectedRoute>  } />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="volunteers" element={<Volunteers />} />
+          <Route path="events" element={<AdminEvents />} />
+          <Route path="newsletter" element={<NewsLetter />} />
+          <Route path="photogallery" element={<PhotoGallery />} />
+        </Route>
+
+        {/* temporary route for testing admin layout and components, remove after testing */}
+        {/* <Route path="/hi" element={<AdminLayout />} /> */}
       </Routes>
     </BrowserRouter>
   );
