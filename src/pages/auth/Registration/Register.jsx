@@ -1,5 +1,5 @@
 import  RegistrationDesktop  from './RegistrationDesktop';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from "../../../services/supabase-client";
 
 const Register = () => {
@@ -18,6 +18,34 @@ const Register = () => {
 	});
 
 	const [error, setError] = useState(null);
+	const [snackbarMessage, setSnackbarMessage] = useState(null);
+	const [snackbarVariant, setSnackbarVariant] = useState("error");
+	const snackbarTimeoutRef = useRef(null);
+
+	const showSnackbar = (message) => {
+		showSnackbarWithVariant(message, "error");
+	};
+
+	const showSnackbarWithVariant = (message, variant = "error") => {
+		setSnackbarMessage(message);
+		setSnackbarVariant(variant);
+
+		if (snackbarTimeoutRef.current) {
+			clearTimeout(snackbarTimeoutRef.current);
+		}
+
+		snackbarTimeoutRef.current = window.setTimeout(() => {
+			setSnackbarMessage(null);
+		}, 4000);
+	};
+
+	useEffect(() => {
+		return () => {
+			if (snackbarTimeoutRef.current) {
+				clearTimeout(snackbarTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	const registerForm = async (photoFile) => {
 		try {
@@ -33,11 +61,11 @@ const Register = () => {
 					.upload(`users/${fileName}`, photoFile);
 
 				if (error) {
-					console.error("Error uploading photo: ", error);
-					setError("Failed to upload photo. Please try again.");
+					const message = "Failed to upload photo. Please try again.";
+					setError(message);
+					showSnackbar(message);
 					return error;
 				}
-				else console.log("Photo uploaded to Supabase Storage:", data);
 
 				// Get public URL of uploaded photo
 				const { data: { publicUrl } } = supabase.storage
@@ -71,46 +99,38 @@ const Register = () => {
 			});
 
 			if (error) {
-
-				console.error("Error registering user: ", error);
-
 				// Duplicate email check
 				if (
 					error.message.includes("User already registered") ||
 					error.message.includes("already exists")
 				) {
-					setError("User already exists with this email address.");
-
-					const goToLogin = window.confirm(
-						"User already exists with this email address."
-					);
-
-					if (goToLogin) {
-						window.location.href = "/signin";
-					}
+					const message = "User already exists with this email address.";
+					setError(message);
+						showSnackbarWithVariant(message, "error");
+						window.setTimeout(() => {
+							window.location.href = "/signin";
+						}, 1800);
 
 					return error;
 				}
 
-				setError(`Registration failed: ${error.message}`);
+				const message = `Registration failed: ${error.message}`;
+				setError(message);
+				showSnackbar(message);
 				return error;
 			}
 
-			console.log("User registered successfully:", data);
 			setError(null);
-
-			const goToSignIn = window.confirm(
-				"Registration successful!!"
-			);
-
-			if (goToSignIn) {
+			showSnackbarWithVariant("Registration successful! Redirecting to sign in...", "success");
+			window.setTimeout(() => {
 				window.location.href = "/signin";
-			}
+			}, 1800);
 
 			return null;
 		} catch (err) {
-			console.error("Unexpected error during registration:", err);
-			setError("An unexpected error occurred. Please try again.");
+			const message = "An unexpected error occurred. Please try again.";
+			setError(message);
+			showSnackbar(message);
 			return err;
 		}
 	}
@@ -134,6 +154,7 @@ const Register = () => {
 		const validationError = validate();
 		if (validationError) {
 			setError(validationError);
+			showSnackbar(validationError);
 			return;
 		}
 		setError(null);
@@ -144,12 +165,22 @@ const Register = () => {
 		
 		const result = await registerForm(photoFileData);
 		if (result) {
-			console.error("Registration failed:", result);
+			const message = result?.message || "Registration failed. Please try again.";
+			showSnackbar(message);
 		}
 	};
 
 	return (
 		<>
+			{snackbarMessage && (
+				<div
+					role="alert"
+					aria-live="assertive"
+					className={`fixed bottom-6 left-1/2 z-50 w-[min(92vw,420px)] -translate-x-1/2 rounded-2xl px-4 py-3 text-center text-sm font-semibold text-white shadow-2xl ${snackbarVariant === "success" ? "bg-emerald-600" : "bg-red-600"}`}
+				>
+					{snackbarMessage}
+				</div>
+			)}
 			<div className="block">
 				<RegistrationDesktop form={form} setForm={setForm} error={error} handleSubmit={handleSubmit} onRegisterStep2={handleRegisterStep2} />
 			</div>
