@@ -36,6 +36,7 @@ import Volunteers from "./pages/admin/Volunteers";
 import AdminEvents from "./pages/admin/AdminEvents";
 import NewsLetter from "./pages/admin/NewsLetter";
 import PhotoGallery from "./pages/admin/PhtotoGallery";
+import NewEvent from "./pages/admin/Newevent";
 
 
 // --- Accessibility Constants for maintainability ---
@@ -850,10 +851,8 @@ function App() {
           <Route path="events" element={<AdminEvents />} />
           <Route path="newsletter" element={<NewsLetter />} />
           <Route path="photogallery" element={<PhotoGallery />} />
+          <Route path="newevent" element={<NewEvent />} />
         </Route>
-
-        {/* temporary route for testing admin layout and components, remove after testing */}
-        {/* <Route path="/hi" element={<AdminLayout />} /> */}
       </Routes>
     </BrowserRouter>
   );

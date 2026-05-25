@@ -22,7 +22,7 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                     <div>
                         {/* back button */}
                         <button
-                            onClick={() => navigate(-1)}
+                            onClick={() => navigate('/')}
                             className="flex items-center gap-2 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-400"
                         >
                             <FaArrowLeft />
