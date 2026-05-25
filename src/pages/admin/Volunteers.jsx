@@ -189,6 +189,7 @@ const Volunteers = () => {
           </div>
 
           {/* Rows */}
+          <div className="overflow-auto max-h-[80vh]">
           {volunteers.map((volunteer) => (
             <div
               key={volunteer.userID}
@@ -251,6 +252,7 @@ const Volunteers = () => {
               </div>
             </div>
           ))}
+          </div>
         </div>
       )}
 

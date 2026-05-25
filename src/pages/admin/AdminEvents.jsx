@@ -143,7 +143,7 @@ const Events = () => {
 
       {/* Events List */}
       {!loading && events.length > 0 && (
-        <div className="grid grid-cols-2 gap-5 mt-6">
+        <div className="grid grid-cols-2 gap-5 mt-6 overflow-auto max-h-[70vh]">
           {events.map((event) => {
             const status = getStatus(event.fromDateTime, event.toDateTime);
             const isRegistrationOpen =
