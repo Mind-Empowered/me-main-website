@@ -73,7 +73,7 @@ const ProfileCard = ({ user, onUserUpdate }) => {
                 lastName: formData.lastName,
                 phone: formData.phone,
                 bio: formData.bio,
-                photo: photoUrl,        // 👈 this is the fix
+                photo: photoUrl,        
                 socials: {
                     instagram: formData.instagram,
                     github: formData.github,

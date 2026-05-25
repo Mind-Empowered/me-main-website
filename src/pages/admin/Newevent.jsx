@@ -11,7 +11,9 @@ const AddEvent = () => {
     const [form, setForm] = useState({
         title: "",
         description: "",
-        fullDetails: "",
+        agenda: "",
+        eventURL: "",
+        bannerAltText: "",
         startDate: "",
         startTime: "",
         endTime: "",
@@ -25,10 +27,18 @@ const AddEvent = () => {
     const [volunteers, setVolunteers] = useState([]);
     const [volunteerInput, setVolunteerInput] = useState("");
     const [bannerFile, setBannerFile] = useState(null);
+    const [bannerPreview, setBannerPreview] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleBannerChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setBannerFile(file);
+        setBannerPreview(URL.createObjectURL(file));
     };
 
     const handleVolunteerKeyDown = (e) => {
@@ -46,27 +56,61 @@ const AddEvent = () => {
     const handleSubmit = async (status) => {
         setLoading(true);
 
-        const fromDateTime = new Date(`${form.startDate}T${form.startTime}`).toISOString();
-        const toDateTime = new Date(`${form.startDate}T${form.endTime}`).toISOString();
+        try {
+            const fromDateTime = new Date(`${form.startDate}T${form.startTime}`).toISOString();
+            const toDateTime = new Date(`${form.startDate}T${form.endTime}`).toISOString();
 
-        const { error } = await supabase
-            .schema("me_dataspace")
-            .from("events")
-            .insert({
-                title: form.title,
-                description: form.description,
-                fromDateTime,
-                toDateTime,
-                enabled: status === "publish",
-            });
+            let bannerURL = null;
 
-        setLoading(false);
+            // Upload banner to 'events' bucket
+            if (bannerFile) {
+                const fileExt = bannerFile.name.split('.').pop();
+                const fileName = `banner_${Date.now()}.${fileExt}`;
 
-        if (!error) {
-            navigate("/admin/events");
-        } else {
-            console.error(error);
-            alert("Something went wrong. Check console.");
+                const { error: uploadError } = await supabase.storage
+                    .from('events')
+                    .upload(fileName, bannerFile, { upsert: false });
+
+                if (uploadError) throw uploadError;
+
+                const { data } = supabase.storage
+                    .from('events')
+                    .getPublicUrl(fileName);
+
+                bannerURL = data.publicUrl;
+            }
+
+            const { error } = await supabase
+                .schema("me_dataspace")
+                .from("events")
+                .insert({
+                    title: form.title,
+                    description: form.description,
+                    agenda: form.agenda || null,
+                    eventURL: form.eventURL || null,
+                    fromDateTime,
+                    toDateTime,
+                    venue: form.venue || null,
+                    max_participants: form.maxParticipants ? parseInt(form.maxParticipants) : null,
+                    reg_deadline: form.registrationDeadline || null,
+                    max_volunteers: form.volunteersNeeded ? parseInt(form.volunteersNeeded) : null,
+                    bannerURL: bannerURL,
+                    bannerAltText: form.bannerAltText || form.title,
+                    enabled: status === "publish",
+                });
+
+            setLoading(false);
+
+            if (!error) {
+                navigate("/admin/events");
+            } else {
+                console.error(error);
+                alert("Failed to create event: " + error.message);
+            }
+        } catch (err) {
+            setLoading(false);
+            console.error("Error:", err);
+            alert("Something went wrong: " + err.message);
         }
     };
 
@@ -92,65 +136,99 @@ const AddEvent = () => {
                 {/* Left — Event Details */}
                 <div className="col-span-2 flex flex-col gap-6">
 
-                    {/* Event Details Card */}
-                    {step === 1 && (<div className="bg-white rounded-xl p-6">
-                        <h2 className="font-semibold text-gray-700 mb-4">Event Details</h2>
+                    {/* Step 1 — Event Details Card */}
+                    {step === 1 && (
+                        <div className="bg-white rounded-xl p-6">
+                            <h2 className="font-semibold text-gray-700 mb-4">Event Details</h2>
 
-                        <label className="text-xs text-gray-500">Event Name *</label>
-                        <input
-                            name="title"
-                            value={form.title}
-                            onChange={handleChange}
-                            placeholder="e.g. Starlet"
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A]"
-                        />
+                            <label className="text-xs text-gray-500">Event Name *</label>
+                            <input
+                                name="title"
+                                value={form.title}
+                                onChange={handleChange}
+                                placeholder="e.g. Starlet"
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A]"
+                            />
 
-                        <label className="text-xs text-gray-500">Short Description *</label>
-                        <textarea
-                            name="description"
-                            value={form.description}
-                            onChange={handleChange}
-                            placeholder="Description shown on the event card..."
-                            rows={3}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A] resize-none"
-                        />
+                            <label className="text-xs text-gray-500">Short Description *</label>
+                            <textarea
+                                name="description"
+                                value={form.description}
+                                onChange={handleChange}
+                                placeholder="Description shown on the event card..."
+                                rows={3}
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A] resize-none"
+                            />
 
-                        <label className="text-xs text-gray-500">Full Details / Agenda</label>
-                        <textarea
-                            name="fullDetails"
-                            value={form.fullDetails}
-                            onChange={handleChange}
-                            placeholder="Full event details, schedule, rules, etc."
-                            rows={4}
-                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A] resize-none"
-                        />
+                            <label className="text-xs text-gray-500">Full Details / Agenda</label>
+                            <textarea
+                                name="agenda"
+                                value={form.agenda}
+                                onChange={handleChange}
+                                placeholder="Full event details, schedule, rules, etc."
+                                rows={4}
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A] resize-none"
+                            />
 
-                        <div>
+                            <label className="text-xs text-gray-500">Event URL</label>
+                            <input
+                                name="eventURL"
+                                value={form.eventURL}
+                                onChange={handleChange}
+                                placeholder="e.g. https://example.com/event"
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A]"
+                            />
+
+                            {/* Banner Upload */}
                             <label className="text-xs text-gray-500">Event Banner</label>
-                            <div className="flex justify-between mt-1">
-                                <label className="bg-gray-800 text-white text-xs px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
+                            <div className="mt-1 mb-2">
+                                <label className="inline-flex items-center gap-2 bg-gray-800 text-white text-xs px-4 py-2 rounded-lg cursor-pointer hover:bg-gray-700 transition">
                                     <FaUpload size={12} /> Upload Photo
                                     <input
                                         type="file"
                                         accept="image/*"
                                         className="hidden"
-                                        onChange={(e) => setBannerFile(e.target.files[0])}
+                                        onChange={handleBannerChange}
                                     />
                                 </label>
-                                <button className="bg-[#C1622A] text-white text-sm px-4 py-2 rounded-lg"
+                                {bannerFile && (
+                                    <p className="text-xs text-gray-400 mt-2">{bannerFile.name}</p>
+                                )}
+                            </div>
+
+                            {/* Banner Preview */}
+                            {bannerPreview && (
+                                <div className="mb-4">
+                                    <p className="text-xs text-gray-400 mb-1">Preview</p>
+                                    <img
+                                        src={bannerPreview}
+                                        alt="Banner preview"
+                                        className="w-full h-40 object-cover rounded-lg border border-gray-200"
+                                    />
+                                </div>
+                            )}
+
+                            <label className="text-xs text-gray-500">Banner Alt Text <span className="text-gray-300">optional</span></label>
+                            <input
+                                name="bannerAltText"
+                                value={form.bannerAltText}
+                                onChange={handleChange}
+                                placeholder="Short description of the banner image"
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A]"
+                            />
+
+                            <div className="flex justify-end">
+                                <button
+                                    className="bg-[#C1622A] text-white text-sm px-4 py-2 rounded-lg"
                                     onClick={() => setStep(2)}
                                 >
                                     next
                                 </button>
                             </div>
-                            {bannerFile && (
-                                <p className="text-xs text-gray-400 mt-2">{bannerFile.name}</p>
-                            )}
                         </div>
+                    )}
 
-                    </div>)}
-
-                    {/* Date, Time & Location Card */}
+                    {/* Step 2 — Date, Time & Location Card */}
                     {step === 2 && (
                         <div className="bg-white rounded-xl p-6">
                             <div className="flex items-center gap-2 mb-4">
@@ -222,7 +300,9 @@ const AddEvent = () => {
                                 onChange={handleChange}
                                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 outline-none focus:border-[#C1622A]"
                             />
-                            <button className="bg-[#C1622A] text-white text-sm px-4 py-2 rounded-lg mt-4"
+
+                            <button
+                                className="bg-[#C1622A] text-white text-sm px-4 py-2 rounded-lg mt-4"
                                 onClick={() => setStep(1)}
                             >
                                 previous
@@ -248,7 +328,6 @@ const AddEvent = () => {
                         />
                         <p className="text-[10px] text-gray-400 mb-3">Press Enter after each volunteer name</p>
 
-                        {/* Volunteer tags */}
                         <div className="flex flex-wrap gap-2 mb-4">
                             {volunteers.map((v, i) => (
                                 <span key={i} className="bg-[#F5F0E8] text-[#C1622A] text-xs px-2 py-1 rounded-full flex items-center gap-1">
