@@ -1,7 +1,18 @@
-import {  FaThLarge , FaImages, FaCalendarAlt, FaEnvelope, FaUsers } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { FaThLarge, FaImages, FaCalendarAlt, FaEnvelope, FaUsers, FaSignOutAlt } from "react-icons/fa";
+import { NavLink, useNavigate } from "react-router-dom";
+import { supabase } from "../../services/supabase-client";
 
 const Sidebar = () => {
+
+    const navigate = useNavigate();
+
+    //handles logout functionality
+    const handleLogout = async () => {
+        const { error } = await supabase.auth.signOut();
+        navigate("/signin");
+    };
+
+
     const menu = [
         {
             title: "Overview",
@@ -73,6 +84,12 @@ const Sidebar = () => {
                         </ul>
                     </div>
                 ))}
+            </div>
+            {/* logout */}
+            <div className="mt-auto">
+                <button className="flex items-center justify-center p-2 bg-[#C1622A]  rounded-lg w-full " onClick={handleLogout}>
+                    Logout
+                </button>
             </div>
         </aside>
     );
