@@ -69,7 +69,7 @@ const PhotoGallery = () => {
         <div className="p-6 bg-[#F5F0E8] min-h-screen">
 
             {/* Stat Cards */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="bg-white rounded-xl p-5 flex items-center gap-4">
                     <FaImage className="text-[#C1622A] text-2xl opacity-60" />
                     <div>
@@ -77,13 +77,13 @@ const PhotoGallery = () => {
                         <p className="text-xs text-gray-400">Total Photos</p>
                     </div>
                 </div>
-                <div className="bg-white rounded-xl p-5 flex items-center gap-4">
+                {/* <div className="bg-white rounded-xl p-5 flex items-center gap-4">
                     <FaCalendarAlt className="text-[#C1622A] text-2xl opacity-60" />
                     <div>
                         <p className="text-3xl font-bold text-gray-800">{albumCount}</p>
                         <p className="text-xs text-gray-400">Albums / Events</p>
                     </div>
-                </div>
+                </div> */}
                 <div className="bg-white rounded-xl p-5 flex items-center gap-4">
                     <FaCloudUploadAlt className="text-[#C1622A] text-2xl opacity-60" />
                     <div>

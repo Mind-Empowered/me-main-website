@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase-client";
 import UploadPhotoModal from "../../components/adminDashboard/UploadPhotoModal";
 import Header from "../../components/profile/Header";
+import AddVolunteerModal from "../../components/adminDashboard/AddVolunteerModal";
 
 
 const Dashboard = () => {
@@ -11,13 +12,14 @@ const Dashboard = () => {
     const quickActions = [
         { label: "Add Event", icon: FaCalendarPlus, path: "/admin/newevent" },
         { label: "Upload Photo", icon: FaImage, action: () => setShowUpload(true) },
-        { label: "Add Volunteer", icon: FaUserPlus, path: "/admin/newvolunteer" },
+        { label: "Add Volunteer", icon: FaUserPlus, action: () => setShowAddVolunteer(true) },
         { label: "Send Newsletter", icon: FaPaperPlane, path: "/admin/newsletter" },
     ];
 
     const navigate = useNavigate();
 
     const [showUpload, setShowUpload] = useState(false);
+    const [showAddVolunteer, setShowAddVolunteer] = useState(false);
 
     const [volunteerCount, setVolunteerCount] = useState(0);
     const [eventCount, setEventCount] = useState(0);
@@ -25,61 +27,60 @@ const Dashboard = () => {
     const [upcomingEventsCount, setUpcomingEventsCount] = useState(0);
     const [upcomingEvents, setUpcomingEvents] = useState([]);
 
+    const fetchStats = async () => {
+        //today's date in ISO format
+        const today = new Date().toISOString();
+        // date one week ago
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        // start of the year
+        const startOfYear = new Date(new Date().getFullYear(), 0, 1).toISOString();
+
+        //to count volunteers
+        const { count: volunteers } = await supabase
+            .schema('me_dataspace')
+            .from("users")
+            .select("*", { count: "exact", head: true })
+            .eq("role", "VOLUNTEER");
+
+        //to count events
+        const { count: eventscount } = await supabase
+            .schema('me_dataspace')
+            .from("events")
+            .select("*", { count: "exact", head: true })
+            .gte("fromDateTime", startOfYear);
+
+        // to count new volunteers this week
+        const { count: weeklyNew } = await supabase
+            .schema('me_dataspace')
+            .from("users")
+            .select("*", { count: "exact", head: true })
+            .gte("created_at", oneWeekAgo.toISOString());
+
+        // to count upcoming events
+        const { count: upcoming } = await supabase
+            .schema('me_dataspace')
+            .from("events")
+            .select("*", { count: "exact", head: true })
+            .gte("fromDateTime", today);
+
+        // to get details of upcoming events    
+        const { data: events } = await supabase
+            .schema('me_dataspace')
+            .from("events")
+            .select("eventID, title, fromDateTime, toDateTime")
+            .gte("fromDateTime", today)
+            .order("fromDateTime", { ascending: true })
+            .limit(3);
+
+        setVolunteerCount(volunteers || 0);
+        setEventCount(eventscount || 0);
+        setNewThisWeek(weeklyNew || 0);
+        setUpcomingEventsCount(upcoming || 0);
+        setUpcomingEvents(events || []);
+    };
+
     useEffect(() => {
-
-        const fetchStats = async () => {
-            //today's date in ISO format
-            const today = new Date().toISOString();
-            // date one week ago
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-            // start of the year
-            const startOfYear = new Date(new Date().getFullYear(), 0, 1).toISOString();
-
-            //to count volunteers
-            const { count: volunteers } = await supabase
-                .schema('me_dataspace')
-                .from("users")
-                .select("*", { count: "exact", head: true })
-                .eq("role", "VOLUNTEER");
-
-            //to count events
-            const { count: eventscount } = await supabase
-                .schema('me_dataspace')
-                .from("events")
-                .select("*", { count: "exact", head: true })
-                .gte("fromDateTime", startOfYear);
-
-            // to count new volunteers this week
-            const { count: weeklyNew } = await supabase
-                .schema('me_dataspace')
-                .from("users")
-                .select("*", { count: "exact", head: true })
-                .gte("created_at", oneWeekAgo.toISOString());
-
-            // to count upcoming events
-            const { count: upcoming } = await supabase
-                .schema('me_dataspace')
-                .from("events")
-                .select("*", { count: "exact", head: true })
-                .gte("fromDateTime", today);
-
-            // to get details of upcoming events    
-            const { data: events } = await supabase
-                .schema('me_dataspace')
-                .from("events")
-                .select("eventID, title, fromDateTime, toDateTime")
-                .gte("fromDateTime", today)
-                .order("fromDateTime", { ascending: true })
-                .limit(3);
-
-            setVolunteerCount(volunteers || 0);
-            setEventCount(eventscount || 0);
-            setNewThisWeek(weeklyNew || 0);
-            setUpcomingEventsCount(upcoming || 0);
-            setUpcomingEvents(events || []);
-        };
-
         fetchStats();
 
     }, []);
@@ -108,9 +109,9 @@ const Dashboard = () => {
 
     return (
         <><Header bgcolour="bg-gradient-to-r from-[#C1622A] to-[#E49E5F]"
-            tcolour="text-white" />
+            tcolour="text-white" logout="hidden" />
 
-            <div className="p-6  ">
+            <div className="p-4">
 
                 {/* Quick Actions */}
                 <div className="grid grid-cols-4 gap-4 mb-6">
@@ -149,12 +150,12 @@ const Dashboard = () => {
                 </div>
 
                 {/* Upcoming Events */}
-                <div className="bg-white rounded-xl p-6">
+                <div className="bg-white rounded-xl p-6 ">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="font-semibold text-gray-700">Upcoming Events</h3>
 
                     </div>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 overflow-auto max-h-[70vh]">
                         {upcomingEvents.map((event) => (
                             <div key={event.eventID} className="flex items-center gap-4 p-3 border border-gray-100 rounded-lg">
                                 <div className="bg-[#C1622A] text-white text-center rounded-lg px-3 py-1 min-w-[48px]">
@@ -185,6 +186,16 @@ const Dashboard = () => {
                     <UploadPhotoModal
                         onClose={() => setShowUpload(false)}
                         onSuccess={() => console.log("uploaded!")}
+                    />
+                )}
+                {/* Add Volunteer Modal */}
+                {showAddVolunteer && (
+                    <AddVolunteerModal
+                        onClose={() => setShowAddVolunteer(false)}
+                        onSuccess={() => {
+                            setShowAddVolunteer(false);
+                            fetchStats(); // refresh volunteer count
+                        }}
                     />
                 )}
 
