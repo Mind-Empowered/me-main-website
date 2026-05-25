@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,28 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 	const [photoFile, setPhotoFile] = useState(null);
 	const [localError, setLocalError] = useState(null);
 	const [step2Error, setStep2Error] = useState(null);
+	const [snackbarMessage, setSnackbarMessage] = useState(null);
+	const snackbarTimeoutRef = useRef(null);
+
+	const showSnackbar = (message) => {
+		setSnackbarMessage(message);
+
+		if (snackbarTimeoutRef.current) {
+			clearTimeout(snackbarTimeoutRef.current);
+		}
+
+		snackbarTimeoutRef.current = window.setTimeout(() => {
+			setSnackbarMessage(null);
+		}, 4000);
+	};
+
+	useEffect(() => {
+		return () => {
+			if (snackbarTimeoutRef.current) {
+				clearTimeout(snackbarTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	const validate = () => {
 		// format email validation properly
@@ -73,6 +95,7 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 		const validationError = validate();
 		if (validationError) {
 			setLocalError(validationError);
+			showSnackbar(validationError);
 			return;
 		}
 		setLocalError(null);
@@ -99,6 +122,15 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 
 	return (
 		<>
+			{snackbarMessage && (
+				<div
+					role="alert"
+					aria-live="assertive"
+					className="fixed bottom-6 left-1/2 z-50 w-[min(92vw,420px)] -translate-x-1/2 rounded-2xl bg-red-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-2xl"
+				>
+					{snackbarMessage}
+				</div>
+			)}
 			{step === 1 && (
 				<div className="relative flex h-screen overflow-hidden">
 					{/* overlay */}
@@ -231,7 +263,7 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 				{/* next button */}
 				<button
 					onClick={handleNext}
-							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] tracking-wide text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300
+						className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300
 					shadow-lg hover:scale-105 outline-none ">Next</button>
 					</div>
 				</div>
@@ -368,23 +400,9 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 								const validationError = validateStep2();
 								if (validationError) {
 									setStep2Error(validationError);
+									showSnackbar(validationError);
 									return;
 								}
-								// Debug: Log current form data
-							console.log("=== REGISTRATION FORM DATA ===");
-							console.log("Step 1 Data:", {
-								firstName: form.firstName,
-								lastName: form.lastName,
-								email: form.email,
-								phone: form.phone
-							});
-							console.log("Step 2 Data:", {
-								github: form.github,
-								linkedin: form.linkedin,
-								bio: form.bio,
-								photoFile: photoFile ? photoFile.name : 'No file'
-							});
-							console.log("==============================");
 								setStep2Error(null);
 								onRegisterStep2(photoFile);
 							}}
