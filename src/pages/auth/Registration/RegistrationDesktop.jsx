@@ -132,11 +132,15 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 				</div>
 			)}
 			{step === 1 && (
-				<div className="relative flex h-screen overflow-hidden">
+				<div className="relative flex min-h-screen overflow-x-hidden overflow-y-auto lg:h-screen lg:overflow-hidden">
+					<div
+						className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+						style={{ backgroundImage: "url('/landing-bg.gif')" }}
+					></div>
 					{/* overlay */}
 					<div className="absolute inset-0 bg-black/80"></div>
 					{/* left panel */}
-					<div className="relative z-10 w-1/2 p-6 pt-20">
+					<div className="relative z-10 hidden w-1/2 p-6 pt-20 lg:block">
 						{/* background gif */}
 						<div
 							className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -145,11 +149,11 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 						<img src="/brand/logo.jpeg" alt="Logo" className="w-28 rounded-full" />
 					</div>
 					{/* right panel */}
-					<div className="relative z-10 flex w-1/2 flex-col items-start justify-center gap-6 p-20  bg-[#FAF6F1]  overflow-visible">
-						<div className="w-full flex items-center justify-evenly ">
+					<div className="relative z-10 mx-auto my-6 flex w-[94%] max-w-2xl flex-col items-start justify-center gap-4 rounded-2xl bg-[#FAF6F1] p-6 sm:w-[88%] sm:gap-5 sm:p-8 md:my-8 md:p-10 lg:my-0 lg:h-full lg:w-1/2 lg:max-w-none lg:gap-6 lg:rounded-none lg:p-20">
+						<div className="w-full flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-evenly ">
 
 							{/* heading */}
-							<h1 className="font-playfairdisplay font-normal text-[48px] leading-[120%] w-[565px] h-[98px] bg-[#1A0D00] bg-clip-text text-transparent">
+							<h1 className="font-playfairdisplay bg-[#1A0D00] bg-clip-text text-3xl font-normal leading-[120%] text-transparent sm:text-4xl lg:h-[98px] lg:w-[565px] lg:text-[48px]">
 								Register as a Volunteer
 							</h1>
 							{/* back button */}
@@ -158,7 +162,7 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 								className="
 							inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#7A3A00] hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase
 							transition-all duration-300 shadow-md hover:scale-105 outline-none focus:ring-2
-							focus:ring-orange-400 right-10 top-14 absolute"
+							focus:ring-orange-400 self-start lg:absolute lg:right-10 lg:top-14"
 							>
 								<FaArrowLeft />
 								Back
@@ -166,9 +170,9 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 						</div>
 
 						{/* name container */}
-						<div className="flex gap-4 w-full">
+						<div className="flex w-full flex-col gap-4 sm:flex-row">
 							{/* first name */}
-							<div className="flex flex-col gap-2 w-full">
+							<div className="flex w-full flex-col gap-2">
 								<label htmlFor="firstName" className="text-[#7A6A5A]">
 									First Name
 								</label>
@@ -182,7 +186,7 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 									className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] outline-none focus:ring-2 focus:ring-orange-400" />
 							</div>
 							{/* last name */}
-							<div className="flex flex-col gap-2 w-full">
+							<div className="flex w-full flex-col gap-2">
 								<label htmlFor="lastName" className="text-[#7A6A5A]">
 									Last Name
 								</label>
@@ -198,7 +202,7 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 						</div>
 
 						{/* email address container */}
-						<div className="w-full flex flex-col gap-2">
+						<div className="flex w-full flex-col gap-2">
 							<label htmlFor="email" className="text-[#7A6A5A]">
 								Email address
 							</label>
@@ -213,7 +217,7 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 						</div>
 
 						{/* phone number container */}
-						<div className="w-full flex flex-col gap-2">
+						<div className="flex w-full flex-col gap-2">
 							<label htmlFor="phone" className="text-[#7A6A5A]">
 								Phone Number
 							</label>
@@ -228,7 +232,7 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 						</div>
 
 						{/* password container */}
-						<div className="w-full flex flex-col gap-2">
+						<div className="flex w-full flex-col gap-2">
 							<label htmlFor="password" className="text-[#7A6A5A]">
 								Password
 							</label>
@@ -243,7 +247,7 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 						</div>
 
 						{/* confirm password container */}
-						<div className="w-full flex flex-col gap-2">
+						<div className="flex w-full flex-col gap-2">
 							<label htmlFor="confirmPassword" className="text-[#7A6A5A]">
 								Confirm Password
 							</label>
@@ -271,11 +275,15 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 
 			{/* second form */}
 			{step === 2 && (
-				<div className="relative flex h-screen overflow-hidden">
+				<div className="relative flex min-h-screen overflow-x-hidden overflow-y-auto lg:h-screen lg:overflow-hidden">
+					<div
+						className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+						style={{ backgroundImage: "url('/landing-bg.gif')" }}
+					></div>
 					{/* overlay */}
 					<div className="absolute inset-0 bg-black/80"></div>
 					{/* left panel */}
-					<div className="relative z-10 w-1/2 p-6 pt-20">
+					<div className="relative z-10 hidden w-1/2 p-6 pt-20 lg:block">
 						{/* background gif */}
 						<div
 							className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -284,16 +292,16 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 						<img src="/brand/logo.jpeg" alt="Logo" className="w-28 rounded-full" />
 					</div>
 					{/* right panel */}
-					<div className="relative z-10 flex w-1/2 flex-col items-start justify-center gap-6 p-20 bg-[#FAF6F1] overflow-visible">
+					<div className="relative z-10 mx-auto my-6 flex w-[94%] max-w-2xl flex-col items-start justify-center gap-4 rounded-2xl bg-[#FAF6F1] p-6 sm:w-[88%] sm:gap-5 sm:p-8 md:my-8 md:p-10 lg:my-0 lg:h-full lg:w-1/2 lg:max-w-none lg:gap-6 lg:rounded-none lg:p-20">
 						<div className="w-full flex items-center justify-between">
 							{/* heading */}
-							<h1 className="font-playfairdisplay font-normal text-[48px] leading-[120%] w-[565px] h-[58px] bg-[#1A0D00] bg-clip-text text-transparent">
+							<h1 className="font-playfairdisplay bg-[#1A0D00] bg-clip-text text-3xl font-normal leading-[120%] text-transparent sm:text-4xl lg:h-[58px] lg:w-[565px] lg:text-[48px]">
 								Complete Your Profile
 							</h1>
 							{/* back button */}
 							<button
 								onClick={() => setStep(1)}
-								className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#7A3A00] hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-md hover:scale-105 outline-none focus:ring-2 focus:ring-orange-400 right-10 top-14 absolute"
+								className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#7A3A00] hover:bg-[#8B3D00] text-white text-xs font-semibold tracking-wide uppercase transition-all duration-300 shadow-md hover:scale-105 outline-none focus:ring-2 focus:ring-orange-400 sm:px-6 sm:py-3 sm:text-sm lg:absolute lg:right-10 lg:top-14"
 							>
 								<FaArrowLeft />
 								Back
