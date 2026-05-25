@@ -95,7 +95,7 @@ const Volunteers = () => {
 
       {/* Table */}
       {!loading && volunteers.length > 0 && (
-        <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
+        <div className="bg-white rounded-xl  border border-gray-200">
           {/* Header */}
           <div className="grid grid-cols-4 bg-[#EFE7DD] text-[#6B4B2A] text-sm font-semibold p-4">
             <p>Member</p>
@@ -105,65 +105,67 @@ const Volunteers = () => {
           </div>
 
           {/* Rows */}
-          {volunteers.map((volunteer) => (
-            <div
-              key={volunteer.userID}
-              className="grid grid-cols-4 items-center p-4 border-t border-gray-100"
-            >
-              {/* Member */}
-              <div className="flex items-center gap-3">
-                <img
-                  src={
-                    volunteer.photo ||
-                    "https://via.placeholder.com/40"
-                  }
-                  alt="profile"
-                  className="w-10 h-10 rounded-full object-cover"
-                />
+          <div className="overflow-auto max-h-[80vh]">
+            {volunteers.map((volunteer) => (
+              <div
+                key={volunteer.userID}
+                className="grid grid-cols-4 items-center p-4 border-t border-gray-100 "
+              >
+                {/* Member */}
+                <div className="flex items-center gap-3">
+                  <img
+                    src={
+                      volunteer.photo ||
+                      "https://via.placeholder.com/40"
+                    }
+                    alt="profile"
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
 
-                <p className="font-medium text-gray-700">
-                  {volunteer.firstName} {volunteer.lastName}
+                  <p className="font-medium text-gray-700">
+                    {volunteer.firstName} {volunteer.lastName}
+                  </p>
+                </div>
+
+                {/* Email */}
+                <p className="text-gray-600 text-sm">
+                  {volunteer.emailID}
                 </p>
-              </div>
 
-              {/* Email */}
-              <p className="text-gray-600 text-sm">
-                {volunteer.emailID}
-              </p>
-
-              {/* Events */}
-              <div className="flex flex-wrap gap-2">
-                {volunteer.events?.length > 0 ? (
-                  volunteer.events.map((event, index) => (
-                    <span
-                      key={index}
-                      className="bg-orange-100 text-[#B86B2B] px-2 py-1 rounded-full text-xs"
-                    >
-                      {event}
+                {/* Events */}
+                <div className="flex flex-wrap gap-2">
+                  {volunteer.events?.length > 0 ? (
+                    volunteer.events.map((event, index) => (
+                      <span
+                        key={index}
+                        className="bg-orange-100 text-[#B86B2B] px-2 py-1 rounded-full text-xs"
+                      >
+                        {event}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400 text-sm">
+                      None yet
                     </span>
-                  ))
-                ) : (
-                  <span className="text-gray-400 text-sm">
-                    None yet
-                  </span>
-                )}
-              </div>
+                  )}
+                </div>
 
-              {/* Actions */}
-              <div className="flex justify-center gap-3">
-                <button className="border p-2 rounded-lg hover:bg-gray-100 transition">
-                  <FaEdit size={14} />
-                </button>
+                {/* Actions */}
+                <div className="flex justify-center gap-3">
+                  <button className="border p-2 rounded-lg hover:bg-gray-100 transition">
+                    <FaEdit size={14} />
+                  </button>
 
-                <button
-                  onClick={() => handleDelete(volunteer.userID)}
-                  className="border p-2 rounded-lg hover:bg-red-100 transition"
-                >
-                  <FaTrash size={14} />
-                </button>
+                  <button
+                    onClick={() => handleDelete(volunteer.userID)}
+                    className="border p-2 rounded-lg hover:bg-red-100 transition"
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
