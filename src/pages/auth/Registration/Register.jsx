@@ -62,10 +62,6 @@ const Register = () => {
 				role: "VOLUNTEER"
 			};
 
-			console.log("=== SENDING TO SUPABASE ===");
-			console.log("Email:", form.email.trim());
-			console.log("User Data:", userData);
-
 			const { data, error } = await supabase.auth.signUp({
 				email: form.email.trim(),
 				password: form.password,
