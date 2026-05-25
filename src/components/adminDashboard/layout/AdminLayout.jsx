@@ -4,10 +4,9 @@ import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
     return (
-        <div className="flex">
+        <div className="flex overflow-y-auto bg-[#F5F0E8]">
             <Sidebar />
             <main className="flex-1">
-                <Header bgcolour="bg-gradient-to-r from-[#C1622A] to-[#E49E5F]" tcolour="text-white"/>
                 <Outlet />
             </main>
         </div>
