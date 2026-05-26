@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase-client";
 import { FaUpload, FaPaperPlane, FaTrash, FaClock, FaEnvelope, FaImage } from "react-icons/fa";
 
-const Newsletter = () => {
+const Calendar = () => {
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
-    const [newsletters, setNewsletters] = useState([]);
+    const [calendars, setCalendars] = useState([]);
     const [preview, setPreview] = useState(null);
 
     const [form, setForm] = useState({
@@ -13,20 +13,20 @@ const Newsletter = () => {
         year: "",
     });
 
-    const fetchNewsletters = async () => {
+    const fetchCalendarData = async () => {
         const { data, error } = await supabase
             .schema("me_dataspace")
-            .from("newsletters")
+            .from("event_calendars")
             .select("*")
             .order("published_at", { ascending: false });
 
         if (!error) {
-            setNewsletters(data || []);
+            setCalendars(data || []);
         }
     };
 
     useEffect(() => {
-        fetchNewsletters();
+        fetchCalendarData();
     }, []);
 
     const handleFileChange = (e) => {
@@ -39,7 +39,7 @@ const Newsletter = () => {
     };
 
     const handleUpload = async () => {
-        if (!file) return alert("Choose a newsletter image first");
+        if (!file) return alert("Choose a calendar first");
 
         try {
             setUploading(true);
@@ -47,7 +47,7 @@ const Newsletter = () => {
             const fileName = `${Date.now()}-${file.name}`;
 
             const { error: uploadError } = await supabase.storage
-                .from("newsletters")
+                .from("calendars")
                 .upload(fileName, file);
 
             if (uploadError) throw uploadError;
@@ -55,18 +55,18 @@ const Newsletter = () => {
             const {
                 data: { publicUrl },
             } = supabase.storage
-                .from("newsletters")
+                .from("calendars")
                 .getPublicUrl(fileName);
 
             const { error: dbError } = await supabase
                 .schema("me_dataspace")
-                .from("newsletters")
+                .from("event_calendars")
                 .insert([
                     {
-                        newsletter_url: publicUrl,
+                        cal_url: publicUrl,
                         published_at: new Date().toISOString(),
-                        publish_month: parseInt(form.month),
-                        publish_yr: parseInt(form.year),
+                        cal_month: parseInt(form.month),
+                        cal_year: parseInt(form.year),
                     },
                 ]);
 
@@ -79,9 +79,9 @@ const Newsletter = () => {
                 year: "",
             });
 
-            fetchNewsletters();
+            fetchCalendarData();
 
-            alert("Newsletter uploaded!");
+            alert("Calendar uploaded!");
         }
         catch (err) {
             console.error(err);
@@ -93,83 +93,37 @@ const Newsletter = () => {
 
     const handleDelete = async (id) => {
         const confirmDelete = confirm(
-            "Delete this newsletter permanently?"
+            "Delete this calendar permanently?"
         );
 
         if (!confirmDelete) return;
 
         const { error } = await supabase
             .schema("me_dataspace")
-            .from("newsletters")
+            .from("event_calendars")
             .delete()
             .eq("id", id);
 
         if (!error) {
-            fetchNewsletters();
+            fetchCalendarData();
         }
     };
 
+
     return (
         <div className="bg-[#F5F0E8] min-h-screen p-8">
-
-            {/* Top Section */}
-            <div className="grid grid-cols-2 gap-5 mb-8">
-
-                {/* Total Newsletters */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
-                    <div className="flex justify-between">
-                        <div>
-                            <p className="text-gray-500 text-sm">
-                                Total Newsletters
-                            </p>
-
-                            <h2 className="text-4xl font-bold text-[#C1622A] mt-2">
-                                {newsletters.length}
-                            </h2>
-                        </div>
-
-                        <FaEnvelope className="text-3xl text-[#C1622A]/40" />
-                    </div>
-                </div>
-
-                {/* Uploaded This Month */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
-                    <div className="flex justify-between">
-                        <div>
-                            <p className="text-gray-500 text-sm">
-                                Uploaded This Month
-                            </p>
-
-                            <h2 className="text-4xl font-bold text-[#C1622A] mt-2">
-                                {
-                                    newsletters.filter((n) => {
-                                        const date = new Date(n.published_at);
-
-                                        return (
-                                            date.getMonth() ===
-                                            new Date().getMonth()
-                                        );
-                                    }).length
-                                }
-                            </h2>
-                        </div>
-
-                        <FaImage className="text-3xl text-[#C1622A]/40" />
-                    </div>
-                </div>
-            </div>
 
             {/* Main Content */}
             <div className="grid grid-cols-2 gap-5">
                 <div>
                     {/* Upload Section */}
-                    <div className=" bg-white rounded-2xl p-6 shadow-sm ">
+                    <div className=" bg-white rounded-2xl p-6 shadow-sm">
 
                         <h2 className="text-xl font-semibold mb-5 text-[#5A2E0C]">
-                            Upload Newsletter
+                            Upload Calendar
                         </h2>
 
-                        <label className="border-2 border-dashed border-[#D8C7B5] rounded-2xl h-[225px] flex flex-col justify-center items-center cursor-pointer hover:border-[#C1622A] transition">
+                        <label className="border-2 border-dashed border-[#D8C7B5] rounded-2xl h-[280px] flex flex-col justify-center items-center cursor-pointer hover:border-[#C1622A] transition">
 
                             {preview ? (
                                 <img
@@ -182,7 +136,7 @@ const Newsletter = () => {
                                     <FaUpload className="text-5xl text-[#C1622A] mb-4" />
 
                                     <p className="text-lg font-medium text-gray-700">
-                                        Click to upload newsletter
+                                        Click to upload calendar
                                     </p>
 
                                     <p className="text-sm text-gray-400 mt-2">
@@ -197,11 +151,7 @@ const Newsletter = () => {
                                 onChange={handleFileChange}
                             />
                         </label>
-                          
-                        {file && (
-                            <div className="mt-5 flex flex-col justify-between items-center bg-[#FAF6F1] p-4 rounded-xl">
-                                <div>
-                                      {/* month and year inputs  */}
+
                         <div className="grid grid-cols-2 gap-4 mt-4">
 
                             <input
@@ -230,10 +180,10 @@ const Newsletter = () => {
 
                         </div>
 
-                                    </div>
-                                    <div className="flex items-center justify-between w-full mt-6">
+                        {file && (
+                            <div className="mt-5 flex justify-between items-center bg-[#FAF6F1] p-4 rounded-xl">
 
-                                     <div>
+                                <div>
                                     <p className="font-medium text-gray-700">
                                         {file.name}
                                     </p>
@@ -242,56 +192,55 @@ const Newsletter = () => {
                                         {(file.size / 1024 / 1024).toFixed(2)} MB
                                     </p>
                                 </div>
-                                
-                                {/* Publish Button */}
-                                <div className="  flex items-center justify-center">
-                                    <button
-                                        onClick={handleUpload}
-                                        disabled={uploading}
-                                        className="bg-[#C1622A] hover:bg-[#a24f21] text-white px-6 py-3 rounded-xl flex items-center gap-2 transition"
-                                    >
-                                        <FaPaperPlane />
-
-                                        {uploading
-                                            ? "Uploading..."
-                                            : "Publish Newsletter"}
-                                    </button>
-                                </div>
-                                    </div>
-                               
                             </div>
-
                         )}
+                        {/* Publish Button */}
+                        <div className=" rounded-2xl p-6 shadow-sm flex items-center justify-center">
+                            <button
+                                onClick={handleUpload}
+                                disabled={uploading}
+                                className="bg-[#C1622A] hover:bg-[#a24f21] text-white px-6 py-3 rounded-xl flex items-center gap-2 transition"
+                            >
+                                <FaPaperPlane />
 
+                                {uploading
+                                    ? "Uploading..."
+                                    : "Publish Calendar"}
+                            </button>
+                        </div>
                     </div>
+
                 </div>
+
+
+
                 {/* Recent Uploads */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm overflow-y-auto max-h-[70vh]">
+                <div className="bg-white rounded-2xl p-6 shadow-sm ">
 
                     <div className="flex justify-between items-center mb-6">
 
                         <h2 className="text-xl font-semibold text-[#5A2E0C]">
-                            Recent Newsletters
+                            Recent Calendars
                         </h2>
 
                         <span className="text-sm text-gray-400">
-                            {newsletters.length} total
+                            {calendars.length} total
                         </span>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-4 overflow-y-auto max-h-[60vh]">
 
-                        {newsletters.length === 0 ? (
+                        {calendars.length === 0 ? (
                             <div className="text-center py-12">
 
                                 <FaImage className="mx-auto text-5xl text-gray-300 mb-4" />
 
                                 <p className="text-gray-500">
-                                    No newsletters uploaded yet
+                                    No calendars uploaded yet
                                 </p>
                             </div>
                         ) : (
-                            newsletters.map((item) => (
+                            calendars.map((item) => (
                                 <div
                                     key={item.id}
                                     className="flex justify-between items-center border border-gray-100 rounded-xl p-4"
@@ -299,14 +248,14 @@ const Newsletter = () => {
                                     <div className="flex items-center gap-4">
 
                                         <img
-                                            src={item.newsletter_url}
-                                            alt="newsletter"
+                                            src={item.cal_url}
+                                            alt="calendar"
                                             className="w-20 h-20 object-cover rounded-lg"
                                         />
 
                                         <div>
                                             <p className="font-semibold text-gray-800">
-                                                {`Newsletter - ${item.publish_month}/${item.publish_yr}`}
+                                                {`Calendar - ${item.cal_month}/${item.cal_year}`}
                                             </p>
                                         </div>
                                     </div>
@@ -314,7 +263,7 @@ const Newsletter = () => {
                                     <div className="flex gap-3">
 
                                         <a
-                                            href={item.newsletter_url}
+                                            href={item.cal_url}
                                             target="_blank"
                                             rel="noreferrer"
                                             className="bg-[#C1622A] text-white px-4 py-2 rounded-lg"
@@ -334,7 +283,6 @@ const Newsletter = () => {
                                 </div>
                             ))
                         )}
-
                     </div>
                 </div>
             </div>
@@ -342,4 +290,4 @@ const Newsletter = () => {
     );
 };
 
-export default Newsletter;
+export default Calendar;
