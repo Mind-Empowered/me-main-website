@@ -2,6 +2,7 @@ import SigninDesktop from "./SigninDesktop";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../../../services/supabase-client";
 import { useNavigate } from "react-router-dom";
+import { ROLE_HOME_PATHS, resolveUserRole } from "../../../services/authRoles";
 const Signin = () => {
 
     const navigate = useNavigate();
@@ -46,7 +47,7 @@ const Signin = () => {
             }, []);
     
         const loginBackend = async () => {
-                const { error } = await supabase.auth.signInWithPassword({
+                const { data, error } = await supabase.auth.signInWithPassword({
                     email: form.email,
                     password: form.password
                 });
@@ -57,7 +58,20 @@ const Signin = () => {
                     showSnackbar(message);
                     return;
             }
-            navigate("/volunteer-profile");
+
+			const authenticatedUser = data?.user || data?.session?.user;
+			const role = await resolveUserRole(authenticatedUser);
+			const homePath = ROLE_HOME_PATHS[role];
+
+			if (!homePath) {
+				await supabase.auth.signOut();
+				const message = "Your account role is not configured correctly. Please contact support.";
+				setError(message);
+				showSnackbar(message);
+				return;
+			}
+
+			navigate(homePath, { replace: true });
         }
 
         // Handle form submission
