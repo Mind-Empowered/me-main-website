@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase-client";
-import { FaSpinner, FaTimes } from "react-icons/fa";
+import { FaSpinner, FaTimes, FaUsers, FaClock } from "react-icons/fa";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [volunteerCounts, setVolunteerCounts] = useState({});
+  const [filter, setFilter] = useState("All");
+
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [editFormData, setEditFormData] = useState({});
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState(null);
-  const [showAddVolunteersModal, setShowAddVolunteersModal] = useState(false);
+
+  const [showVolunteersModal, setShowVolunteersModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [availableVolunteers, setAvailableVolunteers] = useState([]);
-  const [selectedVolunteerIds, setSelectedVolunteerIds] = useState([]);
+  const [registeredVolunteers, setRegisteredVolunteers] = useState([]);
   const [volunteersLoading, setVolunteersLoading] = useState(false);
 
   useEffect(() => {
@@ -24,29 +26,18 @@ const Events = () => {
 
   const fetchVolunteerCounts = async (eventsList) => {
     try {
-      // FIXED: Changed 'data: participation' to 'data: participations' (plural)
-      // This matches the forEach loop below which expects an array
-      const { data: participations, error } = await supabase
+      const { data, error } = await supabase
         .schema("me_dataspace")
         .from("event_participation")
-        .select("event_id");
-
+        .select("event_id")
+        .eq("registered_as", "registered");
       if (error) throw error;
-
-      // Count volunteers for each event
       const counts = {};
       eventsList.forEach((event) => {
-        // FIXED: Changed event.id to event.eventID (correct column name)
-        counts[event.eventID] = 0;
+        counts[event.eventID] = (data || []).filter(
+          (r) => r.event_id === event.eventID,
+        ).length;
       });
-
-      participations?.forEach((participation) => {
-        if (participation.event_id) {
-          counts[participation.event_id] =
-            (counts[participation.event_id] || 0) + 1;
-        }
-      });
-
       setVolunteerCounts(counts);
     } catch (err) {
       console.error("Error fetching volunteer counts:", err);
@@ -62,285 +53,230 @@ const Events = () => {
         .from("events")
         .select("*")
         .order("fromDateTime", { ascending: true });
-
       if (error) throw error;
-
       setEvents(data || []);
-      if (data) {
-        fetchVolunteerCounts(data);
-      }
+      if (data) fetchVolunteerCounts(data);
     } catch (err) {
-      console.error("Error fetching events:", err);
       setError(err.message || "Failed to fetch events");
     } finally {
       setLoading(false);
     }
   };
 
-  // DELETE EVENT
-  const handleDelete = async (eventID) => {
-    // FIXED: Changed parameter name from 'id' to 'eventID' for clarity
-    const confirmDelete = window.confirm("Delete this event?");
-    if (!confirmDelete) return;
-
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this event?")) return;
     try {
-      // FIXED: Changed .eq("id", id) to .eq("eventID", eventID) - correct column name
       const { error } = await supabase
         .schema("me_dataspace")
         .from("events")
         .delete()
-        .eq("eventID", eventID);
-
+        .eq("eventID", id);
       if (error) throw error;
-
-      // FIXED: Changed e.id to e.eventID for filtering
-      setEvents(events.filter((e) => e.eventID !== eventID));
+      setEvents(events.filter((e) => e.eventID !== id));
     } catch (err) {
-      console.error("Error deleting event:", err);
-      alert("Failed to delete event: " + err.message);
+      alert("Failed to delete: " + err.message);
     }
   };
 
-  // EDIT EVENT
   const handleEdit = (event) => {
     setEditingEvent(event);
+    const pad = (n) => String(n).padStart(2, "0");
+    const toDateStr = (d) =>
+      d
+        ? `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+        : "";
+    const toTimeStr = (d) =>
+      d ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : "";
+    const fromDT = event.fromDateTime ? new Date(event.fromDateTime) : null;
+    const toDT = event.toDateTime ? new Date(event.toDateTime) : null;
     setEditFormData({
       title: event.title || "",
       description: event.description || "",
+      agenda: event.agenda || "",
       venue: event.venue || "",
-      max_participants: event.max_participants || "",
-      max_volunteers: event.max_volunteers || "",
-      bannerURL: event.bannerURL || null,
+      max_participants: event.max_participants ?? "",
+      max_volunteers: event.max_volunteers ?? "",
+      bannerURL: event.bannerURL || "",
       bannerFile: null,
       reg_deadline: event.reg_deadline ? event.reg_deadline.split("T")[0] : "",
-      fromDateTime: event.fromDateTime
-        ? event.fromDateTime.split("T")
-        : ["", ""],
-      toDateTime: event.toDateTime ? event.toDateTime.split("T") : ["", ""],
+      fromDate: toDateStr(fromDT),
+      fromTime: toTimeStr(fromDT),
+      toDate: toDateStr(toDT),
+      toTime: toTimeStr(toDT),
+      enabled: event.enabled ?? true,
     });
     setEditError(null);
     setShowEditModal(true);
   };
 
-  const handleEditInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditFormData((prev) => ({
-      ...prev,
-      [name]: value,
+  const handleEditInput = (e) => {
+    const { name, value, type, checked } = e.target;
+    setEditFormData((p) => ({
+      ...p,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  const handleBannerChange = (e) => {
+  const handleBannerFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setEditFormData((prev) => ({
-          ...prev,
-          bannerURL: event.target.result,
-          bannerFile: file,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) =>
+      setEditFormData((p) => ({
+        ...p,
+        bannerURL: ev.target.result,
+        bannerFile: file,
+      }));
+    reader.readAsDataURL(file);
   };
 
-  const uploadBannerToStorage = async (file, id) => {
-    try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `event_banner_${id}_${Date.now()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("events")
-        .upload(fileName, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage.from("events").getPublicUrl(fileName);
-
-      return data.publicUrl;
-    } catch (err) {
-      console.error("Error uploading banner:", err);
-      throw new Error("Failed to upload banner: " + err.message);
-    }
+  const uploadBanner = async (file, eventID) => {
+    const ext = file.name.split(".").pop();
+    const fileName = `event_banner_${eventID}_${Date.now()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("events")
+      .upload(fileName, file);
+    if (error) throw new Error("Upload failed: " + error.message);
+    return supabase.storage.from("events").getPublicUrl(fileName).data
+      .publicUrl;
   };
 
   const handleSaveEdit = async () => {
+    if (!editFormData.title.trim()) {
+      setEditError("Title is required.");
+      return;
+    }
     setEditLoading(true);
     setEditError(null);
-
     try {
-      // Use existing database URL, only upload if new file selected
       let bannerURL = editingEvent.bannerURL || null;
-
-      if (editFormData.bannerFile) {
-        // FIXED: Changed editingEvent.id to editingEvent.eventID
-        bannerURL = await uploadBannerToStorage(
+      if (editFormData.bannerFile)
+        bannerURL = await uploadBanner(
           editFormData.bannerFile,
           editingEvent.eventID,
         );
-      }
+      else if (
+        editFormData.bannerURL &&
+        !editFormData.bannerURL.startsWith("data:")
+      )
+        bannerURL = editFormData.bannerURL;
 
       const fromDateTime = new Date(
-        `${editFormData.fromDateTime[0]}T${editFormData.fromDateTime[1]}`,
+        `${editFormData.fromDate}T${editFormData.fromTime}`,
       ).toISOString();
       const toDateTime = new Date(
-        `${editFormData.toDateTime[0]}T${editFormData.toDateTime[1]}`,
+        `${editFormData.toDate}T${editFormData.toTime}`,
       ).toISOString();
 
-      // FIXED: Changed .eq("id", editingEvent.id) to .eq("eventID", editingEvent.eventID)
+      const updates = {
+        title: editFormData.title.trim(),
+        description: editFormData.description.trim(),
+        agenda: editFormData.agenda.trim() || null,
+        venue: editFormData.venue.trim() || null,
+        max_participants:
+          editFormData.max_participants !== ""
+            ? parseInt(editFormData.max_participants)
+            : null,
+        max_volunteers:
+          editFormData.max_volunteers !== ""
+            ? parseInt(editFormData.max_volunteers)
+            : null,
+        bannerURL,
+        reg_deadline: editFormData.reg_deadline || null,
+        fromDateTime,
+        toDateTime,
+        enabled: editFormData.enabled,
+      };
+
       const { error } = await supabase
         .schema("me_dataspace")
         .from("events")
-        .update({
-          title: editFormData.title.trim(),
-          description: editFormData.description.trim(),
-          venue: editFormData.venue.trim() || null,
-          max_participants: editFormData.max_participants
-            ? parseInt(editFormData.max_participants)
-            : null,
-          max_volunteers: editFormData.max_volunteers
-            ? parseInt(editFormData.max_volunteers)
-            : null,
-          bannerURL: bannerURL,
-          reg_deadline: editFormData.reg_deadline || null,
-          fromDateTime: fromDateTime,
-          toDateTime: toDateTime,
-        })
+        .update(updates)
         .eq("eventID", editingEvent.eventID);
-
       if (error) throw error;
-
-      // Update local state
-      // FIXED: Changed e.id to e.eventID and editingEvent.id to editingEvent.eventID
       setEvents(
         events.map((e) =>
-          e.eventID === editingEvent.eventID
-            ? {
-                ...e,
-                title: editFormData.title.trim(),
-                description: editFormData.description.trim(),
-                venue: editFormData.venue.trim() || null,
-                max_participants: editFormData.max_participants
-                  ? parseInt(editFormData.max_participants)
-                  : null,
-                max_volunteers: editFormData.max_volunteers
-                  ? parseInt(editFormData.max_volunteers)
-                  : null,
-                bannerURL: bannerURL,
-                reg_deadline: editFormData.reg_deadline || null,
-                fromDateTime: fromDateTime,
-                toDateTime: toDateTime,
-              }
-            : e,
+          e.eventID === editingEvent.eventID ? { ...e, ...updates } : e,
         ),
       );
-
       setShowEditModal(false);
-      alert("Event updated successfully!");
     } catch (err) {
-      console.error("Error updating event:", err);
-      setEditError(err.message || "Failed to update event");
+      setEditError(err.message || "Failed to update");
     } finally {
       setEditLoading(false);
     }
   };
 
-  const closeEditModal = () => {
-    setShowEditModal(false);
-    setEditingEvent(null);
-    setEditFormData({});
-    setEditError(null);
-  };
-
-  // VIEW VOLUNTEERS FOR EVENT
-  const handleViewVolunteersClick = async (event) => {
-    // FIXED: Changed !event?.id to !event?.eventID (correct property name)
-    if (!event?.eventID) {
-      alert("Event ID is missing");
-      return;
-    }
-
+  const handleViewVolunteers = async (event) => {
     setSelectedEvent(event);
-    setAvailableVolunteers([]);
+    setRegisteredVolunteers([]);
     setVolunteersLoading(true);
-
+    setShowVolunteersModal(true);
     try {
-      // FIXED: Changed parseInt(event.id) to parseInt(event.eventID)
-      const eventId = parseInt(event.eventID);
-      const { data: participations, error: participationError } = await supabase
+      const { data: participations, error: pErr } = await supabase
         .schema("me_dataspace")
         .from("event_participation")
-        .select("participant_id")
-        .eq("event_id", eventId);
-
-      if (participationError) throw participationError;
-
-      // No volunteers registered
-      if (!participations || participations.length === 0) {
-        setAvailableVolunteers([]);
-        setShowAddVolunteersModal(true);
+        .select("id, participant_id, created_at")
+        .eq("event_id", event.eventID)
+        .eq("registered_as", "registered");
+      if (pErr) throw pErr;
+      if (!participations?.length) {
+        setVolunteersLoading(false);
         return;
       }
-
-      // Get volunteer UUIDs
-      const volunteerIds = participations.map((p) => p.participant_id);
-
-      // Fetch volunteer details
-      const { data: volunteers, error: volunteersError } = await supabase
+      const ids = participations.map((p) => p.participant_id);
+      const { data: users, error: uErr } = await supabase
         .schema("me_dataspace")
         .from("users")
-        .select(
-          `
-          userID,
-          firstName,
-          lastName,
-          emailID,
-          photo
-        `,
-        )
-        .in("userID", volunteerIds);
-
-      if (volunteersError) throw volunteersError;
-
-      setAvailableVolunteers(volunteers || []);
-      setShowAddVolunteersModal(true);
+        .select("userID, firstName, lastName, emailID, photo")
+        .in("userID", ids);
+      if (uErr) throw uErr;
+      setRegisteredVolunteers(
+        participations.map((p) => {
+          const user = (users || []).find((u) => u.userID === p.participant_id);
+          return {
+            participationId: p.id,
+            registeredAt: p.created_at,
+            ...(user || { firstName: "Unknown", lastName: "", emailID: "—" }),
+          };
+        }),
+      );
     } catch (err) {
-      console.error("Error fetching volunteers:", err);
       alert("Failed to fetch volunteers: " + err.message);
     } finally {
       setVolunteersLoading(false);
     }
   };
-  const closeAddVolunteersModal = () => {
-    setShowAddVolunteersModal(false);
-    setSelectedEvent(null);
-    setAvailableVolunteers([]);
-    setSelectedVolunteerIds([]);
-  };
 
-  // EVENT STATUS
-  const getStatus = (fromDate, toDate) => {
+  const getStatus = (from, to) => {
     const now = new Date();
-    if (new Date(fromDate) > now) return "Upcoming";
-    if (new Date(fromDate) <= now && new Date(toDate) >= now) return "Ongoing";
+    if (new Date(from) > now) return "Upcoming";
+    if (new Date(from) <= now && new Date(to) >= now) return "Ongoing";
     return "Completed";
   };
 
-  const formatDateTime = (dt) =>
+  const getDay = (dt) => (dt ? new Date(dt).getDate() : "");
+  const getMonth = (dt) =>
+    dt ? new Date(dt).toLocaleString("default", { month: "short" }) : "";
+  const formatTime = (dt) =>
     dt
-      ? new Date(dt).toLocaleString(undefined, {
-          dateStyle: "medium",
-          timeStyle: "short",
+      ? new Date(dt).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
         })
-      : "—";
-
+      : "";
   const formatDate = (dt) =>
     dt
       ? new Date(dt).toLocaleDateString(undefined, { dateStyle: "medium" })
       : "—";
 
-  // COUNTS
+  const statusStyle = (s) =>
+    s === "Ongoing"
+      ? "text-green-600"
+      : s === "Upcoming"
+        ? "text-yellow-500"
+        : "text-gray-400";
+
   const totalEvents = events.length;
   const ongoingCount = events.filter(
     (e) => getStatus(e.fromDateTime, e.toDateTime) === "Ongoing",
@@ -351,197 +287,184 @@ const Events = () => {
   const completedCount = events.filter(
     (e) => getStatus(e.fromDateTime, e.toDateTime) === "Completed",
   ).length;
+  const filteredEvents =
+    filter === "All"
+      ? events
+      : events.filter(
+          (e) => getStatus(e.fromDateTime, e.toDateTime) === filter,
+        );
+
+  const inputCls =
+    "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C97736]";
 
   return (
     <div className="p-6 bg-[#F7F2EC] min-h-screen">
-      {/* Error State */}
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
           <p className="font-medium">Error loading events</p>
           <p className="text-sm">{error}</p>
           <button
             onClick={fetchEvents}
-            className="mt-2 px-4 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+            className="mt-2 px-4 py-1 bg-red-600 text-white rounded text-sm"
           >
             Retry
           </button>
         </div>
       )}
 
-      {/* Loading State */}
       {loading && (
         <div className="flex justify-center items-center py-12">
           <FaSpinner className="animate-spin text-[#A64200] text-3xl" />
         </div>
       )}
 
-      {/* Statistics */}
+      {/* Stats */}
       {!loading && (
         <div className="grid grid-cols-4 gap-4 mt-5">
-          <div className="bg-white p-4 rounded-xl border-t-4 border-orange-400">
-            <p className="text-sm text-gray-500">Total Events</p>
-            <h1 className="text-3xl font-bold">{totalEvents}</h1>
-          </div>
-          <div className="bg-white p-4 rounded-xl border-t-4 border-blue-400">
-            <p className="text-sm text-gray-500">Ongoing</p>
-            <h1 className="text-3xl font-bold">{ongoingCount}</h1>
-          </div>
-          <div className="bg-white p-4 rounded-xl border-t-4 border-green-400">
-            <p className="text-sm text-gray-500">Upcoming</p>
-            <h1 className="text-3xl font-bold">{upcomingCount}</h1>
-          </div>
-          <div className="bg-white p-4 rounded-xl border-t-4 border-purple-400">
-            <p className="text-sm text-gray-500">Completed</p>
-            <h1 className="text-3xl font-bold">{completedCount}</h1>
-          </div>
+          {[
+            {
+              label: "Total Events",
+              count: totalEvents,
+              color: "border-orange-400",
+            },
+            { label: "Ongoing", count: ongoingCount, color: "border-blue-400" },
+            {
+              label: "Upcoming",
+              count: upcomingCount,
+              color: "border-green-400",
+            },
+            {
+              label: "Completed",
+              count: completedCount,
+              color: "border-purple-400",
+            },
+          ].map(({ label, count, color }) => (
+            <div
+              key={label}
+              className={`bg-white p-4 rounded-xl border-t-4 ${color}`}
+            >
+              <p className="text-sm text-gray-500">{label}</p>
+              <h1 className="text-3xl font-bold">{count}</h1>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Empty State */}
-      {!loading && events.length === 0 && (
+      {/* Filter Tabs */}
+      {!loading && (
+        <div className="flex gap-2 mt-5 bg-white rounded-xl px-4 py-2 border border-gray-100">
+          {["All", "Ongoing", "Upcoming", "Completed"].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-1 rounded-full text-sm font-medium transition ${
+                filter === f
+                  ? "bg-[#F7F2EC] text-gray-700 border border-gray-200"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Empty */}
+      {!loading && filteredEvents.length === 0 && (
         <div className="bg-white rounded-xl p-12 text-center border border-gray-200 mt-5">
-          <p className="text-gray-500 text-lg">No events found</p>
-          <p className="text-gray-400 text-sm mt-1">
-            Events will appear here once you create them
+          <p className="text-gray-500">
+            No {filter !== "All" ? filter.toLowerCase() + " " : ""}events found
           </p>
         </div>
       )}
 
-      {/* Events List */}
-      {!loading && events.length > 0 && (
-        <div className="grid grid-cols-2 gap-5 mt-6 overflow-auto max-h-[70vh]">
-          {events.map((event) => {
+      {/* 2-column card grid */}
+      {!loading && filteredEvents.length > 0 && (
+        <div className="grid grid-cols-2 gap-5 mt-5 overflow-y-auto max-h-[60vh] pr-1">
+          {filteredEvents.map((event) => {
             const status = getStatus(event.fromDateTime, event.toDateTime);
-            const isRegistrationOpen =
-              event.reg_deadline && new Date(event.reg_deadline) > new Date();
+            const volunteerCount = volunteerCounts[event.eventID] || 0;
 
             return (
               <div
                 key={event.eventID}
-                className="bg-white rounded-xl overflow-hidden border border-gray-200"
+                className="bg-white rounded-xl border border-gray-200 overflow-hidden"
               >
-                {/* Top */}
-                <div className="flex justify-between p-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="font-semibold text-lg">{event.title}</h2>
-                      {/* enabled badge */}
-                      {event.enabled !== undefined && (
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                            event.enabled
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-red-100 text-red-600"
-                          }`}
-                        >
-                          {event.enabled ? "Active" : "Disabled"}
-                        </span>
-                      )}
+                {/* Card Header: date badge + title + status */}
+                <div className="flex items-center justify-between px-4 pt-4 pb-2">
+                  <div className="flex items-center gap-3">
+                    {/* Date badge */}
+                    <div className="flex flex-col items-center justify-center bg-[#F7F2EC] rounded-lg w-12 h-12 flex-shrink-0">
+                      <span className="text-lg font-bold text-[#A64200] leading-none">
+                        {getDay(event.fromDateTime)}
+                      </span>
+                      <span className="text-[10px] font-semibold text-gray-500 uppercase">
+                        {getMonth(event.fromDateTime)}
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      {formatDateTime(event.fromDateTime)} →{" "}
-                      {formatDateTime(event.toDateTime)}
-                    </p>
+                    <div>
+                      <h2 className="font-bold text-gray-800 text-base leading-tight">
+                        {event.title}
+                      </h2>
+                      <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
+                        <FaClock size={10} />
+                        <span>{formatTime(event.fromDateTime)}</span>
+                      </div>
+                    </div>
                   </div>
-
-                  <div>
+                  <div className="flex flex-col items-end gap-1">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        status === "Ongoing"
-                          ? "bg-green-100 text-green-700"
-                          : status === "Upcoming"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-gray-200 text-gray-700"
-                      }`}
+                      className={`text-xs font-semibold flex items-center gap-1 ${statusStyle(status)}`}
                     >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current inline-block"></span>
                       {status}
+                    </span>
+                    <span className="flex items-center gap-1 text-xs text-gray-400">
+                      <FaUsers size={10} />
+                      {volunteerCount}
+                      {event.max_volunteers
+                        ? `/${event.max_volunteers}`
+                        : ""}{" "}
+                      volunteers
                     </span>
                   </div>
                 </div>
-                <div className="px-4 pb-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                  {/* Banner */}
-                  <img
-                    src={event.bannerURL}
-                    alt={event.bannerAltText}
-                    className="w-full h-44 object-cover"
-                  />
 
-                  {/* Meta details grid */}
-                  <div className="px-4 pb-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                    {/* Venue */}
-                    {event.venue && (
-                      <div>
-                        <span className="text-gray-400 text-xs uppercase tracking-wide">
-                          Venue
-                        </span>
-                        <p className="text-gray-700 font-medium truncate">
-                          {event.venue}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Registration Deadline */}
-                    {event.reg_deadline && (
-                      <div>
-                        <span className="text-gray-400 text-xs uppercase tracking-wide">
-                          Reg. Deadline
-                        </span>
-                        <p
-                          className={`font-medium ${isRegistrationOpen ? "text-gray-700" : "text-red-500"}`}
-                        >
-                          {formatDate(event.reg_deadline)}
-                          {!isRegistrationOpen && (
-                            <span className="ml-1 text-xs font-normal text-red-400">
-                              (Closed)
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Max Participants */}
-                    {event.max_participants != null && (
-                      <div>
-                        <span className="text-gray-400 text-xs uppercase tracking-wide">
-                          Max Participants
-                        </span>
-                        <p className="text-gray-700 font-medium">
-                          {event.max_participants}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Max Volunteers */}
-                    {event.max_volunteers != null && (
-                      <div>
-                        <span className="text-gray-400 text-xs uppercase tracking-wide">
-                          Volunteers
-                        </span>
-                        <p className="text-gray-700 font-medium">
-                          {volunteerCounts[event.eventID] || 0}/
-                          {event.max_volunteers}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                {/* Card Body: thumbnail + description side by side */}
+                <div className="flex gap-3 px-4 pb-3">
+                  {event.bannerURL ? (
+                    <img
+                      src={event.bannerURL}
+                      alt={event.title}
+                      className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center text-gray-300 text-xs">
+                      No image
+                    </div>
+                  )}
+                  <p className="text-sm text-gray-500 leading-relaxed line-clamp-4 flex-1">
+                    {event.description}
+                  </p>
                 </div>
-                {/* Buttons */}
-                <div className="flex gap-3 p-4 pt-2">
+
+                {/* Card Footer: action buttons */}
+                <div className="flex border-t border-gray-100">
                   <button
                     onClick={() => handleEdit(event)}
-                    className="flex-1 border rounded-lg py-2 hover:bg-blue-100 text-blue-600 font-medium"
+                    className="flex-1 py-2.5 text-sm text-gray-600 hover:bg-gray-50 font-medium transition border-r border-gray-100"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(event.eventID)}
-                    className="flex-1 border rounded-lg py-2 hover:bg-red-100 text-red-600 font-medium"
+                    className="flex-1 py-2.5 text-sm text-gray-600 hover:bg-red-50 hover:text-red-500 font-medium transition border-r border-gray-100"
                   >
                     Delete
                   </button>
                   <button
-                    onClick={() => handleViewVolunteersClick(event)}
-                    className="flex-1 bg-[#C97736] text-white rounded-lg py-2 hover:bg-[#a85f27] font-medium"
+                    onClick={() => handleViewVolunteers(event)}
+                    className="flex-1 py-2.5 text-sm text-white bg-[#C97736] hover:bg-[#a85f27] font-medium transition"
                   >
                     View Volunteers
                   </button>
@@ -552,230 +475,181 @@ const Events = () => {
         </div>
       )}
 
-      {/* Edit Event Modal */}
+      {/* Edit Modal */}
       {showEditModal && editingEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full max-h-screen overflow-y-auto">
-            {/* Header */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+          <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center p-5 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-800">
                 Edit Event
               </h2>
               <button
-                onClick={closeEditModal}
-                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600"
               >
-                <FaTimes size={20} />
+                <FaTimes size={18} />
               </button>
             </div>
-
-            {/* Modal Body */}
-            <div className="p-6">
+            <div className="p-5 overflow-y-auto flex-1 space-y-4">
               {editError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                   {editError}
                 </div>
               )}
 
-              <div className="space-y-4 max-h-[70vh] overflow-y-auto">
-                {/* Banner */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Event Banner
-                  </label>
-                  <div className="flex flex-col items-center gap-3">
-                    {editFormData.bannerURL && (
-                      <img
-                        src={editFormData.bannerURL}
-                        alt="Banner preview"
-                        className="w-full h-32 rounded-lg object-cover border border-gray-300"
-                      />
-                    )}
-                    <label className="cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleBannerChange}
-                        className="hidden"
-                      />
-                      <span className="px-4 py-2 bg-[#C97736] text-white rounded-lg hover:bg-[#a85f27] transition text-sm font-medium cursor-pointer">
-                        Change Banner
-                      </span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Title */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Event Title *
-                  </label>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Banner
+                </label>
+                {editFormData.bannerURL && (
+                  <img
+                    src={editFormData.bannerURL}
+                    alt="preview"
+                    className="w-full h-28 object-cover rounded-lg border border-gray-200 mb-2"
+                  />
+                )}
+                <label className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 text-xs rounded-lg cursor-pointer hover:bg-gray-200">
+                  Change Banner
                   <input
-                    type="text"
-                    name="title"
-                    value={editFormData.title}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-                    placeholder="Event title"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleBannerFileChange}
                   />
-                </div>
+                </label>
+              </div>
 
-                {/* Description */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description *
-                  </label>
-                  <textarea
-                    name="description"
-                    value={editFormData.description}
-                    onChange={handleEditInputChange}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736] resize-none"
-                    placeholder="Event description"
-                  />
-                </div>
-
-                {/* Venue */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Venue
-                  </label>
-                  <input
-                    type="text"
-                    name="venue"
-                    value={editFormData.venue}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-                    placeholder="Event venue"
-                  />
-                </div>
-
-                {/* Start Date & Time */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Date & Time
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="date"
-                      value={editFormData.fromDateTime[0]}
-                      onChange={(e) =>
-                        setEditFormData((prev) => ({
-                          ...prev,
-                          fromDateTime: [e.target.value, prev.fromDateTime[1]],
-                        }))
-                      }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-                    />
-                    <input
-                      type="time"
-                      value={editFormData.fromDateTime[1]}
-                      onChange={(e) =>
-                        setEditFormData((prev) => ({
-                          ...prev,
-                          fromDateTime: [prev.fromDateTime[0], e.target.value],
-                        }))
-                      }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-                    />
-                  </div>
-                </div>
-
-                {/* End Date & Time */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    End Date & Time
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="date"
-                      value={editFormData.toDateTime[0]}
-                      onChange={(e) =>
-                        setEditFormData((prev) => ({
-                          ...prev,
-                          toDateTime: [e.target.value, prev.toDateTime[1]],
-                        }))
-                      }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-                    />
-                    <input
-                      type="time"
-                      value={editFormData.toDateTime[1]}
-                      onChange={(e) =>
-                        setEditFormData((prev) => ({
-                          ...prev,
-                          toDateTime: [prev.toDateTime[0], e.target.value],
-                        }))
-                      }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-                    />
-                  </div>
-                </div>
-
-                {/* Registration Deadline */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Registration Deadline
-                  </label>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Title *
+                </label>
+                <input
+                  name="title"
+                  value={editFormData.title}
+                  onChange={handleEditInput}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={editFormData.description}
+                  onChange={handleEditInput}
+                  rows={3}
+                  className={`${inputCls} resize-none`}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Venue
+                </label>
+                <input
+                  name="venue"
+                  value={editFormData.venue}
+                  onChange={handleEditInput}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Start Date & Time
+                </label>
+                <div className="flex gap-2">
                   <input
                     type="date"
-                    name="reg_deadline"
-                    value={editFormData.reg_deadline}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
+                    name="fromDate"
+                    value={editFormData.fromDate}
+                    onChange={handleEditInput}
+                    className={`${inputCls} flex-1`}
+                  />
+                  <input
+                    type="time"
+                    name="fromTime"
+                    value={editFormData.fromTime}
+                    onChange={handleEditInput}
+                    className={`${inputCls} flex-1`}
                   />
                 </div>
-
-                {/* Max Participants */}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  End Date & Time
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    name="toDate"
+                    value={editFormData.toDate}
+                    onChange={handleEditInput}
+                    className={`${inputCls} flex-1`}
+                  />
+                  <input
+                    type="time"
+                    name="toTime"
+                    value={editFormData.toTime}
+                    onChange={handleEditInput}
+                    className={`${inputCls} flex-1`}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Registration Deadline
+                </label>
+                <input
+                  type="date"
+                  name="reg_deadline"
+                  value={editFormData.reg_deadline}
+                  onChange={handleEditInput}
+                  className={inputCls}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
                     Max Participants
                   </label>
                   <input
                     type="number"
                     name="max_participants"
                     value={editFormData.max_participants}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-                    placeholder="Max participants"
+                    onChange={handleEditInput}
+                    className={inputCls}
                   />
                 </div>
-
-                {/* Max Volunteers */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
                     Max Volunteers
                   </label>
                   <input
                     type="number"
                     name="max_volunteers"
                     value={editFormData.max_volunteers}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-                    placeholder="Max volunteers"
+                    onChange={handleEditInput}
+                    className={inputCls}
                   />
                 </div>
               </div>
             </div>
-
-            {/* Modal Footer */}
-            <div className="flex gap-3 p-6 border-t border-gray-200 bg-gray-50">
+            <div className="flex gap-3 p-5 border-t border-gray-200 bg-gray-50">
               <button
-                onClick={closeEditModal}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition font-medium"
+                onClick={() => setShowEditModal(false)}
                 disabled={editLoading}
+                className="flex-1 py-2 border border-gray-300 rounded-lg text-gray-600 text-sm hover:bg-gray-100"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="flex-1 px-4 py-2 bg-[#C97736] text-white rounded-lg hover:bg-[#a85f27] transition font-medium flex items-center justify-center gap-2"
                 disabled={editLoading}
+                className="flex-1 py-2 bg-[#C97736] text-white rounded-lg text-sm hover:bg-[#a85f27] flex items-center justify-center gap-2"
               >
                 {editLoading ? (
                   <>
-                    <FaSpinner className="animate-spin" size={14} />
-                    Saving...
+                    <FaSpinner className="animate-spin" size={13} /> Saving...
                   </>
                 ) : (
                   "Save Changes"
@@ -786,55 +660,65 @@ const Events = () => {
         </div>
       )}
 
-      {/* View Volunteers Modal */}
-      {showAddVolunteersModal && selectedEvent && (
+      {/* Volunteers Modal */}
+      {showVolunteersModal && selectedEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full max-h-screen overflow-y-auto">
-            {/* Header */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-800">
-                Volunteers Registered for {selectedEvent.title}
-              </h2>
+          <div className="bg-white rounded-xl w-full max-w-md max-h-[85vh] flex flex-col">
+            <div className="flex justify-between items-center p-5 border-b border-gray-200">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Registered Volunteers
+                </h2>
+                <p className="text-sm text-gray-500">{selectedEvent.title}</p>
+              </div>
               <button
-                onClick={closeAddVolunteersModal}
-                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowVolunteersModal(false)}
+                className="text-gray-400 hover:text-gray-600"
               >
-                <FaTimes size={20} />
+                <FaTimes size={18} />
               </button>
             </div>
-
-            {/* Modal Body */}
-            <div className="p-6">
+            <div className="p-5 flex-1 overflow-y-auto">
               {volunteersLoading ? (
-                <div className="flex justify-center items-center py-8">
+                <div className="flex justify-center py-8">
                   <FaSpinner className="animate-spin text-[#C97736] text-2xl" />
                 </div>
-              ) : availableVolunteers.length === 0 ? (
-                <p className="text-gray-500 text-center">
-                  No volunteers registered for this event
+              ) : registeredVolunteers.length === 0 ? (
+                <p className="text-center text-gray-500 py-8">
+                  No volunteers registered yet.
                 </p>
               ) : (
-                <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                  {availableVolunteers.map((volunteer) => (
+                <div className="space-y-3">
+                  <p className="text-xs text-gray-400">
+                    {registeredVolunteers.length} volunteer
+                    {registeredVolunteers.length !== 1 ? "s" : ""}
+                  </p>
+                  {registeredVolunteers.map((v) => (
                     <div
-                      key={volunteer.userID}
-                      className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg bg-gradient-to-r from-gray-50 to-green-50 hover:shadow-md transition"
+                      key={v.participationId}
+                      className="flex items-center gap-3 p-3 border border-gray-100 rounded-lg bg-gray-50"
                     >
-                      <div className="w-8 h-8 rounded-full bg-[#C97736] text-white flex items-center justify-center text-sm font-bold">
-                        {volunteer.firstName.charAt(0)}
-                        {volunteer.lastName.charAt(0)}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-gray-700">
-                            {volunteer.firstName} {volunteer.lastName}
-                          </p>
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                            ✓ Registered
-                          </span>
+                      {v.photo ? (
+                        <img
+                          src={v.photo}
+                          alt="profile"
+                          className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-[#C97736] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                          {v.firstName?.charAt(0)}
+                          {v.lastName?.charAt(0)}
                         </div>
-                        <p className="text-xs text-gray-500">
-                          {volunteer.emailID}
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-800 text-sm">
+                          {v.firstName} {v.lastName}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {v.emailID}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {formatDate(v.registeredAt)}
                         </p>
                       </div>
                     </div>
@@ -842,12 +726,10 @@ const Events = () => {
                 </div>
               )}
             </div>
-
-            {/* Modal Footer */}
-            <div className="flex gap-3 p-6 border-t border-gray-200 bg-gray-50">
+            <div className="p-5 border-t border-gray-200">
               <button
-                onClick={closeAddVolunteersModal}
-                className="flex-1 px-4 py-2 bg-[#C97736] text-white rounded-lg hover:bg-[#a85f27] transition font-medium"
+                onClick={() => setShowVolunteersModal(false)}
+                className="w-full py-2 bg-[#C97736] text-white rounded-lg text-sm hover:bg-[#a85f27]"
               >
                 Close
               </button>

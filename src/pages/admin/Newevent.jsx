@@ -40,103 +40,7 @@ const AddEvent = () => {
     setBannerFile(file);
     setBannerPreview(URL.createObjectURL(file));
   };
-  // Add this validation function
-  const validateEventDates = (fromDateTime, toDateTime) => {
-    const from = new Date(fromDateTime);
-    const to = new Date(toDateTime);
 
-    if (to <= from) {
-      return {
-        valid: false,
-        message: "End date and time must be after the start date and time",
-      };
-    }
-
-    return { valid: true, message: "" };
-  };
-  {
-    /* Start Date & Time */
-  }
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-      Start Date & Time *
-    </label>
-    <div className="flex gap-2">
-      <input
-        type="date"
-        value={editFormData.fromDateTime[0]}
-        onChange={(e) =>
-          setEditFormData((prev) => ({
-            ...prev,
-            fromDateTime: [e.target.value, prev.fromDateTime[1]],
-          }))
-        }
-        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-      />
-      <input
-        type="time"
-        value={editFormData.fromDateTime[1]}
-        onChange={(e) =>
-          setEditFormData((prev) => ({
-            ...prev,
-            fromDateTime: [prev.fromDateTime[0], e.target.value],
-          }))
-        }
-        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-      />
-    </div>
-  </div>;
-
-  {
-    /* End Date & Time */
-  }
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-      End Date & Time *
-    </label>
-    <div className="flex gap-2">
-      <input
-        type="date"
-        // FIXED: Set minimum end date to start date
-        min={editFormData.fromDateTime[0]}
-        value={editFormData.toDateTime[0]}
-        onChange={(e) =>
-          setEditFormData((prev) => ({
-            ...prev,
-            toDateTime: [e.target.value, prev.toDateTime[1]],
-          }))
-        }
-        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-      />
-      <input
-        type="time"
-        value={editFormData.toDateTime[1]}
-        onChange={(e) =>
-          setEditFormData((prev) => ({
-            ...prev,
-            toDateTime: [prev.toDateTime[0], e.target.value],
-          }))
-        }
-        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C97736]"
-      />
-    </div>
-  </div>;
-
-  // Then in your form submission (handleSaveEvent or similar):
-  const handleSaveEvent = async () => {
-    // FIXED: Validate dates before submitting
-    const dateValidation = validateEventDates(
-      editFormData.fromDateTime,
-      editFormData.toDateTime,
-    );
-
-    if (!dateValidation.valid) {
-      setEditError(dateValidation.message);
-      return;
-    }
-
-    // ... rest of your save logic
-  };
   const handleVolunteerKeyDown = (e) => {
     if (e.key === "Enter" && volunteerInput.trim()) {
       e.preventDefault();
@@ -436,7 +340,7 @@ const AddEvent = () => {
         {/* Right — Volunteers + Actions */}
         <div className="flex flex-col gap-6">
           {/* Assigned Volunteers */}
-          <div className="bg-white rounded-xl p-6">
+          {/* <div className="bg-white rounded-xl p-6">
             <h2 className="font-semibold text-gray-700 mb-4">
               Assigned Volunteers
             </h2>
@@ -451,9 +355,9 @@ const AddEvent = () => {
             />
             <p className="text-[10px] text-gray-400 mb-3">
               Press Enter after each volunteer name
-            </p>
+            </p> */}
 
-            <div className="flex flex-wrap gap-2 mb-4">
+            {/* <div className="flex flex-wrap gap-2 mb-4">
               {volunteers.map((v, i) => (
                 <span
                   key={i}
@@ -468,7 +372,7 @@ const AddEvent = () => {
                   </button>
                 </span>
               ))}
-            </div>
+            </div> */}
 
             <label className="text-xs text-gray-500">Volunteers Needed</label>
             <input
@@ -479,14 +383,14 @@ const AddEvent = () => {
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A]"
             />
 
-            <label className="text-xs text-gray-500">Contact Person</label>
+            {/* <label className="text-xs text-gray-500">Contact Person</label>
             <input
               name="contactPerson"
               value={form.contactPerson}
               onChange={handleChange}
               placeholder="Coordinator name"
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 outline-none focus:border-[#C1622A]"
-            />
+            /> */}
           </div>
 
           {/* Actions */}
@@ -499,17 +403,17 @@ const AddEvent = () => {
             >
               {loading ? "Publishing..." : "Publish Event"}
             </button>
-            <button
+            {/* <button
               onClick={() => handleSubmit("draft")}
               disabled={loading}
               className="w-full border border-gray-200 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50 transition"
             >
               Save as Draft
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
-    </div>
+    // </div>
   );
 };
 
