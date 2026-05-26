@@ -43,20 +43,6 @@ const AddEvent = () => {
     setBannerPreview(URL.createObjectURL(file));
   };
 
-  // check 
-  const handleVolunteerKeyDown = (e) => {
-    if (e.key === "Enter" && volunteerInput.trim()) {
-      e.preventDefault();
-      setVolunteers([...volunteers, volunteerInput.trim()]);
-      setVolunteerInput("");
-    }
-  };
-
-  //check
-  const removeVolunteer = (index) => {
-    setVolunteers(volunteers.filter((_, i) => i !== index));
-  };
-
   const handleSubmit = async (status) => {
     setLoading(true);
     try {
