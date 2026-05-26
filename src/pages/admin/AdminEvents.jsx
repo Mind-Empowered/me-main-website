@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase-client";
-import { FaSpinner, FaTimes, FaUsers, FaClock, FaCheck } from "react-icons/fa";
+import {
+  FaSpinner,
+  FaTimes,
+  FaUsers,
+  FaClock,
+  FaCheck,
+  FaSearch,
+} from "react-icons/fa";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -20,6 +27,7 @@ const Events = () => {
   const [registeredVolunteers, setRegisteredVolunteers] = useState([]);
   const [volunteersLoading, setVolunteersLoading] = useState(false);
   const [attendanceUpdating, setAttendanceUpdating] = useState({});
+  const [volunteerSearchQuery, setVolunteerSearchQuery] = useState("");
 
   useEffect(() => {
     fetchEvents();
@@ -31,7 +39,7 @@ const Events = () => {
         .schema("me_dataspace")
         .from("event_participation")
         .select("event_id")
-        .eq("registered_as", "registered");
+        .in("registered_as", ["registered", "attended"]);
       if (error) throw error;
       const counts = {};
       eventsList.forEach((event) => {
@@ -204,6 +212,7 @@ const Events = () => {
   const handleViewVolunteers = async (event) => {
     setSelectedEvent(event);
     setRegisteredVolunteers([]);
+    setVolunteerSearchQuery("");
     setVolunteersLoading(true);
     setShowVolunteersModal(true);
     try {
@@ -322,6 +331,16 @@ const Events = () => {
 
   const attendedCount = registeredVolunteers.filter((v) => v.attended).length;
 
+  // Filter volunteers based on search query
+  const filteredVolunteers = registeredVolunteers.filter((v) => {
+    const searchLower = volunteerSearchQuery.toLowerCase();
+    return (
+      v.firstName.toLowerCase().includes(searchLower) ||
+      v.lastName.toLowerCase().includes(searchLower) ||
+      v.emailID.toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="p-6 bg-[#F7F2EC] min-h-screen">
       {error && (
@@ -416,11 +435,11 @@ const Events = () => {
               >
                 <div className="flex items-center justify-between px-4 pt-4 pb-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex flex-col items-center justify-center bg-[#F7F2EC] rounded-lg w-12 h-12 flex-shrink-0">
-                      <span className="text-lg font-bold text-[#A64200] leading-none">
+                    <div className="flex flex-col items-center justify-center bg-[#A64200] rounded-lg w-12 h-12 flex-shrink-0">
+                      <span className="text-lg font-bold text-white leading-none">
                         {getDay(event.fromDateTime)}
                       </span>
-                      <span className="text-[10px] font-semibold text-gray-500 uppercase">
+                      <span className="text-[10px] font-semibold text-white uppercase">
                         {getMonth(event.fromDateTime)}
                       </span>
                     </div>
@@ -681,7 +700,7 @@ const Events = () => {
       {/* Volunteers Modal */}
       {showVolunteersModal && selectedEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-md max-h-[85vh] flex flex-col">
+          <div className="bg-white rounded-xl w-full max-w-4xl h-[100vh] flex flex-col">
             <div className="flex justify-between items-center p-5 border-b border-gray-200">
               <div>
                 <h2 className="text-lg font-semibold text-gray-800">
@@ -697,26 +716,40 @@ const Events = () => {
               </button>
             </div>
 
-            {/* Attendance summary bar */}
-            {registeredVolunteers.length > 0 && (
-              <div className="px-5 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
-                <span className="text-sm text-gray-600">
-                  Attended:{" "}
-                  <span className="font-semibold text-green-600">
-                    {attendedCount}
+            {/* Attendance summary bar and search */}
+            <div className="px-5 py-3 bg-gray-50 border-b border-gray-100 space-y-3">
+              {registeredVolunteers.length > 0 && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">
+                    Attended:{" "}
+                    <span className="font-semibold text-green-600">
+                      {attendedCount}
+                    </span>
+                    <span className="text-gray-400">
+                      {" "}
+                      / {registeredVolunteers.length}
+                    </span>
                   </span>
-                  <span className="text-gray-400">
-                    {" "}
-                    / {registeredVolunteers.length}
+                  <span className="text-xs text-gray-400">
+                    Check to mark as attended
                   </span>
-                </span>
-                <span className="text-xs text-gray-400">
-                  Check to mark as attended
-                </span>
-              </div>
-            )}
+                </div>
+              )}
 
-            <div className="p-5 flex-1 overflow-y-auto">
+              {/* Search bar */}
+              <div className="relative">
+                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
+                <input
+                  type="text"
+                  placeholder="Search by name or email..."
+                  value={volunteerSearchQuery}
+                  onChange={(e) => setVolunteerSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C97736]"
+                />
+              </div>
+            </div>
+
+            <div className="p-5 flex-1 overflow-y-auto min-h-0">
               {volunteersLoading ? (
                 <div className="flex justify-center py-8">
                   <FaSpinner className="animate-spin text-[#C97736] text-2xl" />
@@ -725,12 +758,16 @@ const Events = () => {
                 <p className="text-center text-gray-500 py-8">
                   No volunteers registered yet.
                 </p>
+              ) : filteredVolunteers.length === 0 ? (
+                <p className="text-center text-gray-500 py-8">
+                  No volunteers match your search.
+                </p>
               ) : (
-                <div className="space-y-2">
-                  {registeredVolunteers.map((v) => (
+                <div className="grid grid-cols-2 gap-4 pr-2">
+                  {filteredVolunteers.map((v) => (
                     <div
                       key={v.participationId}
-                      className={`flex items-center gap-3 p-3 border rounded-lg transition ${
+                      className={`flex items-center gap-4 p-4 border rounded-lg transition ${
                         v.attended
                           ? "border-green-200 bg-green-50"
                           : "border-gray-100 bg-gray-50"
@@ -742,7 +779,7 @@ const Events = () => {
                           handleToggleAttendance(v.participationId, v.attended)
                         }
                         disabled={!!attendanceUpdating[v.participationId]}
-                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition ${
+                        className={`w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition ${
                           v.attended
                             ? "bg-green-500 border-green-500 text-white"
                             : "border-gray-300 bg-white hover:border-green-400"
@@ -754,9 +791,9 @@ const Events = () => {
                         }
                       >
                         {attendanceUpdating[v.participationId] ? (
-                          <FaSpinner className="animate-spin" size={10} />
+                          <FaSpinner className="animate-spin" size={12} />
                         ) : v.attended ? (
-                          <FaCheck size={10} />
+                          <FaCheck size={12} />
                         ) : null}
                       </button>
 
@@ -765,10 +802,10 @@ const Events = () => {
                         <img
                           src={v.photo}
                           alt="profile"
-                          className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                          className="w-14 h-14 rounded-full object-cover flex-shrink-0"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-[#C97736] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        <div className="w-14 h-14 rounded-full bg-[#C97736] text-white flex items-center justify-center font-bold flex-shrink-0 text-lg">
                           {v.firstName?.charAt(0)}
                           {v.lastName?.charAt(0)}
                         </div>
@@ -777,21 +814,21 @@ const Events = () => {
                       {/* Info */}
                       <div className="flex-1 min-w-0">
                         <p
-                          className={`font-medium text-sm ${v.attended ? "text-green-800" : "text-gray-800"}`}
+                          className={`font-medium text-base ${v.attended ? "text-green-800" : "text-gray-800"}`}
                         >
                           {v.firstName} {v.lastName}
                         </p>
-                        <p className="text-xs text-gray-500 truncate">
+                        <p className="text-sm text-gray-500 truncate">
                           {v.emailID}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-sm text-gray-400">
                           {formatDate(v.registeredAt)}
                         </p>
                       </div>
 
                       {/* Attended badge */}
                       {v.attended && (
-                        <span className="text-xs font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded-full flex-shrink-0">
+                        <span className="text-sm font-medium text-green-600 bg-green-100 px-3 py-1 rounded-full flex-shrink-0">
                           Attended
                         </span>
                       )}
