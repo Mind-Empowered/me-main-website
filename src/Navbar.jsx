@@ -1,5 +1,6 @@
 import React from 'react';
 import CalendarPopup from './components/CalendarPopup';
+import NewsletterPopup from './components/NewsletterPopup';
 
 const NavLink = ({ item, scrollToSection, scrolled, isMobile = false }) => {
   const desktopClasses = `relative font-bold text-xs lg:text-sm tracking-[0.1em] uppercase transition-all duration-300 py-2.5 px-4 rounded-full group overflow-hidden ${scrolled
@@ -41,8 +42,8 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
         : 'bg-black/10 backdrop-blur-xl shadow-none py-3'
         }`}
     >
-      <div className="relative flex items-center justify-between h-16 lg:h-20 px-4 sm:px-6 lg:px-12">
-        <div className="flex-shrink-0">
+      <div className="relative grid grid-cols-2 lg:grid-cols-[1fr_auto_1fr] items-center h-16 lg:h-20 px-4 sm:px-6 lg:px-12 gap-3 lg:gap-6">
+        <div className="flex-shrink-0 justify-self-start">
           <div
             className="flex items-center space-x-3 group cursor-pointer"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -61,19 +62,19 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
           </div>
         </div>
 
-        <div className="hidden lg:flex items-center justify-center space-x-2 bg-black/5 dark:bg-white/5 p-1 rounded-full border border-white/10 backdrop-blur-md">
+        <div className="hidden lg:flex items-center justify-center justify-self-center space-x-2 bg-black/5 dark:bg-white/5 p-1 rounded-full border border-white/10 backdrop-blur-md">
           {navItems.map((item) => (
             <NavLink key={item.key} item={item} scrollToSection={handleScrollToSection} scrolled={scrolled} />
           ))}
         </div>
 
         {/* Right-side actions — grouped tightly */}
-        <div className="hidden lg:flex items-center gap-2">
-          {/* Donate */}
-
-
+        <div className="hidden lg:flex items-center justify-self-end gap-2">
           {/* Calendar */}
           <CalendarPopup language={language} scrolled={scrolled} />
+
+          {/* Newsletter */}
+          <NewsletterPopup scrolled={scrolled} />
 
           <div className="relative">
             <button
@@ -90,7 +91,7 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
         </div>
 
         {/* Mobile menu button */}
-        <div className="lg:hidden flex items-center">
+        <div className="lg:hidden flex items-center justify-self-end">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={`inline-flex items-center justify-center p-2.5 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#ff7612] ${scrolled ? 'text-[#461711] hover:bg-black/5' : 'text-white hover:bg-white/10'}`}
@@ -141,6 +142,17 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
               <span style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
                 {language === 'en' ? 'Event Calendar' : 'ഇവന്റ് കലണ്ടർ'}
               </span>
+            </button>
+
+            <button
+              onClick={() => document && document.querySelector('[aria-label="Newsletter updates"]')?.click()}
+              className="flex items-center gap-3 w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M19 5h-14a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2zm0 0l-7 5-7-5" />
+              </svg>
+              <span>{language === 'en' ? 'Newsletter' : 'വാർത്താക്കുറിപ്പ്'}</span>
             </button>
 
             <button

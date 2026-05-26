@@ -98,11 +98,11 @@ function HomePage() {
 
   // --- Data-driven navigation ---
   const navItems = [
-    { name: translations?.nav?.mission?.[language] || 'Mission', ref: missionRef, key: 'about' },
+    // { name: translations?.nav?.mission?.[language] || 'Mission', ref: missionRef, key: 'about' },
     { name: translations?.nav?.story?.[language] || 'Story', ref: storyRef, key: 'story' },
     { name: translations?.nav?.team?.[language] || 'Team', ref: teamRef, key: 'team' },
     { name: translations?.nav?.gallery?.[language] || 'Gallery', ref: galleryRef, key: 'gallery' },
-    { name: translations?.nav?.newsletter?.[language] || 'Newsletter', ref: newsletterRef, key: 'newsletter' },
+    // { name: translations?.nav?.newsletter?.[language] || 'Newsletter', ref: newsletterRef, key: 'newsletter' },
     { name: translations?.nav?.sponsor?.[language] || 'Sponsor', ref: sponsorRef, key: 'sponsor' },
     { name: translations?.nav?.contact?.[language] || 'Contact', ref: contactRef, key: 'contact' },
   ];
@@ -783,12 +783,12 @@ function HomePage() {
           </div>
         </section>
 
-        {/* 7. Newsletter */}
+        {/* 7. Newsletter
         <section ref={newsletterRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <Newsletter language={language} />
           </div>
-        </section>
+        </section> */}
 
         {/* 8. FAQ */}
         <section ref={faqsRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
