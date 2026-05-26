@@ -133,7 +133,7 @@ const VolunteerProfile = () => {
     return (
         <div className="min-h-screen bg-[#F5EDE0] flex flex-col overflow-hidden">
             {/* Fixed Header */}
-            <Header user={user} bgcolour="bg-[#FAF7F2]" tcolour="text-[#A64200]" logout="block" />
+            <Header user={user} bgcolour="bg-[#FAF7F2]" tcolour="text-[#A64200]" logout="block" logo="block"/>
             
             {/* Main Content - Scrollable */}
             <main className="flex-1 overflow-y-auto">

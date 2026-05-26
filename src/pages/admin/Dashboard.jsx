@@ -109,7 +109,7 @@ const Dashboard = () => {
 
     return (
         <><Header bgcolour="bg-gradient-to-r from-[#C1622A] to-[#E49E5F]"
-            tcolour="text-white" logout="hidden" />
+            tcolour="text-white" logout="hidden" logo="hidden"/>
 
             <div className="p-4">
 
