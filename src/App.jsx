@@ -37,6 +37,7 @@ import AdminEvents from "./pages/admin/AdminEvents";
 import NewsLetter from "./pages/admin/NewsLetter";
 import PhotoGallery from "./pages/admin/PhtotoGallery";
 import NewEvent from "./pages/admin/Newevent";
+import Calendar from "./pages/admin/Calendar";
 
 
 // --- Accessibility Constants for maintainability ---
@@ -852,6 +853,7 @@ function App() {
           <Route path="newsletter" element={<NewsLetter />} />
           <Route path="photogallery" element={<PhotoGallery />} />
           <Route path="newevent" element={<NewEvent />} />
+          <Route path="calendar" element={<Calendar />} />
         </Route>
       </Routes>
     </BrowserRouter>

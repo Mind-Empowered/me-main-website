@@ -42,6 +42,11 @@ const Sidebar = () => {
                     icon: <FaEnvelope />,
                     path: "/admin/newsletter",
                 },
+                {
+                    label: "Calendar",
+                    icon: <FaCalendarAlt />,
+                    path: "/admin/calendar",
+                },
             ],
         },
         {
@@ -76,7 +81,13 @@ const Sidebar = () => {
                         <h3 className="text-sm">{section.title}</h3>
                         <ul>
                             {section.items.map((item, itemIndex) => (
-                                <NavLink key={itemIndex} to={item.path} className="flex items-center gap-4 p-2 hover:bg-[#C1622A]  rounded-lg">
+                                <NavLink key={itemIndex} to={item.path} className={({ isActive }) =>
+        `flex items-center gap-4 p-2 rounded-lg transition ${
+            isActive
+                ? "bg-[#C1622A] text-white"
+                : "hover:bg-[#C1622A]/60"
+        }`
+    }>
                                     <span>{item.icon}</span>
                                     <span>{item.label}</span>
                                 </NavLink>
