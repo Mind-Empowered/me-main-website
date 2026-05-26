@@ -42,6 +42,11 @@ const Sidebar = () => {
                     icon: <FaEnvelope />,
                     path: "/admin/newsletter",
                 },
+                {
+                    label: "Calendar",
+                    icon: <FaCalendarAlt />,
+                    path: "/admin/calendar",
+                },
             ],
         },
         {
