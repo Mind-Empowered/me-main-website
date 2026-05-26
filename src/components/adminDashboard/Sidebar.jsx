@@ -85,9 +85,9 @@ const Sidebar = () => {
                         <ul>
                             {section.items.map((item, itemIndex) => (
                                 <NavLink key={itemIndex} to={item.path} className={({ isActive }) =>
-                                    `flex items-center gap-4 p-2 rounded-lg transition ${isActive
+                                    `flex items-center gap-4 p-2 rounded-lg transition mb-1  ${isActive
                                         ? "bg-[#C1622A] text-white"
-                                        : "hover:bg-[#C1622A]/60"
+                                        : "hover:bg-[#C1622A]/40 text-gray-300 hover:text-white"
                                     }`
                                 }>
                                     <span>{item.icon}</span>
