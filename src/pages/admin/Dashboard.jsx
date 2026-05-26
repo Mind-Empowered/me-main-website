@@ -96,7 +96,6 @@ const Dashboard = () => {
     fetchStats();
   }, []);
 
-  const handlePhotoUpload = async (file) => {
     // unique filename to avoid conflicts
     const fileName = `${Date.now()}-${file.name}`;
 
@@ -244,6 +243,5 @@ const Dashboard = () => {
       </div>
     </>
   );
-};
 
 export default Dashboard;
