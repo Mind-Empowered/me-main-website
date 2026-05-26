@@ -96,26 +96,7 @@ const Dashboard = () => {
     fetchStats();
   }, []);
 
-    // unique filename to avoid conflicts
-    const fileName = `${Date.now()}-${file.name}`;
 
-    // upload to storage bucket
-    const { data, error: uploadError } = await supabase.storage
-      .from("gallery")
-      .upload(fileName, file);
-
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
-      return null;
-    }
-
-    // get public URL
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("gallery").getPublicUrl(fileName);
-
-    return publicUrl;
-  };
 
   return (
     <>
@@ -243,5 +224,6 @@ const Dashboard = () => {
       </div>
     </>
   );
+};
 
 export default Dashboard;
