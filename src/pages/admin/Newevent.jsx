@@ -143,7 +143,7 @@ const AddEvent = () => {
       <div className="p-4 flex justify-center h-full">
         {/* Event Details */}
         <div className="w-full  flex flex-col gap-6 max-h-[100vh] overflow-y-auto">
-          {/* Step 1 — Event Details Card */}
+          {/* Event Details Card */}
           {step === 1 && (
             <div className="bg-white rounded-xl p-6">
               <h2 className="font-semibold text-gray-700 mb-4">
@@ -204,7 +204,7 @@ const AddEvent = () => {
             </div>
           )}
 
-          {/* Step 2 — Date, Time & Location Card */}
+          {/*  Date, Time & Location Card */}
           {step === 2 && (
             <div className="bg-white rounded-xl p-6">
               {/* Banner Upload */}
