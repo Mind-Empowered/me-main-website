@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase-client";
-import {FaUpload, FaPaperPlane, FaTrash, FaClock, FaEnvelope, FaImage} from "react-icons/fa";
+import { FaUpload, FaPaperPlane, FaTrash, FaClock, FaEnvelope, FaImage } from "react-icons/fa";
 
 const Newsletter = () => {
     const [file, setFile] = useState(null);
@@ -113,7 +113,7 @@ const Newsletter = () => {
         <div className="bg-[#F5F0E8] min-h-screen p-8">
 
             {/* Top Section */}
-            <div className="grid grid-cols-3 gap-5 mb-8">
+            <div className="grid grid-cols-2 gap-5 mb-8">
 
                 {/* Total Newsletters */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -157,34 +157,19 @@ const Newsletter = () => {
                         <FaImage className="text-3xl text-[#C1622A]/40" />
                     </div>
                 </div>
-
-                {/* Publish Button */}
-                <div className="  flex items-center justify-center">
-                    <button
-                        onClick={handleUpload}
-                        disabled={uploading}
-                        className="bg-[#C1622A] hover:bg-[#a24f21] text-white px-6 py-3 rounded-xl flex items-center gap-2 transition"
-                    >
-                        <FaPaperPlane />
-
-                        {uploading
-                            ? "Uploading..."
-                            : "Publish Newsletter"}
-                    </button>
-                </div>
             </div>
 
             {/* Main Content */}
             <div className="grid grid-cols-2 gap-5">
                 <div>
                     {/* Upload Section */}
-                    <div className=" bg-white rounded-2xl p-6 shadow-sm">
+                    <div className=" bg-white rounded-2xl p-6 shadow-sm ">
 
                         <h2 className="text-xl font-semibold mb-5 text-[#5A2E0C]">
                             Upload Newsletter
                         </h2>
 
-                        <label className="border-2 border-dashed border-[#D8C7B5] rounded-2xl h-[280px] flex flex-col justify-center items-center cursor-pointer hover:border-[#C1622A] transition">
+                        <label className="border-2 border-dashed border-[#D8C7B5] rounded-2xl h-[225px] flex flex-col justify-center items-center cursor-pointer hover:border-[#C1622A] transition">
 
                             {preview ? (
                                 <img
@@ -212,7 +197,11 @@ const Newsletter = () => {
                                 onChange={handleFileChange}
                             />
                         </label>
-
+                          
+                        {file && (
+                            <div className="mt-5 flex flex-col justify-between items-center bg-[#FAF6F1] p-4 rounded-xl">
+                                <div>
+                                      {/* month and year inputs  */}
                         <div className="grid grid-cols-2 gap-4 mt-4">
 
                             <input
@@ -241,10 +230,10 @@ const Newsletter = () => {
 
                         </div>
 
-                        {file && (
-                            <div className="mt-5 flex justify-between items-center bg-[#FAF6F1] p-4 rounded-xl">
+                                    </div>
+                                    <div className="flex items-center justify-between w-full mt-6">
 
-                                <div>
+                                     <div>
                                     <p className="font-medium text-gray-700">
                                         {file.name}
                                     </p>
@@ -253,8 +242,27 @@ const Newsletter = () => {
                                         {(file.size / 1024 / 1024).toFixed(2)} MB
                                     </p>
                                 </div>
+                                
+                                {/* Publish Button */}
+                                <div className="  flex items-center justify-center">
+                                    <button
+                                        onClick={handleUpload}
+                                        disabled={uploading}
+                                        className="bg-[#C1622A] hover:bg-[#a24f21] text-white px-6 py-3 rounded-xl flex items-center gap-2 transition"
+                                    >
+                                        <FaPaperPlane />
+
+                                        {uploading
+                                            ? "Uploading..."
+                                            : "Publish Newsletter"}
+                                    </button>
+                                </div>
+                                    </div>
+                               
                             </div>
+
                         )}
+
                     </div>
                 </div>
                 {/* Recent Uploads */}
@@ -326,6 +334,7 @@ const Newsletter = () => {
                                 </div>
                             ))
                         )}
+
                     </div>
                 </div>
             </div>
