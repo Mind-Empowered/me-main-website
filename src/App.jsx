@@ -845,8 +845,8 @@ function App() {
         <Route path="/signin" element={<Signin />} />
         <Route path="/reset-password" element={<ResetPass />} />
         <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
-        <Route path="/volunteer-profile" element={ <ProtectedRoute><VolunteerProfile /></ProtectedRoute>  } />
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/volunteer-profile" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]}><VolunteerProfile /></ProtectedRoute>  } />
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="volunteers" element={<Volunteers />} />
           <Route path="events" element={<AdminEvents />} />
