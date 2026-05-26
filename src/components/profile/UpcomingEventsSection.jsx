@@ -196,7 +196,7 @@ const UpcomingEventsSection = () => {
 
   return (
     <>
-      <div className="bg-white rounded-2xl p-6 flex flex-col">
+      <div className="bg-white rounded-2xl p-6 flex flex-col h-full">
         <h2 className="text-2xl font-bold mb-4 text-[#8A7060]">
           Upcoming Events
         </h2>

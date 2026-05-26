@@ -409,7 +409,7 @@ const ParticipatedEventsSection = () => {
     }
 
     return (
-        <div className="bg-white rounded-2xl p-6 flex flex-col h-auto">
+        <div className="bg-white rounded-2xl p-6 flex flex-col h-80">
             <h2 className="text-2xl font-bold mb-4 text-[#8A7060]">
                 Participated Events
             </h2>
@@ -422,21 +422,23 @@ const ParticipatedEventsSection = () => {
                 <>
                     <div className="space-y-3 mb-4">
                         {paginatedEvents.map((event) => (
-                            <div
+                            <div className=" ">
+                                <div 
                                 key={event.id}
-                                className="border rounded-lg p-4 hover:shadow-md transition"
+                                className="flex justify-between border rounded-lg p-4 hover:shadow-md transition"
                             >
                                 <h3 className="text-md font-bold text-[#A64200]">
                                     {event.title}
                                 </h3>
-                                <p className="text-gray-600 text-sm line-clamp-1">
+                                {/* <p className="text-gray-600 text-sm line-clamp-1">
                                     {event.description}
-                                </p>
+                                </p> */}
                                 {event.date && (
                                     <p className="text-sm text-gray-400 mt-1">
                                         {new Date(event.date).toLocaleDateString()}
                                     </p>
                                 )}
+                            </div>
                             </div>
                         ))}
                     </div>
