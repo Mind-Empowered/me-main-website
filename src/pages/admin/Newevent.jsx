@@ -16,12 +16,14 @@ const AddEvent = () => {
     bannerAltText: "",
     startDate: "",
     startTime: "",
+    endDate: "",
     endTime: "",
     venue: "",
     maxParticipants: "",
     registrationDeadline: "",
     volunteersNeeded: "",
-    contactPerson: "",
+    food: false,
+    mapUrl: "",
   });
 
   const [volunteers, setVolunteers] = useState([]);
@@ -41,6 +43,7 @@ const AddEvent = () => {
     setBannerPreview(URL.createObjectURL(file));
   };
 
+  // check 
   const handleVolunteerKeyDown = (e) => {
     if (e.key === "Enter" && volunteerInput.trim()) {
       e.preventDefault();
@@ -49,19 +52,19 @@ const AddEvent = () => {
     }
   };
 
+  //check
   const removeVolunteer = (index) => {
     setVolunteers(volunteers.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (status) => {
     setLoading(true);
-
     try {
       const fromDateTime = new Date(
         `${form.startDate}T${form.startTime}`,
       ).toISOString();
       const toDateTime = new Date(
-        `${form.startDate}T${form.endTime}`,
+        `${form.endDate}T${form.endTime}`,
       ).toISOString();
 
       let bannerURL = null;
@@ -96,19 +99,22 @@ const AddEvent = () => {
           max_participants: form.maxParticipants
             ? parseInt(form.maxParticipants)
             : null,
-          reg_deadline: form.registrationDeadline || null,
+          reg_deadline: form.registrationDeadline
+            ? new Date(form.registrationDeadline).toISOString()
+            : null,
           max_volunteers: form.volunteersNeeded
             ? parseInt(form.volunteersNeeded)
             : null,
           bannerURL: bannerURL,
           bannerAltText: form.bannerAltText || form.title,
-          enabled: status === "publish",
+          is_food_available: form.food,
+          venue_url: form.mapUrl || null,
         });
 
       setLoading(false);
 
       if (!error) {
-        navigate("/admin/events");
+        navigate("/admin/dashboard");
       } else {
         console.error(error);
         alert("Failed to create event: " + error.message);
@@ -128,7 +134,7 @@ const AddEvent = () => {
           <h1 className="text-xl font-semibold text-gray-800">
             Create New Event
           </h1>
-          <p className="text-xs text-gray-400">
+          <p className=" text-gray-400">
             Fill in the details below to publish a new event for your community.
           </p>
         </div>
@@ -150,7 +156,7 @@ const AddEvent = () => {
                 Event Details
               </h2>
 
-              <label className="text-xs text-gray-500">Event Name *</label>
+              <label className=" text-gray-500">Event Name *</label>
               <input
                 name="title"
                 value={form.title}
@@ -159,7 +165,7 @@ const AddEvent = () => {
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A]"
               />
 
-              <label className="text-xs text-gray-500">
+              <label className=" text-gray-500">
                 Short Description *
               </label>
               <textarea
@@ -171,7 +177,7 @@ const AddEvent = () => {
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A] resize-none"
               />
 
-              <label className="text-xs text-gray-500">
+              <label className=" text-gray-500">
                 Full Details / Agenda
               </label>
               <textarea
@@ -183,7 +189,7 @@ const AddEvent = () => {
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A] resize-none"
               />
 
-              <label className="text-xs text-gray-500">Event URL</label>
+              <label className=" text-gray-500">Event URL</label>
               <input
                 name="eventURL"
                 value={form.eventURL}
@@ -192,7 +198,7 @@ const AddEvent = () => {
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A]"
               />
 
-              
+
               <div className="flex justify-end">
                 <button
                   className="bg-[#C1622A] text-white text-sm px-4 py-2 rounded-lg"
@@ -208,9 +214,9 @@ const AddEvent = () => {
           {step === 2 && (
             <div className="bg-white rounded-xl p-6">
               {/* Banner Upload */}
-              <label className="text-xs text-gray-500">Event Banner</label>
+              <label className=" text-gray-500">Event Banner</label>
               <div className="mt-1 mb-2">
-                <label className="inline-flex items-center gap-2 bg-gray-800 text-white text-xs px-4 py-2 rounded-lg cursor-pointer hover:bg-gray-700 transition">
+                <label className="inline-flex items-center gap-2 bg-gray-800 text-white  px-4 py-2 rounded-lg cursor-pointer hover:bg-gray-700 transition">
                   <FaUpload size={12} /> Upload Photo
                   <input
                     type="file"
@@ -220,7 +226,7 @@ const AddEvent = () => {
                   />
                 </label>
                 {bannerFile && (
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className=" text-gray-400 mt-2">
                     {bannerFile.name}
                   </p>
                 )}
@@ -229,7 +235,7 @@ const AddEvent = () => {
               {/* Banner Preview */}
               {bannerPreview && (
                 <div className="mb-4">
-                  <p className="text-xs text-gray-400 mb-1">Preview</p>
+                  <p className=" text-gray-400 mb-1">Preview</p>
                   <img
                     src={bannerPreview}
                     alt="Banner preview"
@@ -238,7 +244,7 @@ const AddEvent = () => {
                 </div>
               )}
 
-              <label className="text-xs text-gray-500">
+              <label className=" text-gray-500">
                 Banner Alt Text <span className="text-gray-300">optional</span>
               </label>
               <input
@@ -256,9 +262,9 @@ const AddEvent = () => {
                 </h2>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-4 gap-4 mb-4">
                 <div>
-                  <label className="text-xs text-gray-500">Start Date *</label>
+                  <label className=" text-gray-500">Start Date *</label>
                   <input
                     type="date"
                     name="startDate"
@@ -268,7 +274,7 @@ const AddEvent = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">Start Time</label>
+                  <label className=" text-gray-500">Start Time</label>
                   <input
                     type="time"
                     name="startTime"
@@ -278,7 +284,17 @@ const AddEvent = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">End Time</label>
+                  <label className=" text-gray-500">End Date *</label>
+                  <input
+                    type="date"
+                    name="endDate"
+                    value={form.endDate}
+                    onChange={handleChange}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 outline-none focus:border-[#C1622A]"
+                  />
+                </div>
+                <div>
+                  <label className=" text-gray-500">End Time</label>
                   <input
                     type="time"
                     name="endTime"
@@ -291,7 +307,7 @@ const AddEvent = () => {
 
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="text-xs text-gray-500">
+                  <label className=" text-gray-500">
                     Venue / Location{" "}
                     <span className="text-gray-300">optional</span>
                   </label>
@@ -303,61 +319,77 @@ const AddEvent = () => {
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 outline-none focus:border-[#C1622A]"
                   />
                 </div>
+                {/* map url */}
                 <div>
-                  <label className="text-xs text-gray-500">
-                    Max Participants
-                  </label>
+                  <label className=" text-gray-500">
+                    Map URL </label>
+                  <input
+                    name="mapUrl"
+                    value={form.mapUrl}
+                    onChange={handleChange}
+                    placeholder="e.g. https://maps.google.com/?q=Community+Hall"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 outline-none focus:border-[#C1622A]"
+                  />
+                </div>
+              </div>
+
+              <label className=" text-gray-500 ">
+                Registration Deadline
+              </label>
+              <input
+                type="datetime-local"
+                name="registrationDeadline"
+                value={form.registrationDeadline}
+                onChange={handleChange}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 outline-none focus:border-[#C1622A]"
+              />
+
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                <div><label className=" text-gray-500">Volunteers Needed</label>
+                  <input
+                    name="volunteersNeeded"
+                    value={form.volunteersNeeded}
+                    onChange={handleChange}
+                    placeholder="e.g. 10"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A]"
+                  /></div>
+                <div><label className=" text-gray-500">
+                  Max Participants
+                </label>
                   <input
                     name="maxParticipants"
                     value={form.maxParticipants}
                     onChange={handleChange}
                     placeholder="e.g. 100"
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 outline-none focus:border-[#C1622A]"
-                  />
-                </div>
+                  /></div>
+
+              </div>
+              <div className="flex items-center gap-2 mb-4">
+                <input type="checkbox" name="food" checked={form.food} onChange={(e) => setForm({ ...form, food: e.target.checked })} className="ml-2 w-6 h-6  outline-none focus:ring-2 focus:ring-[#C1622A]" />
+                <label className=" text-gray-500">Food Provided</label>
+              </div>
+              <div className="flex justify-between  gap-2 mb-4">
+                <button
+                  className="bg-[#C1622A] text-white text-sm px-4 py-2 rounded-lg mt-4 hover:bg-[#a8521f] transition outline-none  focus:ring-2 focus:ring-[#C1622A]"
+                  onClick={() => setStep(1)}
+                >
+                  previous
+                </button>
+                <button
+                  onClick={() => handleSubmit("publish")}
+                  disabled={loading}
+                  className="bg-[#C1622A] text-white text-sm px-4 py-2 rounded-lg mt-4 hover:bg-[#a8521f] transition outline-none  focus:ring-2 focus:ring-[#C1622A]"
+                >
+                  {loading ? "Publishing..." : "Publish Event"}
+                </button>
               </div>
 
-              <label className="text-xs text-gray-500">
-                Registration Deadline
-              </label>
-              <input
-                type="date"
-                name="registrationDeadline"
-                value={form.registrationDeadline}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 outline-none focus:border-[#C1622A]"
-              />
-              <label className="text-xs text-gray-500">Volunteers Needed</label>
-            <input
-              name="volunteersNeeded"
-              value={form.volunteersNeeded}
-              onChange={handleChange}
-              placeholder="e.g. 10"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1 mb-4 outline-none focus:border-[#C1622A]"
-            />
-            <div className="flex justify-between  gap-2 mb-4"> 
-              <button
-                className="bg-[#C1622A] text-white text-sm px-4 py-2 rounded-lg mt-4 hover:bg-[#a8521f] transition"
-                onClick={() => setStep(1)}
-              >
-                previous
-              </button>
-              <button
-              onClick={() => handleSubmit("publish")}
-              disabled={loading}
-              className="bg-[#C1622A] text-white text-sm px-4 py-2 rounded-lg mt-4 hover:bg-[#a8521f] transition"
-            >
-              {loading ? "Publishing..." : "Publish Event"}
-            </button>
-            </div>
-              
             </div>
           )}
         </div>
-
-          
-        </div>
       </div>
+    </div>
     // </div>
   );
 };
