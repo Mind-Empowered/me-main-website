@@ -61,7 +61,8 @@ const Signin = () => {
 
 			const authenticatedUser = data?.user || data?.session?.user;
 			const role = await resolveUserRole(authenticatedUser);
-			const homePath = ROLE_HOME_PATHS[role];
+			// const homePath = ROLE_HOME_PATHS[role];
+            const homePath = "/";
 
 			if (!homePath) {
 				await supabase.auth.signOut();
