@@ -244,6 +244,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../services/supabase-client";
 import { FaSpinner, FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import { SectionSkeleton } from "./ProfileSkeletons";
 
 const ParticipatedEventsSection = () => {
     const [participatedEvents, setParticipatedEvents] = useState([]);
@@ -383,16 +384,7 @@ const ParticipatedEventsSection = () => {
     };
 
     if (loading) {
-        return (
-            <div className="bg-white rounded-2xl p-6 flex flex-col">
-                <h2 className="text-2xl font-bold mb-4 text-[#8A7060]">
-                    Participated Events
-                </h2>
-                <div className="flex items-center justify-center py-8">
-                    <FaSpinner className="animate-spin text-[#A64200] text-2xl" />
-                </div>
-            </div>
-        );
+        return <SectionSkeleton titleWidth="w-52" itemCount={2} cardHeight="h-32" />;
     }
 
     if (error) {

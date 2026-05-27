@@ -8,6 +8,7 @@ import {
   FaCheck,
   FaSearch,
 } from "react-icons/fa";
+import { AdminStatsSkeleton, AdminTableSkeleton } from "../../components/adminDashboard/AdminSkeletons";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -472,8 +473,12 @@ const Events = () => {
       )}
 
       {loading && (
-        <div className="flex justify-center items-center py-12">
-          <FaSpinner className="animate-spin text-[#A64200] text-3xl" />
+        <div className="space-y-5 mt-5">
+          <AdminStatsSkeleton cards={4} />
+          <div className="bg-white rounded-xl p-4 border border-gray-100">
+            <div className="h-10 w-full max-w-sm rounded-full bg-gradient-to-r from-[#e7ddd4] via-white to-[#e7ddd4] bg-[length:200%_100%] animate-pulse mb-4" />
+            <AdminTableSkeleton rows={3} columns={4} />
+          </div>
         </div>
       )}
 
@@ -587,6 +592,8 @@ const Events = () => {
                       src={event.bannerURL}
                       alt={event.title}
                       className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center text-gray-300 text-xs">
@@ -671,6 +678,8 @@ const Events = () => {
                     src={editFormData.bannerURL}
                     alt="preview"
                     className="w-full h-28 object-cover rounded-lg border border-gray-200 mb-2"
+                    loading="lazy"
+                    decoding="async"
                   />
                 )}
                 <label className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 text-xs rounded-lg cursor-pointer hover:bg-gray-200">

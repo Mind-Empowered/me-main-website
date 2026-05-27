@@ -45,7 +45,7 @@ const Story = ({ language }) => {
                                     className="w-full h-auto aspect-video object-cover"
                                     controls
                                     playsInline
-                                    preload="metadata"
+                                    preload="none"
                                     title="Mind Empowered Journey 2025"
                                 >
                                     <source src="/story.mp4" type="video/mp4" />
@@ -157,7 +157,7 @@ const Story = ({ language }) => {
                                 <p className="text-xl text-[#ff7612] font-black italic">
                                     {translations.team.collabSubtitle[language]}
                                 </p>
-                                <p className="leading-relaxed leading-[1.8] opacity-80">
+                                <p className="leading-[1.8] opacity-80">
                                     The Yellow Tulip Project (YTP) is a global mental health initiative dedicated to empowering young people and reducing stigma. Mind Empowered is the bridge bringing this global perspective to the youth of India — combining local heart with international expertise.
                                 </p>
                             </div>

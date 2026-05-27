@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabase-client";
 import { FaEdit, FaTrash, FaSpinner, FaTimes, FaUser } from "react-icons/fa";
+import { AdminListSkeleton } from "../../components/adminDashboard/AdminSkeletons";
 
 const Volunteers = () => {
   const [volunteers, setVolunteers] = useState([]);
@@ -214,8 +215,8 @@ const Volunteers = () => {
 
       {/* Loading State */}
       {loading && (
-        <div className="flex justify-center items-center py-12">
-          <FaSpinner className="animate-spin text-[#A64200] text-3xl" />
+        <div className="mt-4">
+          <AdminListSkeleton rows={5} />
         </div>
       )}
 
@@ -254,6 +255,8 @@ const Volunteers = () => {
                       src={volunteer.photo}
                       alt="profile"
                       className="w-10 h-10 rounded-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
