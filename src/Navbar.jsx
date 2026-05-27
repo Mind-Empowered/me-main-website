@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { supabase } from './services/supabase-client';
+import { ROLE_HOME_PATHS, resolveUserRole } from './services/authRoles';
 import CalendarPopup from './components/CalendarPopup';
 import NewsletterPopup from './components/NewsletterPopup';
 
@@ -30,11 +32,46 @@ const NavLink = ({ item, scrollToSection, scrolled, isMobile = false }) => {
 
 const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageModal, openDonateModal }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [dashboardPath, setDashboardPath] = React.useState(null);
 
   const handleScrollToSection = (ref) => {
     scrollToSection(ref);
     setIsMobileMenuOpen(false); // Close mobile menu on navigation
   };
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    const applySession = async (session) => {
+      if (!session?.user) {
+        if (mounted) setDashboardPath(null);
+        return;
+      }
+
+      const role = await resolveUserRole(session.user);
+      const nextPath = ROLE_HOME_PATHS[role] || "/signin";
+
+      if (mounted) {
+        setDashboardPath(nextPath);
+      }
+    };
+
+    const initializeAuthState = async () => {
+      const { data } = await supabase.auth.getSession();
+      await applySession(data?.session || null);
+    };
+
+    initializeAuthState();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      await applySession(session);
+    });
+
+    return () => {
+      mounted = false;
+      listener?.subscription?.unsubscribe();
+    };
+  }, []);
 
   return (
     <nav
@@ -71,13 +108,20 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
         {/* Right-side actions — grouped tightly */}
         <div className="hidden lg:flex items-center justify-self-end gap-2">
-          {/* Sign In / Sign Up buttons */}
-          <Link to="/signin" className={`px-3 py-2 rounded-full font-semibold transition-all duration-200 ${scrolled ? 'text-[#461711] bg-white/0 hover:bg-black/5' : 'text-white bg-white/10 hover:bg-white/20'}`}>
-            Sign In
-          </Link>
-          <Link to="/register" className="px-4 py-2 rounded-2xl font-black bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] text-[#461711] hover:opacity-95 transition-all duration-200">
-            Sign Up
-          </Link>
+          {dashboardPath ? (
+            <Link to={dashboardPath} className="px-4 py-2 rounded-2xl font-black bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] text-[#461711] hover:opacity-95 transition-all duration-200">
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link to="/signin" className={`px-3 py-2 rounded-full font-semibold transition-all duration-200 ${scrolled ? 'text-[#461711] bg-white/0 hover:bg-black/5' : 'text-white bg-white/10 hover:bg-white/20'}`}>
+                Sign In
+              </Link>
+              <Link to="/register" className="px-4 py-2 rounded-2xl font-black bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] text-[#461711] hover:opacity-95 transition-all duration-200">
+                Sign Up
+              </Link>
+            </>
+          )}
           {/* Calendar */}
           <CalendarPopup language={language} scrolled={scrolled} />
 
@@ -164,8 +208,14 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
             </button>
 
             <div className="pt-2">
-              <Link to="/signin" className="block w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300">Sign In</Link>
-              <Link to="/register" className="mt-1 block w-full text-left px-4 py-3 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] text-[#461711] rounded-lg font-black text-lg transition-all duration-300">Sign Up</Link>
+              {dashboardPath ? (
+                <Link to={dashboardPath} className="block w-full text-left px-4 py-3 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] text-[#461711] rounded-lg font-black text-lg transition-all duration-300">Dashboard</Link>
+              ) : (
+                <>
+                  <Link to="/signin" className="block w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300">Sign In</Link>
+                  <Link to="/register" className="mt-1 block w-full text-left px-4 py-3 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] text-[#461711] rounded-lg font-black text-lg transition-all duration-300">Sign Up</Link>
+                </>
+              )}
             </div>
 
             <button
