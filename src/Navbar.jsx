@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from './services/supabase-client';
 import { ROLE_HOME_PATHS, resolveUserRole } from './services/authRoles';
 import CalendarPopup from './components/CalendarPopup';
@@ -31,8 +31,14 @@ const NavLink = ({ item, scrollToSection, scrolled, isMobile = false }) => {
 };
 
 const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageModal, openDonateModal }) => {
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [dashboardPath, setDashboardPath] = React.useState(null);
+  const [profileUser, setProfileUser] = React.useState(null);
+  const [profileRole, setProfileRole] = React.useState(null);
+  const [isProfilePopupOpen, setIsProfilePopupOpen] = React.useState(false);
+  const profilePopupRef = React.useRef(null);
+  const profileButtonRef = React.useRef(null);
 
   const handleScrollToSection = (ref) => {
     scrollToSection(ref);
@@ -44,7 +50,12 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
     const applySession = async (session) => {
       if (!session?.user) {
-        if (mounted) setDashboardPath(null);
+        if (mounted) {
+          setDashboardPath(null);
+          setProfileUser(null);
+          setProfileRole(null);
+          setIsProfilePopupOpen(false);
+        }
         return;
       }
 
@@ -53,6 +64,8 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
       if (mounted) {
         setDashboardPath(nextPath);
+        setProfileUser(session.user);
+        setProfileRole(role);
       }
     };
 
@@ -72,6 +85,47 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
       listener?.subscription?.unsubscribe();
     };
   }, []);
+
+  React.useEffect(() => {
+    if (!isProfilePopupOpen) return;
+
+    const handlePointerDown = (event) => {
+      if (profilePopupRef.current?.contains(event.target) || profileButtonRef.current?.contains(event.target)) {
+        return;
+      }
+
+      setIsProfilePopupOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, [isProfilePopupOpen]);
+
+  const handleLogout = async () => {
+    setIsProfilePopupOpen(false);
+    setIsMobileMenuOpen(false);
+    await supabase.auth.signOut();
+    setDashboardPath(null);
+    setProfileUser(null);
+    setProfileRole(null);
+    navigate('/', { replace: true });
+  };
+
+  const profileName = profileUser?.user_metadata?.full_name || profileUser?.user_metadata?.name || profileUser?.user_metadata?.display_name || profileUser?.email?.split('@')[0] || 'Member';
+  const profileEmail = profileUser?.email || '';
+  const profileInitials = profileName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase() || 'ME';
+  const profileRoleLabel = profileRole ? profileRole.toLowerCase() : 'member';
 
   return (
     <nav
@@ -108,10 +162,64 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
         {/* Right-side actions — grouped tightly */}
         <div className="hidden lg:flex items-center justify-self-end gap-2">
-          {dashboardPath ? (
-            <Link to={dashboardPath} className="px-4 py-2 rounded-2xl font-black bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] text-[#461711] hover:opacity-95 transition-all duration-200">
-              Dashboard
-            </Link>
+          {profileUser ? (
+            <>
+              <div className="relative">
+                <button
+                  ref={profileButtonRef}
+                  onClick={() => setIsProfilePopupOpen((value) => !value)}
+                  aria-label="Open profile menu"
+                  className={`flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 shadow-md ${scrolled ? 'border-[#ff7612]/35 bg-white text-[#461711] hover:scale-105' : 'border-white/20 bg-white/10 text-white hover:bg-white/15 hover:scale-105'}`}
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A9 9 0 0112 15c2.485 0 4.735 1.007 6.364 2.636M15 11a3 3 0 11-6 0 3 3 0 016 0zm6 1a9 9 0 10-18 0 9 9 0 0018 0z" />
+                  </svg>
+                </button>
+
+                {isProfilePopupOpen && (
+                  <div ref={profilePopupRef} className="absolute right-0 top-full z-[80] mt-3 w-80 overflow-hidden rounded-3xl border border-[#ff7612]/15 bg-white/95 shadow-[0_30px_80px_-20px_rgba(70,23,17,0.35)] backdrop-blur-2xl">
+                    <div className="bg-gradient-to-r from-[#461711] to-[#7a3012] px-5 py-4 text-white">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-sm font-black tracking-wider">
+                          {profileInitials}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-base font-black">{profileName}</p>
+                          <p className="truncate text-xs uppercase tracking-[0.2em] text-white/75">{profileRoleLabel}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 px-5 py-4 text-[#461711]">
+                      <div>
+                        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#ff7612]">Email</p>
+                        <p className="mt-1 break-all text-sm font-semibold text-[#5d4037]">{profileEmail}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#ff7612]">Role</p>
+                        <p className="mt-1 text-sm font-semibold text-[#5d4037]">{profileRoleLabel}</p>
+                      </div>
+                      <div className="flex gap-2 pt-1">
+                        <Link
+                          to={dashboardPath || '/signin'}
+                          onClick={() => setIsProfilePopupOpen(false)}
+                          className="flex-1 rounded-2xl bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] px-4 py-3 text-center text-sm font-black text-[#461711] transition-all duration-200 hover:opacity-95"
+                        >
+                          Dashboard
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="rounded-2xl border border-[#461711]/10 px-4 py-3 text-sm font-black text-[#461711] transition-all duration-200 hover:bg-[#461711]/5"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+            </>
           ) : (
             <>
               <Link to="/signin" className={`px-3 py-2 rounded-full font-semibold transition-all duration-200 ${scrolled ? 'text-[#461711] bg-white/0 hover:bg-black/5' : 'text-white bg-white/10 hover:bg-white/20'}`}>
@@ -132,7 +240,7 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
             <button
               onClick={openLanguageModal}
               aria-label="Change Language"
-              className={`p-2 rounded-full transition-all duration-300 hover:bg-black/10 hover:scale-110 active:scale-95 group ${scrolled ? 'text-[#461711]' : 'text-white'
+              className={`flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 shadow-md hover:scale-105 active:scale-95 group ${scrolled ? 'border-[#ff7612]/30 bg-white text-[#461711] hover:bg-white/95' : 'border-white/20 bg-white/10 text-white hover:bg-white/15'
                 }`}
             >
               <svg className="w-5 h-5 transition-transform duration-500 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,8 +316,38 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
             </button>
 
             <div className="pt-2">
-              {dashboardPath ? (
-                <Link to={dashboardPath} className="block w-full text-left px-4 py-3 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] text-[#461711] rounded-lg font-black text-lg transition-all duration-300">Dashboard</Link>
+              {profileUser ? (
+                <>
+                  <button
+                    onClick={() => setIsProfilePopupOpen((value) => !value)}
+                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-[#461711] transition-all duration-300 hover:bg-[#ff7612]/5"
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#461711] text-sm font-black text-white">{profileInitials}</span>
+                    <span className="text-lg font-black">Profile</span>
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="mt-1 block w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300"
+                  >
+                    Logout
+                  </button>
+                  {isProfilePopupOpen && (
+                    <div className="mt-3 rounded-3xl border border-[#ff7612]/15 bg-white/95 p-4 text-[#461711] shadow-[0_20px_60px_-25px_rgba(70,23,17,0.35)]">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#461711] text-sm font-black text-white">{profileInitials}</div>
+                        <div className="min-w-0">
+                          <p className="truncate text-base font-black">{profileName}</p>
+                          <p className="truncate text-xs uppercase tracking-[0.18em] text-[#ff7612]">{profileRoleLabel}</p>
+                        </div>
+                      </div>
+                      <p className="mt-3 break-all text-sm font-semibold text-[#5d4037]">{profileEmail}</p>
+                      <div className="mt-4 flex gap-2">
+                        <Link to={dashboardPath || '/signin'} onClick={() => setIsProfilePopupOpen(false)} className="flex-1 rounded-2xl bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] px-4 py-3 text-center text-sm font-black text-[#461711] transition-all duration-200 hover:opacity-95">Dashboard</Link>
+                        <button onClick={handleLogout} className="rounded-2xl border border-[#461711]/10 px-4 py-3 text-sm font-black text-[#461711] transition-all duration-200 hover:bg-[#461711]/5">Logout</button>
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
                 <>
                   <Link to="/signin" className="block w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300">Sign In</Link>
