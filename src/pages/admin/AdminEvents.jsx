@@ -37,9 +37,9 @@ const Events = () => {
     try {
       const { data, error } = await supabase
         .schema("me_dataspace")
-        .from("event_participation")
+        .from("event_participatiion")
         .select("event_id")
-        .in("registered_as", ["registered", "attended"]);
+        .in("registered_as", ["volunteer", "attended"]);
       if (error) throw error;
       const counts = {};
       eventsList.forEach((event) => {
@@ -98,27 +98,43 @@ const Events = () => {
       d ? `${pad(d.getHours())}:${pad(d.getMinutes())}` : "";
     const fromDT = event.fromDateTime ? new Date(event.fromDateTime) : null;
     const toDT = event.toDateTime ? new Date(event.toDateTime) : null;
+
+    // reg_deadline may be a full ISO string or date only
+    let reg_deadline = "";
+    if (event.reg_deadline) {
+      // datetime-local input needs "YYYY-MM-DDTHH:mm"
+      const d = new Date(event.reg_deadline);
+      reg_deadline = `${toDateStr(d)}T${toTimeStr(d)}`;
+    }
+
     setEditFormData({
       title: event.title || "",
       description: event.description || "",
+      agenda: event.agenda || "",
       venue: event.venue || "",
+      venue_url: event.venue_url || "",
       max_participants: event.max_participants ?? "",
       max_volunteers: event.max_volunteers ?? "",
       bannerURL: event.bannerURL || "",
       bannerFile: null,
-      reg_deadline: event.reg_deadline ? event.reg_deadline.split("T")[0] : "",
+      reg_deadline,
       fromDate: toDateStr(fromDT),
       fromTime: toTimeStr(fromDT),
       toDate: toDateStr(toDT),
       toTime: toTimeStr(toDT),
+      is_food_available: event.is_food_available ?? false,
+      eventURL: event.eventURL || "",
     });
     setEditError(null);
     setShowEditModal(true);
   };
 
   const handleEditInput = (e) => {
-    const { name, value } = e.target;
-    setEditFormData((p) => ({ ...p, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setEditFormData((p) => ({
+      ...p,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleBannerFileChange = (e) => {
@@ -175,7 +191,9 @@ const Events = () => {
       const updates = {
         title: editFormData.title.trim(),
         description: editFormData.description.trim(),
+        agenda: editFormData.agenda.trim() || null,
         venue: editFormData.venue.trim() || null,
+        venue_url: editFormData.venue_url.trim() || null,
         max_participants:
           editFormData.max_participants !== ""
             ? parseInt(editFormData.max_participants)
@@ -185,9 +203,13 @@ const Events = () => {
             ? parseInt(editFormData.max_volunteers)
             : null,
         bannerURL,
-        reg_deadline: editFormData.reg_deadline || null,
+        reg_deadline: editFormData.reg_deadline
+          ? new Date(editFormData.reg_deadline).toISOString()
+          : null,
         fromDateTime,
         toDateTime,
+        is_food_available: editFormData.is_food_available,
+        eventURL: editFormData.eventURL.trim() || null,
       };
 
       const { error } = await supabase
@@ -218,10 +240,10 @@ const Events = () => {
     try {
       const { data: participations, error: pErr } = await supabase
         .schema("me_dataspace")
-        .from("event_participation")
+        .from("event_participatiion")
         .select("id, participant_id, created_at, registered_as")
         .eq("event_id", event.eventID)
-        .in("registered_as", ["registered", "attended"]);
+        .in("registered_as", ["volunteer", "attended"]);
       if (pErr) throw pErr;
       if (!participations?.length) {
         setVolunteersLoading(false);
@@ -254,18 +276,16 @@ const Events = () => {
     }
   };
 
-  // Toggle attended status — updates registered_as to "attended" or back to "registered"
   const handleToggleAttendance = async (participationId, currentlyAttended) => {
     setAttendanceUpdating((prev) => ({ ...prev, [participationId]: true }));
-    const newStatus = currentlyAttended ? "registered" : "attended";
+    const newStatus = currentlyAttended ? "volunteer" : "attended";
     try {
       const { error } = await supabase
         .schema("me_dataspace")
-        .from("event_participation")
+        .from("event_participatiion")
         .update({ registered_as: newStatus })
         .eq("id", participationId);
       if (error) throw error;
-
       setRegisteredVolunteers((prev) =>
         prev.map((v) =>
           v.participationId === participationId
@@ -301,7 +321,6 @@ const Events = () => {
     dt
       ? new Date(dt).toLocaleDateString(undefined, { dateStyle: "medium" })
       : "—";
-
   const statusStyle = (s) =>
     s === "Ongoing"
       ? "text-green-600"
@@ -325,19 +344,15 @@ const Events = () => {
       : events.filter(
           (e) => getStatus(e.fromDateTime, e.toDateTime) === filter,
         );
-
   const inputCls =
     "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C97736]";
-
   const attendedCount = registeredVolunteers.filter((v) => v.attended).length;
-
-  // Filter volunteers based on search query
   const filteredVolunteers = registeredVolunteers.filter((v) => {
-    const searchLower = volunteerSearchQuery.toLowerCase();
+    const q = volunteerSearchQuery.toLowerCase();
     return (
-      v.firstName.toLowerCase().includes(searchLower) ||
-      v.lastName.toLowerCase().includes(searchLower) ||
-      v.emailID.toLowerCase().includes(searchLower)
+      v.firstName.toLowerCase().includes(q) ||
+      v.lastName.toLowerCase().includes(q) ||
+      v.emailID.toLowerCase().includes(q)
     );
   });
 
@@ -401,11 +416,7 @@ const Events = () => {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-1 rounded-full text-sm font-medium transition ${
-                filter === f
-                  ? "bg-[#F7F2EC] text-gray-700 border border-gray-200"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`px-4 py-1 rounded-full text-sm font-medium transition ${filter === f ? "bg-[#F7F2EC] text-gray-700 border border-gray-200" : "text-gray-500 hover:text-gray-700"}`}
             >
               {f}
             </button>
@@ -427,7 +438,6 @@ const Events = () => {
           {filteredEvents.map((event) => {
             const status = getStatus(event.fromDateTime, event.toDateTime);
             const volunteerCount = volunteerCounts[event.eventID] || 0;
-
             return (
               <div
                 key={event.eventID}
@@ -514,7 +524,7 @@ const Events = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
+      {/* ── Edit Modal ── */}
       {showEditModal && editingEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] flex flex-col">
@@ -529,12 +539,15 @@ const Events = () => {
                 <FaTimes size={18} />
               </button>
             </div>
+
             <div className="p-5 overflow-y-auto flex-1 space-y-4">
               {editError && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                   {editError}
                 </div>
               )}
+
+              {/* Banner */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
                   Banner
@@ -556,9 +569,11 @@ const Events = () => {
                   />
                 </label>
               </div>
+
+              {/* Title */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Title *
+                  Event Name *
                 </label>
                 <input
                   name="title"
@@ -567,9 +582,11 @@ const Events = () => {
                   className={inputCls}
                 />
               </div>
+
+              {/* Description */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Description
+                  Short Description
                 </label>
                 <textarea
                   name="description"
@@ -579,17 +596,36 @@ const Events = () => {
                   className={`${inputCls} resize-none`}
                 />
               </div>
+
+              {/* Agenda */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Venue
+                  Full Details / Agenda
+                </label>
+                <textarea
+                  name="agenda"
+                  value={editFormData.agenda}
+                  onChange={handleEditInput}
+                  rows={3}
+                  className={`${inputCls} resize-none`}
+                />
+              </div>
+
+              {/* Event URL */}
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Event URL
                 </label>
                 <input
-                  name="venue"
-                  value={editFormData.venue}
+                  name="eventURL"
+                  value={editFormData.eventURL}
                   onChange={handleEditInput}
+                  placeholder="https://example.com/event"
                   className={inputCls}
                 />
               </div>
+
+              {/* Start Date & Time */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
                   Start Date & Time
@@ -611,6 +647,8 @@ const Events = () => {
                   />
                 </div>
               </div>
+
+              {/* End Date & Time */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
                   End Date & Time
@@ -632,18 +670,50 @@ const Events = () => {
                   />
                 </div>
               </div>
+
+              {/* Venue + Map URL */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Venue / Location
+                  </label>
+                  <input
+                    name="venue"
+                    value={editFormData.venue}
+                    onChange={handleEditInput}
+                    placeholder="e.g. Community Hall"
+                    className={inputCls}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Map URL
+                  </label>
+                  <input
+                    name="venue_url"
+                    value={editFormData.venue_url}
+                    onChange={handleEditInput}
+                    placeholder="https://maps.google.com/..."
+                    className={inputCls}
+                  />
+                </div>
+              </div>
+
+              {/* Registration Deadline */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
                   Registration Deadline
                 </label>
                 <input
-                  type="date"
+                  type="datetime-local"
                   name="reg_deadline"
                   value={editFormData.reg_deadline}
                   onChange={handleEditInput}
                   className={inputCls}
                 />
               </div>
+
+              {/* Max Participants + Max Volunteers */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -659,7 +729,7 @@ const Events = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Max Volunteers
+                    Volunteers Needed
                   </label>
                   <input
                     type="number"
@@ -670,7 +740,26 @@ const Events = () => {
                   />
                 </div>
               </div>
+
+              {/* Food Provided */}
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  name="is_food_available"
+                  id="is_food_available"
+                  checked={editFormData.is_food_available}
+                  onChange={handleEditInput}
+                  className="w-5 h-5 accent-[#C97736] cursor-pointer"
+                />
+                <label
+                  htmlFor="is_food_available"
+                  className="text-sm text-gray-600 cursor-pointer select-none"
+                >
+                  Food Provided
+                </label>
+              </div>
             </div>
+
             <div className="flex gap-3 p-5 border-t border-gray-200 bg-gray-50">
               <button
                 onClick={() => setShowEditModal(false)}
@@ -697,7 +786,7 @@ const Events = () => {
         </div>
       )}
 
-      {/* Volunteers Modal */}
+      {/* ── Volunteers Modal ── */}
       {showVolunteersModal && selectedEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl w-full max-w-4xl h-[100vh] flex flex-col">
@@ -716,7 +805,6 @@ const Events = () => {
               </button>
             </div>
 
-            {/* Attendance summary bar and search */}
             <div className="px-5 py-3 bg-gray-50 border-b border-gray-100 space-y-3">
               {registeredVolunteers.length > 0 && (
                 <div className="flex items-center justify-between">
@@ -735,8 +823,6 @@ const Events = () => {
                   </span>
                 </div>
               )}
-
-              {/* Search bar */}
               <div className="relative">
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
                 <input
@@ -767,23 +853,14 @@ const Events = () => {
                   {filteredVolunteers.map((v) => (
                     <div
                       key={v.participationId}
-                      className={`flex items-center gap-4 p-4 border rounded-lg transition ${
-                        v.attended
-                          ? "border-green-200 bg-green-50"
-                          : "border-gray-100 bg-gray-50"
-                      }`}
+                      className={`flex items-center gap-4 p-4 border rounded-lg transition ${v.attended ? "border-green-200 bg-green-50" : "border-gray-100 bg-gray-50"}`}
                     >
-                      {/* Attendance checkbox */}
                       <button
                         onClick={() =>
                           handleToggleAttendance(v.participationId, v.attended)
                         }
                         disabled={!!attendanceUpdating[v.participationId]}
-                        className={`w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition ${
-                          v.attended
-                            ? "bg-green-500 border-green-500 text-white"
-                            : "border-gray-300 bg-white hover:border-green-400"
-                        }`}
+                        className={`w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition ${v.attended ? "bg-green-500 border-green-500 text-white" : "border-gray-300 bg-white hover:border-green-400"}`}
                         title={
                           v.attended
                             ? "Mark as not attended"
@@ -797,7 +874,6 @@ const Events = () => {
                         ) : null}
                       </button>
 
-                      {/* Avatar */}
                       {v.photo ? (
                         <img
                           src={v.photo}
@@ -811,7 +887,6 @@ const Events = () => {
                         </div>
                       )}
 
-                      {/* Info */}
                       <div className="flex-1 min-w-0">
                         <p
                           className={`font-medium text-base ${v.attended ? "text-green-800" : "text-gray-800"}`}
@@ -826,7 +901,6 @@ const Events = () => {
                         </p>
                       </div>
 
-                      {/* Attended badge */}
                       {v.attended && (
                         <span className="text-sm font-medium text-green-600 bg-green-100 px-3 py-1 rounded-full flex-shrink-0">
                           Attended
