@@ -7,6 +7,7 @@ import ParticipatedEventsSection from "../components/profile/ParticipatedEventsS
 import FullProfileDetails from "../components/profile/FullProfileDetails";
 import { supabase } from "../services/supabase-client";
 import { useState, useEffect } from "react";
+import { VolunteerProfileSkeleton } from "../components/profile/ProfileSkeletons";
 
 const VolunteerProfile = () => {
 
@@ -49,7 +50,7 @@ const VolunteerProfile = () => {
         fetchUser();
     }, []);
 
-    if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>; 
+    if (loading) return <VolunteerProfileSkeleton />; 
     if (!user) return <div className="flex items-center justify-center min-h-screen">User not found</div>
 
     // Show full profile view

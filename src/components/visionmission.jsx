@@ -26,6 +26,8 @@ const VisionMission = ({ language }) => {
                 src="/vision.png"
                 alt="vision"
                 className="w-16 h-16 object-contain"
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div className="text-center">
@@ -47,6 +49,8 @@ const VisionMission = ({ language }) => {
                 src="/mission.png"
                 alt="mission"
                 className="w-16 h-16 object-contain"
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div className="text-center">
@@ -80,7 +84,7 @@ const VisionMission = ({ language }) => {
         <div className="bg-white/60 backdrop-blur-xl rounded-xl shadow-lg p-6 lg:p-8 border border-white flex flex-col">
           <div className="flex flex-col items-center text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-[#ff7612] to-[#ffdb5b] rounded-full flex items-center justify-center shadow-md mb-5">
-              <img src="/obj1.png" alt={translations.story.obj1_title[language]} className="w-12 h-12 object-contain" />
+              <img src="/obj1.png" alt={translations.story.obj1_title[language]} className="w-12 h-12 object-contain" loading="lazy" decoding="async" />
             </div>
             <h3 className={`font-bold text-[#461711] mb-3 ${language === 'ml' ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
               {translations.story.obj1_title[language]}
@@ -100,7 +104,7 @@ const VisionMission = ({ language }) => {
         <div className="bg-white/60 backdrop-blur-xl rounded-xl shadow-lg p-6 lg:p-8 border border-white flex flex-col">
           <div className="flex flex-col items-center text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-[#ff7612] to-[#ffdb5b] rounded-full flex items-center justify-center shadow-md mb-5">
-              <img src="/obj2.png" alt={translations.story.obj2_title[language]} className="w-12 h-12 object-contain" />
+              <img src="/obj2.png" alt={translations.story.obj2_title[language]} className="w-12 h-12 object-contain" loading="lazy" decoding="async" />
             </div>
             <h3 className={`font-bold text-[#461711] mb-3 ${language === 'ml' ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
               {translations.story.obj2_title[language]}
@@ -120,7 +124,7 @@ const VisionMission = ({ language }) => {
         <div className="bg-white/60 backdrop-blur-xl rounded-xl shadow-lg p-6 lg:p-8 border border-white flex flex-col">
           <div className="flex flex-col items-center text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-[#ff7612] to-[#ffdb5b] rounded-full flex items-center justify-center shadow-md mb-5">
-              <img src="/obj3.png" alt={translations.story.obj3_title[language]} className="w-12 h-12 object-contain" />
+              <img src="/obj3.png" alt={translations.story.obj3_title[language]} className="w-12 h-12 object-contain" loading="lazy" decoding="async" />
             </div>
             <h3 className={`font-bold text-[#461711] mb-3 ${language === 'ml' ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'}`} style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
               {translations.story.obj3_title[language]}

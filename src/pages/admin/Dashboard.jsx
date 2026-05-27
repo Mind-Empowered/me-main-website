@@ -15,6 +15,7 @@ import { supabase } from "../../services/supabase-client";
 import UploadPhotoModal from "../../components/adminDashboard/UploadPhotoModal";
 import Header from "../../components/profile/Header";
 import AddVolunteerModal from "../../components/adminDashboard/AddVolunteerModal";
+import { AdminListSkeleton, AdminStatsSkeleton } from "../../components/adminDashboard/AdminSkeletons";
 
 const Dashboard = () => {
   const quickActions = [
@@ -32,6 +33,7 @@ const Dashboard = () => {
 
   const [showUpload, setShowUpload] = useState(false);
   const [showAddVolunteer, setShowAddVolunteer] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [volunteerCount, setVolunteerCount] = useState(0);
   const [eventCount, setEventCount] = useState(0);
@@ -40,6 +42,7 @@ const Dashboard = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
 
   const fetchStats = async () => {
+    setIsLoading(true);
     //today's date in ISO format
     const today = new Date().toISOString();
     // date one week ago
@@ -93,7 +96,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchStats();
+    fetchStats().finally(() => setIsLoading(false));
   }, []);
 
 
@@ -125,83 +128,85 @@ const Dashboard = () => {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-white rounded-xl p-5 flex justify-between items-start">
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Active Volunteers</p>
-              <h2 className="text-4xl font-bold text-gray-800">
-                {volunteerCount}
-              </h2>
-              <p className="text-green-600 text-xs mt-2">
-                ▲ {newThisWeek} joined this week
-              </p>
-            </div>
-            <FaUsers className="text-[#C1622A] text-2xl opacity-40" />
+        {isLoading ? (
+          <div className="mb-6">
+            <AdminStatsSkeleton cards={2} />
           </div>
-          <div className="bg-white rounded-xl p-5 flex justify-between items-start">
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Events This Year</p>
-              <h2 className="text-4xl font-bold text-gray-800">{eventCount}</h2>
-              <p className="text-green-600 text-xs mt-2">
-                ▲ {upcomingEventsCount} upcoming
-              </p>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="bg-white rounded-xl p-5 flex justify-between items-start">
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Active Volunteers</p>
+                <h2 className="text-4xl font-bold text-gray-800">
+                  {volunteerCount}
+                </h2>
+                <p className="text-green-600 text-xs mt-2">
+                  ▲ {newThisWeek} joined this week
+                </p>
+              </div>
+              <FaUsers className="text-[#C1622A] text-2xl opacity-40" />
             </div>
-            <FaCalendarAlt className="text-[#C1622A] text-2xl opacity-40" />
+            <div className="bg-white rounded-xl p-5 flex justify-between items-start">
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Events This Year</p>
+                <h2 className="text-4xl font-bold text-gray-800">{eventCount}</h2>
+                <p className="text-green-600 text-xs mt-2">
+                  ▲ {upcomingEventsCount} upcoming
+                </p>
+              </div>
+              <FaCalendarAlt className="text-[#C1622A] text-2xl opacity-40" />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Upcoming Events */}
         <div className="bg-white rounded-xl p-5 ">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold text-gray-700">Upcoming Events</h3>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {upcomingEvents.map((event) => (
-              <div
-                key={event.eventID}
-                className="flex items-center gap-4 p-3 border border-gray-300 rounded-lg"
-              >
-                <img
-                  src={event.bannerURL}
-                  alt={event.title}
-                  className="w-24 h-24 object-cover rounded"
-                />
-                {/* <div className="bg-[#C1622A] text-white text-center rounded-lg px-3 py-1 min-w-[48px]">
-                  <div className="text-lg font-bold leading-tight">
-                    {new Date(event.fromDateTime).getDate()}
-                  </div>
-                  <div className="text-[10px]">
-                    {new Date(event.fromDateTime)
-                      .toLocaleString("default", { month: "short" })
-                      .toUpperCase()}
-                  </div>
-                </div> */}
-                <div className="flex flex-col gap-8">
-                  <p className="text-sm font-medium text-gray-800">
-                    {event.title}
-                  </p>
-                  <p className="text-xs text-gray-400 flex items-center gap-1">
-                    <FaClock size={12} />
-                    <p className="text-sm text-gray-500">
-                      {new Date(event.fromDateTime).toLocaleDateString(
-                        "en-GB",
-                        {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        },
-                      )}
-                      {" at "}
-                      {new Date(event.fromDateTime).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+          {isLoading ? (
+            <AdminListSkeleton rows={3} />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {upcomingEvents.map((event) => (
+                <div
+                  key={event.eventID}
+                  className="flex items-center gap-4 p-3 border border-gray-300 rounded-lg"
+                >
+                  <img
+                    src={event.bannerURL}
+                    alt={event.title}
+                    className="w-24 h-24 object-cover rounded"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div className="flex flex-col gap-8">
+                    <p className="text-sm font-medium text-gray-800">
+                      {event.title}
                     </p>
-                  </p>
+                    <p className="text-xs text-gray-400 flex items-center gap-1">
+                      <FaClock size={12} />
+                      <p className="text-sm text-gray-500">
+                        {new Date(event.fromDateTime).toLocaleDateString(
+                          "en-GB",
+                          {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          },
+                        )}
+                        {" at "}
+                        {new Date(event.fromDateTime).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Photo upload modal */}

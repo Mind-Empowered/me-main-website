@@ -501,6 +501,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../services/supabase-client";
 import { FaTimes, FaSpinner, FaChevronRight, FaChevronLeft, FaMapMarkerAlt, FaUtensils } from "react-icons/fa";
+import { SectionSkeleton } from "./ProfileSkeletons";
 
 const UpcomingEventsSection = () => {
   const [events, setEvents] = useState([]);
@@ -692,7 +693,7 @@ const UpcomingEventsSection = () => {
     }
   };
 
-  if (loading) return <div>Loading events...</div>;
+  if (loading) return <SectionSkeleton titleWidth="w-44" itemCount={4} cardHeight="h-28" />;
 
   return (
     <>
@@ -717,6 +718,8 @@ const UpcomingEventsSection = () => {
                         src={event.bannerURL}
                         alt={event.bannerAltText || event.title}
                         className="w-24 h-24 object-cover rounded"
+                        loading="lazy"
+                        decoding="async"
                       />
                     )}
                     <div className="flex-1 flex justify-between">

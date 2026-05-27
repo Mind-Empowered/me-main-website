@@ -9,12 +9,14 @@ import {
   FaImage,
   FaTimes,
 } from "react-icons/fa";
+import { AdminNewsletterSkeleton } from "../../components/adminDashboard/AdminSkeletons";
 
 const Newsletter = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [newsletters, setNewsletters] = useState([]);
   const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState({
     month: "",
@@ -22,14 +24,19 @@ const Newsletter = () => {
   });
 
   const fetchNewsletters = async () => {
-    const { data, error } = await supabase
-      .schema("me_dataspace")
-      .from("newsletters")
-      .select("*")
-      .order("published_at", { ascending: false });
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .schema("me_dataspace")
+        .from("newsletters")
+        .select("*")
+        .order("published_at", { ascending: false });
 
-    if (!error) {
-      setNewsletters(data || []);
+      if (!error) {
+        setNewsletters(data || []);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,6 +130,10 @@ const Newsletter = () => {
 
   return (
     <div className="bg-[#F5F0E8] min-h-screen p-8">
+      {loading ? (
+        <AdminNewsletterSkeleton />
+      ) : (
+        <>
       {/* Top Section */}
       <div className="grid grid-cols-2 gap-5 mb-8">
         {/* Total Newsletters */}
@@ -177,6 +188,8 @@ const Newsletter = () => {
                   src={preview}
                   alt="preview"
                   className="h-full w-full object-cover rounded-2xl"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <>
@@ -288,6 +301,8 @@ const Newsletter = () => {
                       src={item.newsletter_url}
                       alt="newsletter"
                       className="w-20 h-20 object-contain rounded-lg"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <button
                       onClick={() => handleDelete(item.id)}
@@ -321,6 +336,8 @@ const Newsletter = () => {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 };
