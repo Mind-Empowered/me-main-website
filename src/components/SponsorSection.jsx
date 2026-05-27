@@ -28,6 +28,8 @@ const SponsorSection = ({ language, onSponsorClick }) => {
                                     src="/sponsor.png" 
                                     alt="Sponsor a Girl Poster" 
                                     className="w-full h-auto rounded-[2rem] shadow-inner"
+                                    loading="lazy"
+                                    decoding="async"
                                 />
                                 
                                 {/* Overlay Gradient */}
@@ -60,6 +62,8 @@ const SponsorSection = ({ language, onSponsorClick }) => {
                                         src="/starlet/Logo.png" 
                                         className="w-full h-full object-contain" 
                                         alt="Starlet Logo" 
+                                        loading="lazy"
+                                        decoding="async"
                                     />
                                 </div>
                             </div>

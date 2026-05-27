@@ -21,6 +21,8 @@ const WhoAmI = ({ language }) => {
                   src="/who-am-i.png" 
                   alt="Who Am I" 
                   className="w-full h-auto rounded-[1.5rem] object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
                 
                 {/* Floating Badge */}
