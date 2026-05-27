@@ -94,7 +94,7 @@ const EventHighlight = ({ language }) => {
                 <div className="relative bg-white w-full max-w-7xl h-[85vh] rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)] border-4 border-orange-200 flex flex-col transform transition-all duration-300 scale-100">
                     <div className="flex justify-between items-center p-6 bg-orange-50/50 border-b border-orange-100 relative z-10">
                         <div className="flex items-center gap-4">
-                            <img src={current.mascot} className="w-10 h-10 object-contain" alt="Mascot" />
+                            <img src={current.mascot} className="w-10 h-10 object-contain" alt="Mascot" loading="lazy" decoding="async" />
                             <h3 className="text-xl md:text-2xl font-black text-[#461711] tracking-tight">{current.t.title[language]}</h3>
                         </div>
                         <button
@@ -113,6 +113,7 @@ const EventHighlight = ({ language }) => {
                             className="absolute inset-0 w-full h-full border-none"
                             title="Highlight Website"
                             allow="autoplay"
+                            loading="lazy"
                         />
                     </div>
                 </div>
@@ -164,6 +165,8 @@ const EventHighlight = ({ language }) => {
                                         src={current.mascot}
                                         alt="Mascot"
                                         className="w-16 h-16 animate-flap drop-shadow-xl"
+                                            loading="lazy"
+                                            decoding="async"
                                     />
                                     <div className="absolute -top-10 left-12 bg-white px-3 py-1.5 rounded-xl border border-gray-100 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                                         <span className="text-xs font-bold text-[#461711]">Explore Dhriti!</span>
@@ -233,12 +236,15 @@ const EventHighlight = ({ language }) => {
                                                 loop
                                                 muted
                                                 playsInline
+                                                preload="none"
                                             ></video>
                                         ) : (
                                             <img 
                                                 src={current.media.src} 
                                                 className="w-full h-full object-cover scale-105 hover:scale-100 transition-transform duration-700"
                                                 alt="Starlet Highlight"
+                                                loading="lazy"
+                                                decoding="async"
                                             />
                                         )}
                                     </div>

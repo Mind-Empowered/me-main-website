@@ -23,6 +23,23 @@ import {
 } from "./components";
 import { translations } from "./translations";
 
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Register from "./pages/auth/Registration/Register";
+import Signin from "./pages/auth/Signin/Signin"; 
+import ResetPass from "./pages/auth/ResetPassword/ResetPass";
+import ResetPass_S2 from "./pages/auth/ResetPassword_S2/ResetPass_S2";
+import ProtectedRoute from "./routes/ProctectedRoute";
+import VolunteerProfile from "./pages/VolunteerProfile";
+import AdminLayout from "./components/adminDashboard/layout/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import Volunteers from "./pages/admin/Volunteers";
+import AdminEvents from "./pages/admin/AdminEvents";
+import NewsLetter from "./pages/admin/NewsLetter";
+import PhotoGallery from "./pages/admin/PhtotoGallery";
+import NewEvent from "./pages/admin/Newevent";
+import Calendar from "./pages/admin/Calendar";
+
+
 // --- Accessibility Constants for maintainability ---
 const FONT_SIZE_KEYS = ['small', 'normal', 'large', 'xlarge'];
 const FONT_SIZE_CLASSES = {
@@ -33,7 +50,7 @@ const FONT_SIZE_CLASSES = {
 };
 // ----------------------------------------------------
 
-function App() {
+function HomePage() {
   const missionRef = useRef(null);
   const faqsRef = useRef(null);
   const contactRef = useRef(null);
@@ -81,11 +98,11 @@ function App() {
 
   // --- Data-driven navigation ---
   const navItems = [
-    { name: translations?.nav?.mission?.[language] || 'Mission', ref: missionRef, key: 'about' },
+    // { name: translations?.nav?.mission?.[language] || 'Mission', ref: missionRef, key: 'about' },
     { name: translations?.nav?.story?.[language] || 'Story', ref: storyRef, key: 'story' },
     { name: translations?.nav?.team?.[language] || 'Team', ref: teamRef, key: 'team' },
     { name: translations?.nav?.gallery?.[language] || 'Gallery', ref: galleryRef, key: 'gallery' },
-    { name: translations?.nav?.newsletter?.[language] || 'Newsletter', ref: newsletterRef, key: 'newsletter' },
+    // { name: translations?.nav?.newsletter?.[language] || 'Newsletter', ref: newsletterRef, key: 'newsletter' },
     { name: translations?.nav?.sponsor?.[language] || 'Sponsor', ref: sponsorRef, key: 'sponsor' },
     { name: translations?.nav?.contact?.[language] || 'Contact', ref: contactRef, key: 'contact' },
   ];
@@ -766,12 +783,12 @@ function App() {
           </div>
         </section>
 
-        {/* 7. Newsletter */}
+        {/* 7. Newsletter
         <section ref={newsletterRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
             <Newsletter language={language} />
           </div>
-        </section>
+        </section> */}
 
         {/* 8. FAQ */}
         <section ref={faqsRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
@@ -816,6 +833,96 @@ function App() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  const [isInitialSkeletonVisible, setIsInitialSkeletonVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setIsInitialSkeletonVisible(false);
+    }, 1200);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+  return (
+    <>
+      {isInitialSkeletonVisible && (
+        <div className="fixed inset-0 z-[9999] bg-[#f8f4ef] text-[#461711]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,118,18,0.08),_transparent_45%),radial-gradient(circle_at_bottom_right,_rgba(255,219,91,0.15),_transparent_35%)]" />
+          <div className="relative flex min-h-screen flex-col">
+            <div className="border-b border-[#461711]/5 px-4 sm:px-6 lg:px-12 py-4 sm:py-5">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="h-12 w-12 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer shadow-sm" />
+                  <div className="space-y-2">
+                    <div className="h-4 w-36 sm:w-48 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                    <div className="h-3 w-24 sm:w-32 rounded-full bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  </div>
+                </div>
+
+                <div className="hidden md:flex items-center gap-3">
+                  <div className="h-11 w-24 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="h-11 w-11 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="h-11 w-11 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                </div>
+              </div>
+            </div>
+
+            <main className="flex-1 px-4 sm:px-6 lg:px-12 py-8 sm:py-10 lg:py-12">
+              <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-center">
+                <div className="space-y-5">
+                  <div className="h-5 w-32 rounded-full bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="h-14 w-full max-w-2xl rounded-[2rem] bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="h-14 w-5/6 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="h-14 w-2/3 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="flex flex-wrap gap-3 pt-4">
+                    <div className="h-12 w-32 rounded-2xl bg-gradient-to-r from-[#461711]/10 via-white to-[#461711]/10 bg-[length:200%_100%] animate-skeleton-shimmer" />
+                    <div className="h-12 w-32 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  </div>
+                </div>
+
+                <div className="rounded-[2.5rem] border border-white/80 bg-white/70 p-4 shadow-2xl shadow-black/5 backdrop-blur-xl">
+                  <div className="aspect-[4/5] rounded-[2rem] bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                </div>
+              </div>
+
+              <div className="mt-8 grid gap-4 md:grid-cols-3">
+                <div className="h-32 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                <div className="h-32 rounded-[2rem] bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                <div className="h-32 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+              </div>
+            </main>
+          </div>
+        </div>
+      )}
+
+      <div className={isInitialSkeletonVisible ? 'opacity-0 pointer-events-none select-none' : 'opacity-100 transition-opacity duration-300'}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/reset-password" element={<ResetPass />} />
+            <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
+            <Route path="/volunteer-profile" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]}><VolunteerProfile /></ProtectedRoute>  } />
+            <Route path="/admin" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminLayout /></ProtectedRoute>}>
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="volunteers" element={<Volunteers />} />
+              <Route path="events" element={<AdminEvents />} />
+              <Route path="newsletter" element={<NewsLetter />} />
+              <Route path="photogallery" element={<PhotoGallery />} />
+              <Route path="newevent" element={<NewEvent />} />
+              <Route path="calendar" element={<Calendar />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </div>
+    </>
   );
 }
 
