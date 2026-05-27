@@ -161,9 +161,105 @@ const Events = () => {
       .publicUrl;
   };
 
+  const isValidURL = (url) => {
+    if (!url) return true;
+    try {
+      const u = new URL(url);
+      return u.protocol === "http:" || u.protocol === "https:";
+    } catch {
+      return false;
+    }
+  };
+
+  const isValidGoogleMapsURL = (url) => {
+    if (!url) return true;
+    try {
+      const u = new URL(url);
+      const validHosts = [
+        "maps.google.com",
+        "www.google.com",
+        "goo.gl",
+        "maps.app.goo.gl",
+      ];
+      return validHosts.some(
+        (h) => u.hostname === h || u.hostname.endsWith("." + h),
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  const validateEditForm = () => {
+    const errs = [];
+    const now = new Date();
+
+    if (!editFormData.title.trim()) errs.push("Event name is required.");
+    else if (editFormData.title.trim().length < 3)
+      errs.push("Event name must be at least 3 characters.");
+
+    if (!editFormData.description.trim())
+      errs.push("Short description is required.");
+    else if (editFormData.description.trim().length < 10)
+      errs.push("Description must be at least 10 characters.");
+
+    if (editFormData.eventURL && !isValidURL(editFormData.eventURL))
+      errs.push("Event URL must start with http:// or https://.");
+
+    if (!editFormData.fromDate || !editFormData.fromTime)
+      errs.push("Start date and time are required.");
+    if (!editFormData.toDate || !editFormData.toTime)
+      errs.push("End date and time are required.");
+
+    if (
+      editFormData.fromDate &&
+      editFormData.fromTime &&
+      editFormData.toDate &&
+      editFormData.toTime
+    ) {
+      const startDT = new Date(
+        `${editFormData.fromDate}T${editFormData.fromTime}`,
+      );
+      const endDT = new Date(`${editFormData.toDate}T${editFormData.toTime}`);
+      if (endDT <= startDT)
+        errs.push("End date & time must be after the start.");
+      if (editFormData.reg_deadline) {
+        const regDT = new Date(editFormData.reg_deadline);
+        if (regDT >= startDT)
+          errs.push("Registration deadline must be before the event start.");
+        if (regDT >= endDT)
+          errs.push("Registration deadline must be before the event end.");
+      }
+    }
+
+    if (editFormData.venue_url && !isValidURL(editFormData.venue_url))
+      errs.push("Map URL must start with http:// or https://.");
+    else if (
+      editFormData.venue_url &&
+      !isValidGoogleMapsURL(editFormData.venue_url)
+    )
+      errs.push("Map URL must be a valid Google Maps link.");
+
+    if (editFormData.max_participants !== "") {
+      const val = parseInt(editFormData.max_participants);
+      if (isNaN(val) || val < 1)
+        errs.push("Max participants must be a positive number.");
+      else if (val > 100000)
+        errs.push("Max participants value seems too large.");
+    }
+
+    if (
+      editFormData.max_volunteers !== "" &&
+      isNaN(parseInt(editFormData.max_volunteers))
+    )
+      errs.push("Volunteers needed must be a number.");
+
+    return errs;
+  };
+
   const handleSaveEdit = async () => {
-    if (!editFormData.title.trim()) {
-      setEditError("Title is required.");
+    const validationErrors = validateEditForm();
+    if (validationErrors.length > 0) {
+      setEditError(validationErrors.join("\n"));
       return;
     }
     setEditLoading(true);
@@ -225,7 +321,11 @@ const Events = () => {
       );
       setShowEditModal(false);
     } catch (err) {
-      setEditError(err.message || "Failed to update");
+      if (err.code === "23505" && err.message?.includes("eventURL"))
+        setEditError(
+          "This Event URL is already used by another event. Please use a different URL.",
+        );
+      else setEditError(err.message || "Failed to update");
     } finally {
       setEditLoading(false);
     }
@@ -540,13 +640,27 @@ const Events = () => {
               </button>
             </div>
 
-            <div className="p-5 overflow-y-auto flex-1 space-y-4">
-              {editError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                  {editError}
-                </div>
-              )}
+            {/* Sticky error banner */}
+            {editError && (
+              <div className="px-5 py-3 bg-red-50 border-b border-red-200">
+                <p className="text-red-700 text-xs font-semibold mb-1">
+                  Please fix the following:
+                </p>
+                <ul className="space-y-0.5">
+                  {editError.split("\n").map((e, i) => (
+                    <li
+                      key={i}
+                      className="text-red-600 text-xs flex items-start gap-1.5"
+                    >
+                      <span className="flex-shrink-0 mt-0.5">•</span>
+                      {e}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
+            <div className="p-5 overflow-y-auto flex-1 space-y-4">
               {/* Banner */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
