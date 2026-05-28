@@ -26,8 +26,8 @@ const BlurredImage = ({ src, alt, className }) => {
 };
 
 const Photogallery = ({ language }) => {
-  const [visibleCount, setVisibleCount] = useState(12);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 8;
 
   const [photos, setPhotos] = useState([]);
 
@@ -53,14 +53,21 @@ const Photogallery = ({ language }) => {
     photos.map(() => (Math.random() * 4 - 2).toFixed(2)),
     [photos]);
 
-  const toggleGallery = () => {
-    if (isExpanded) {
-      setVisibleCount(12);
+  const totalPages = Math.ceil(photos.length / itemsPerPage);
+  const currentPhotos = photos.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
+  const handleNext = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(prev => prev + 1);
       document.getElementById('photo-gallery-section')?.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      setVisibleCount(photos.length);
     }
-    setIsExpanded(!isExpanded);
+  };
+
+  const handlePrev = () => {
+    if (currentPage > 0) {
+      setCurrentPage(prev => prev - 1);
+      document.getElementById('photo-gallery-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const manjariFont = language === 'ml' ? { fontFamily: 'Manjari, sans-serif' } : {};
@@ -83,12 +90,12 @@ const Photogallery = ({ language }) => {
 
         <PhotoProvider maskOpacity={0.95}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 sm:gap-12 pb-12">
-            {photos.slice(0, visibleCount).map((photo, index) => (
+            {currentPhotos.map((photo, index) => (
               <div
                 key={photo.itemID}
                 className="group relative"
                 style={{
-                  transform: `rotate(${rotations[index]}deg)`,
+                  transform: `rotate(${rotations[currentPage * itemsPerPage + index] || 0}deg)`,
                   transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                 }}
               >
@@ -113,18 +120,33 @@ const Photogallery = ({ language }) => {
           </div>
         </PhotoProvider>
 
-        <div className="mt-24 text-center">
+        <div className="mt-16 flex items-center justify-center gap-6">
           <button
-            onClick={toggleGallery}
-            className="group px-12 py-4 bg-[#ff7612] text-white font-bold rounded-full shadow-lg hover:shadow-[0_10px_25px_rgba(255,118,18,0.4)] hover:-translate-y-1 transition-all duration-300 active:scale-95"
+            onClick={handlePrev}
+            disabled={currentPage === 0}
+            className={`group px-6 py-3 font-bold rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 ${currentPage === 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none' : 'bg-[#ff7612] text-white hover:shadow-[0_10px_25px_rgba(255,118,18,0.4)] hover:-translate-y-1 active:scale-95'}`}
             style={manjariFont}
           >
-            <span className="flex items-center gap-3">
-              {isExpanded ? (language === 'ml' ? 'കുറച്ചു കാണുക' : 'Back to Top') : (language === 'ml' ? 'ബാക്കി കാണുക' : 'Explore More Memories')}
-              <svg className={`w-5 h-5 transition-transform duration-500 ${isExpanded ? 'rotate-180' : 'group-hover:translate-y-1'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-              </svg>
-            </span>
+            <svg className={`w-5 h-5 transition-transform duration-300 ${currentPage === 0 ? '' : 'group-hover:-translate-x-1'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+            </svg>
+            {language === 'ml' ? 'മുമ്പത്തെ' : 'Previous'}
+          </button>
+          
+          <span className="text-[#461711] font-bold font-mono text-lg">
+            {currentPage + 1} / {totalPages || 1}
+          </span>
+
+          <button
+            onClick={handleNext}
+            disabled={currentPage >= totalPages - 1}
+            className={`group px-6 py-3 font-bold rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 ${currentPage >= totalPages - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none' : 'bg-[#ff7612] text-white hover:shadow-[0_10px_25px_rgba(255,118,18,0.4)] hover:-translate-y-1 active:scale-95'}`}
+            style={manjariFont}
+          >
+            {language === 'ml' ? 'അടുത്തത്' : 'Next'}
+            <svg className={`w-5 h-5 transition-transform duration-300 ${currentPage >= totalPages - 1 ? '' : 'group-hover:translate-x-1'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+            </svg>
           </button>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { translations } from "../translations";
 
-const Contact = ({ language }) => {
+const Contact = ({ language, siteSettings }) => {
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
     const [isSending, setIsSending] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -96,7 +96,7 @@ const Contact = ({ language }) => {
                         </h3>
                         <div className="flex flex-wrap gap-4">
                             {/* LinkedIn */}
-                            <a href="https://www.linkedin.com/company/mind-empowered/" target="_blank" rel="noopener noreferrer"
+                            <a href={siteSettings?.linkedin_url || "https://www.linkedin.com/company/mind-empowered/"} target="_blank" rel="noopener noreferrer"
                                 className="w-14 h-14 rounded-2xl bg-white border-2 border-gray-100 shadow-sm flex items-center justify-center"
                                 aria-label="LinkedIn">
                                 <svg className="w-6 h-6 text-[#461711] transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
@@ -104,7 +104,7 @@ const Contact = ({ language }) => {
                                 </svg>
                             </a>
                             {/* Instagram */}
-                            <a href="https://www.instagram.com/mind.empowered/" target="_blank" rel="noopener noreferrer"
+                            <a href={siteSettings?.instagram_url || "https://www.instagram.com/mind.empowered/"} target="_blank" rel="noopener noreferrer"
                                 className="w-14 h-14 rounded-2xl bg-white border-2 border-gray-100 shadow-sm flex items-center justify-center"
                                 aria-label="Instagram">
                                 <svg className="w-6 h-6 text-[#461711] transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@ const Contact = ({ language }) => {
                                 </svg>
                             </a>
                             {/* Email */}
-                            <a href="mailto:Mindempowered2020@gmail.com"
+                            <a href={`mailto:${siteSettings?.email || "Mindempowered2020@gmail.com"}`}
                                 className="w-14 h-14 rounded-2xl bg-white border-2 border-gray-100 shadow-sm flex items-center justify-center"
                                 aria-label="Email">
                                 <svg className="w-6 h-6 text-[#461711] transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,8 +142,8 @@ const Contact = ({ language }) => {
                             </div>
                             <div>
                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-0.5">Email</p>
-                                <a href="mailto:Mindempowered2020@gmail.com" className="text-sm text-[#461711] font-semibold transition-colors">
-                                    Mindempowered2020@gmail.com
+                                <a href={`mailto:${siteSettings?.email || "Mindempowered2020@gmail.com"}`} className="text-sm text-[#461711] font-semibold transition-colors">
+                                    {siteSettings?.email || "Mindempowered2020@gmail.com"}
                                 </a>
                             </div>
                         </div>
@@ -156,7 +156,7 @@ const Contact = ({ language }) => {
                             </div>
                             <div>
                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-0.5">Address</p>
-                                <p className="text-sm text-gray-600 leading-snug">ERRA 34, Elamana Road,<br />Tripunithura, Ernakulam,<br />Kerala 682301</p>
+                                <p className="text-sm text-gray-600 leading-snug whitespace-pre-wrap">{siteSettings?.address || "ERRA 34, Elamana Road,\nTripunithura, Ernakulam,\nKerala 682301"}</p>
                             </div>
                         </div>
                     </div>

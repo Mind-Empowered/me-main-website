@@ -162,12 +162,22 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
         {/* Right-side actions — grouped tightly */}
         <div className="hidden lg:flex items-center justify-self-end gap-2">
+          {/* Calendar */}
+          <CalendarPopup language={language} scrolled={scrolled} />
+
+          {/* Newsletter */}
+          <NewsletterPopup scrolled={scrolled} />
+
           {profileUser ? (
             <>
-              <div className="relative">
+              <div 
+                className="relative"
+                onMouseEnter={() => setIsProfilePopupOpen(true)}
+                onMouseLeave={() => setIsProfilePopupOpen(false)}
+              >
                 <button
                   ref={profileButtonRef}
-                  onClick={() => setIsProfilePopupOpen((value) => !value)}
+                  onClick={() => navigate(dashboardPath || '/signin')}
                   aria-label="Open profile menu"
                   className={`flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 shadow-md ${scrolled ? 'border-[#ff7612]/35 bg-white text-[#461711] hover:scale-105' : 'border-white/20 bg-white/10 text-white hover:bg-white/15 hover:scale-105'}`}
                 >
@@ -199,21 +209,6 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
                         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#ff7612]">Role</p>
                         <p className="mt-1 text-sm font-semibold text-[#5d4037]">{profileRoleLabel}</p>
                       </div>
-                      <div className="flex gap-2 pt-1">
-                        <Link
-                          to={dashboardPath || '/signin'}
-                          onClick={() => setIsProfilePopupOpen(false)}
-                          className="flex-1 rounded-2xl bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] px-4 py-3 text-center text-sm font-black text-[#461711] transition-all duration-200 hover:opacity-95"
-                        >
-                          Dashboard
-                        </Link>
-                        <button
-                          onClick={handleLogout}
-                          className="rounded-2xl border border-[#461711]/10 px-4 py-3 text-sm font-black text-[#461711] transition-all duration-200 hover:bg-[#461711]/5"
-                        >
-                          Logout
-                        </button>
-                      </div>
                     </div>
                   </div>
                 )}
@@ -221,33 +216,26 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
             </>
           ) : (
-            <>
-              <Link to="/signin" className={`px-3 py-2 rounded-full font-semibold transition-all duration-200 ${scrolled ? 'text-[#461711] bg-white/0 hover:bg-black/5' : 'text-white bg-white/10 hover:bg-white/20'}`}>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/signin"
+                className={`px-5 py-2.5 rounded-full font-bold text-xs lg:text-sm tracking-[0.05em] uppercase transition-all duration-300 border shadow-sm ${
+                  scrolled
+                    ? 'text-[#461711] border-[#461711]/15 hover:border-[#ff7612] hover:text-[#ff7612] hover:bg-[#ff7612]/5'
+                    : 'text-white border-white/20 hover:border-white hover:bg-white/10'
+                }`}
+              >
                 Sign In
               </Link>
-              <Link to="/register" className="px-4 py-2 rounded-2xl font-black bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] text-[#461711] hover:opacity-95 transition-all duration-200">
+              <Link
+                to="/register"
+                className="px-6 py-2.5 rounded-full font-bold text-xs lg:text-sm tracking-[0.05em] uppercase bg-[#ff7612] hover:bg-[#e45a00] text-white hover:shadow-[0_4px_15px_rgba(255,118,18,0.25)] hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 shadow-md"
+              >
                 Sign Up
               </Link>
-            </>
+            </div>
           )}
-          {/* Calendar */}
-          <CalendarPopup language={language} scrolled={scrolled} />
 
-          {/* Newsletter */}
-          <NewsletterPopup scrolled={scrolled} />
-
-          <div className="relative">
-            <button
-              onClick={openLanguageModal}
-              aria-label="Change Language"
-              className={`flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 shadow-md hover:scale-105 active:scale-95 group ${scrolled ? 'border-[#ff7612]/30 bg-white text-[#461711] hover:bg-white/95' : 'border-white/20 bg-white/10 text-white hover:bg-white/15'
-                }`}
-            >
-              <svg className="w-5 h-5 transition-transform duration-500 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-              </svg>
-            </button>
-          </div>
         </div>
 
         {/* Mobile menu button */}
@@ -318,51 +306,41 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
             <div className="pt-2">
               {profileUser ? (
                 <>
-                  <button
-                    onClick={() => setIsProfilePopupOpen((value) => !value)}
+                  <Link
+                    to={dashboardPath || '/signin'}
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-[#461711] transition-all duration-300 hover:bg-[#ff7612]/5"
                   >
                     <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#461711] text-sm font-black text-white">{profileInitials}</span>
                     <span className="text-lg font-black">Profile</span>
-                  </button>
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="mt-1 block w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300"
                   >
                     Logout
                   </button>
-                  {isProfilePopupOpen && (
-                    <div className="mt-3 rounded-3xl border border-[#ff7612]/15 bg-white/95 p-4 text-[#461711] shadow-[0_20px_60px_-25px_rgba(70,23,17,0.35)]">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#461711] text-sm font-black text-white">{profileInitials}</div>
-                        <div className="min-w-0">
-                          <p className="truncate text-base font-black">{profileName}</p>
-                          <p className="truncate text-xs uppercase tracking-[0.18em] text-[#ff7612]">{profileRoleLabel}</p>
-                        </div>
-                      </div>
-                      <p className="mt-3 break-all text-sm font-semibold text-[#5d4037]">{profileEmail}</p>
-                      <div className="mt-4 flex gap-2">
-                        <Link to={dashboardPath || '/signin'} onClick={() => setIsProfilePopupOpen(false)} className="flex-1 rounded-2xl bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] px-4 py-3 text-center text-sm font-black text-[#461711] transition-all duration-200 hover:opacity-95">Dashboard</Link>
-                        <button onClick={handleLogout} className="rounded-2xl border border-[#461711]/10 px-4 py-3 text-sm font-black text-[#461711] transition-all duration-200 hover:bg-[#461711]/5">Logout</button>
-                      </div>
-                    </div>
-                  )}
                 </>
               ) : (
-                <>
-                  <Link to="/signin" className="block w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300">Sign In</Link>
-                  <Link to="/register" className="mt-1 block w-full text-left px-4 py-3 bg-gradient-to-r from-[#ff7612] to-[#ffdb5b] text-[#461711] rounded-lg font-black text-lg transition-all duration-300">Sign Up</Link>
-                </>
+                <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-100">
+                  <Link
+                    to="/signin"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full text-center px-5 py-3 text-[#461711] hover:text-[#ff7612] hover:bg-[#ff7612]/5 border border-[#461711]/15 hover:border-[#ff7612] rounded-2xl font-bold text-base transition-all duration-300 shadow-sm"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full text-center px-5 py-3 bg-gradient-to-r from-[#ff7612] to-[#e45a00] text-white hover:opacity-95 rounded-2xl font-bold text-base transition-all duration-300 shadow-md hover:shadow-lg"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
               )}
             </div>
 
-            <button
-              onClick={openLanguageModal}
-              className="flex items-center gap-3 w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-              <span>{language === 'en' ? 'മലയാളം' : 'English'}</span>
-            </button>
           </div>
         </div>
       </div>

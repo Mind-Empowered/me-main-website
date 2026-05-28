@@ -1,15 +1,23 @@
-import { FaThLarge, FaImages, FaCalendarAlt, FaEnvelope, FaUsers, FaSignOutAlt } from "react-icons/fa";
+import { useState } from "react";
+import { FaThLarge, FaImages, FaCalendarAlt, FaEnvelope, FaUsers, FaSignOutAlt, FaBars, FaTimes, FaHome, FaCog, FaLanguage, FaMusic, FaHistory } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "../../services/supabase-client";
+import { useLanguage } from "../../contexts/LanguageContext";
 
-const Sidebar = () => {
-
+const Sidebar = ({ onCloseMobile }) => {
+    const [isExpanded, setIsExpanded] = useState(true);
+    const { language, setLanguage } = useLanguage();
     const navigate = useNavigate();
 
-    //handles logout functionality
     const handleLogout = async () => {
-        const { error } = await supabase.auth.signOut();
-        navigate("/signin");
+        if (onCloseMobile) onCloseMobile();
+        await supabase.auth.signOut();
+        navigate("/");
+    };
+
+    const handleBackToHome = () => {
+        if (onCloseMobile) onCloseMobile();
+        navigate("/");
     };
 
 
@@ -57,51 +65,105 @@ const Sidebar = () => {
                     icon: <FaUsers />,
                     path: "/admin/volunteers",
                 },
+                {
+                    label: "Activity Log",
+                    icon: <FaHistory />,
+                    path: "/admin/activity",
+                },
             ],
         },
     ];
 
     return (
-        <aside className="w-64 h-screen bg-[#2C1A0E] p-6 flex flex-col gap-8 text-white">
-            <NavLink to="/admin/dashboard">
-                {/* logo and name */}
-                <div className="flex items-center gap-4" >
-
-                    <div>
-                        <img src="/brand/logo.jpeg" alt="logo" className="w-14 rounded-full" />
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-bold">Mind Empowered</h2>
-                        <p className="text-[#E8954A]">Admin Panel</p>
-                    </div>
-                </div>
-            </NavLink>
+        <aside className={`${isExpanded ? "w-64" : "w-[80px]"} h-screen bg-[#2C1A0E] py-6 px-4 flex flex-col gap-6 text-white transition-all duration-300 relative shrink-0`}>
+            {/* Header / Logo */}
+            <div className={`flex items-center ${isExpanded ? 'justify-between' : 'justify-center'} px-2`}>
+                {isExpanded && (
+                    <NavLink 
+                        to="/admin/dashboard" 
+                        onClick={() => { if (onCloseMobile) onCloseMobile(); }}
+                        className="flex items-center gap-3 overflow-hidden shrink-0"
+                    >
+                        <img src="/brand/logo.jpeg" alt="logo" className="w-10 h-10 rounded-full shrink-0" />
+                        <div className="whitespace-nowrap">
+                            <p className="text-[#E8954A] font-bold text-sm">Admin Panel</p>
+                        </div>
+                    </NavLink>
+                )}
+                <button 
+                    onClick={() => {
+                        if (window.innerWidth < 768) {
+                            if (onCloseMobile) onCloseMobile();
+                        } else {
+                            setIsExpanded(!isExpanded);
+                        }
+                    }}
+                    className="text-gray-400 hover:text-white shrink-0 p-1 rounded transition-colors"
+                >
+                    {isExpanded ? <FaTimes size={20} /> : <FaBars size={20} />}
+                </button>
+            </div>
+            
+            <hr className="border-[#462a17]"></hr>
+            
             {/* menu items */}
-            <hr></hr>
-            <div>
+            <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-6 scrollbar-hide">
                 {menu.map((section, index) => (
-                    <div key={index} className="flex flex-col gap-4">
-                        <h3 className="text-sm">{section.title}</h3>
-                        <ul>
+                    <div key={index} className="flex flex-col gap-2">
+                        {isExpanded && <h3 className="text-xs uppercase text-gray-500 font-semibold px-2 tracking-wider">{section.title}</h3>}
+                        <ul className="flex flex-col gap-1">
                             {section.items.map((item, itemIndex) => (
-                                <NavLink key={itemIndex} to={item.path} className={({ isActive }) =>
-                                    `flex items-center gap-4 p-2 rounded-lg transition mb-1  ${isActive
-                                        ? "bg-[#C1622A] text-white"
-                                        : "hover:bg-[#C1622A]/40 text-gray-300 hover:text-white"
-                                    }`
-                                }>
-                                    <span>{item.icon}</span>
-                                    <span>{item.label}</span>
+                                <NavLink 
+                                    key={itemIndex} 
+                                    to={item.path} 
+                                    onClick={() => { if (onCloseMobile) onCloseMobile(); }}
+                                    title={!isExpanded ? item.label : ""} 
+                                    className={({ isActive }) =>
+                                        `flex items-center ${isExpanded ? 'justify-start px-4' : 'justify-center'} gap-4 py-3 rounded-lg transition shrink-0 ${isActive
+                                            ? "bg-[#C1622A] text-white"
+                                            : "hover:bg-[#C1622A]/20 text-gray-400 hover:text-white"
+                                        }`
+                                    }
+                                >
+                                    <span className="text-lg shrink-0">{item.icon}</span>
+                                    {isExpanded && <span className="whitespace-nowrap text-sm font-medium">{item.label}</span>}
                                 </NavLink>
                             ))}
                         </ul>
                     </div>
                 ))}
             </div>
-            {/* logout */}
-            <div className="mt-auto">
-                <button className="flex items-center justify-center p-2 bg-[#C1622A]  rounded-lg w-full " onClick={handleLogout}>
-                    Logout
+
+            {/* bottom actions */}
+            <div className="mt-auto flex flex-col gap-2 border-t border-[#462a17] pt-4">
+                <NavLink 
+                    to="/admin/settings"
+                    onClick={() => { if (onCloseMobile) onCloseMobile(); }}
+                    title={!isExpanded ? "Settings" : ""}
+                    className={({ isActive }) => 
+                        `flex items-center ${isExpanded ? 'justify-start px-4' : 'justify-center'} gap-3 py-3 rounded-lg w-full transition shrink-0 ${isActive ? "bg-[#C1622A] text-white" : "text-gray-300 hover:bg-[#C1622A]/20 hover:text-white"}`
+                    }
+                >
+                    <FaCog className="text-lg shrink-0" />
+                    {isExpanded && <span className="whitespace-nowrap font-medium text-sm">Settings</span>}
+                </NavLink>
+
+                <button 
+                    onClick={handleBackToHome}
+                    title={!isExpanded ? "Back to Home" : ""}
+                    className={`flex items-center ${isExpanded ? 'justify-start px-4' : 'justify-center'} gap-3 py-3 rounded-lg w-full text-gray-300 hover:bg-[#C1622A]/20 hover:text-white transition shrink-0`}
+                >
+                    <FaHome className="text-lg shrink-0" />
+                    {isExpanded && <span className="whitespace-nowrap font-medium text-sm">Back to Home</span>}
+                </button>
+
+                <button 
+                    onClick={handleLogout}
+                    title={!isExpanded ? "Logout" : ""}
+                    className={`flex items-center ${isExpanded ? 'justify-start px-4' : 'justify-center'} gap-3 py-3 rounded-lg w-full bg-[#C1622A] text-white hover:bg-[#a8521f] transition shrink-0`}
+                >
+                    <FaSignOutAlt className="text-lg shrink-0" />
+                    {isExpanded && <span className="whitespace-nowrap font-medium text-sm">Logout</span>}
                 </button>
             </div>
         </aside>

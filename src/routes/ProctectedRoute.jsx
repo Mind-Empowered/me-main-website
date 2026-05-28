@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { supabase } from '../services/supabase-client';
 import { ROLE_HOME_PATHS, resolveUserRole } from '../services/authRoles';
 
-const ProtectedRoute = ({ children, allowedRoles = [] }) => {
+const ProtectedRoute = ({ children, allowedRoles = [], fallback }) => {
   const [user, setUser] = useState(null); 
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true); 
@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     checkUser();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return fallback || <div>Loading...</div>;
   
   if (!user) return <Navigate to="/signin" />;
 
