@@ -381,7 +381,7 @@ const Volunteers = () => {
       {!loading && volunteers.length > 0 && (
         <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
           {/* Header */}
-          <div className="hidden md:grid grid-cols-4 bg-[#EFE7DD] text-[#6B4B2A] text-sm font-semibold p-4">
+          <div className="hidden lg:grid grid-cols-4 bg-[#EFE7DD] text-[#6B4B2A] text-sm font-semibold p-4">
             <p>Member</p>
             <p>Email</p>
             <p>Events Attended</p>
@@ -392,39 +392,46 @@ const Volunteers = () => {
             {volunteers.map((volunteer) => (
               <div key={volunteer.userID} className="border-t border-gray-100 flex flex-col">
                 <div 
-                  className="flex flex-col md:grid md:grid-cols-4 md:items-center p-4 gap-3 md:gap-4 cursor-pointer hover:bg-gray-50 transition" 
+                  className="flex flex-col sm:flex-row sm:items-center lg:grid lg:grid-cols-4 lg:items-center p-4 gap-3 lg:gap-4 cursor-pointer hover:bg-gray-50 transition" 
                   onClick={() => toggleRow(volunteer.userID)}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    {volunteer.photo ? (
-                      <img src={volunteer.photo} alt="profile" className="w-10 h-10 rounded-full object-cover flex-shrink-0" loading="lazy" decoding="async" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0"><FaUser className="text-gray-400" /></div>
-                    )}
-                    <div className="min-w-0">
-                      <p className="font-semibold md:font-medium text-gray-700 truncate">{volunteer.firstName} {volunteer.lastName}</p>
-                      <p className="text-gray-400 text-xs md:hidden truncate mt-0.5">{volunteer.emailID}</p>
+                  <div className="flex items-center justify-between sm:justify-start gap-3 min-w-0 flex-1 lg:flex-none">
+                    <div className="flex items-center gap-3 min-w-0">
+                      {volunteer.photo ? (
+                        <img src={volunteer.photo} alt="profile" className="w-10 h-10 rounded-full object-cover flex-shrink-0" loading="lazy" decoding="async" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0"><FaUser className="text-gray-400" /></div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-semibold lg:font-medium text-gray-700 truncate">{volunteer.firstName} {volunteer.lastName}</p>
+                        <p className="text-gray-400 text-xs lg:hidden truncate mt-0.5">{volunteer.emailID}</p>
+                      </div>
+                    </div>
+                    {/* Mobile Actions */}
+                    <div className="flex sm:hidden items-center gap-2">
+                      <button onClick={(e) => { e.stopPropagation(); handleEdit(volunteer); }} className="border p-2 rounded-xl hover:bg-blue-100 transition text-blue-600 bg-white" title="Edit"><FaEdit size={14} /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(volunteer.userID); }} className="bg-red-50 text-red-600 p-2 rounded-xl hover:bg-red-100 transition" title="Delete"><FaTrash size={14} /></button>
                     </div>
                   </div>
-                  <p className="hidden md:block text-gray-600 text-sm truncate">{volunteer.emailID}</p>
-                  <div className="flex flex-wrap gap-2 md:pl-0">
+                  <p className="hidden lg:block text-gray-600 text-sm truncate">{volunteer.emailID}</p>
+                  <div className="flex flex-wrap gap-2 lg:pl-0 mt-1 sm:mt-0">
                     {volunteer.events && volunteer.events.length > 0 ? (
                       volunteer.events.map((event, index) => (
                         <span key={index} className="bg-orange-100 text-[#B86B2B] px-2 py-0.5 rounded-full text-xs font-semibold">{event}</span>
                       ))
                     ) : (
-                      <span className="text-gray-400 text-xs md:text-sm">No events attended</span>
+                      <span className="text-gray-400 text-xs lg:text-sm">No events attended</span>
                     )}
                   </div>
-                  <div className="flex items-center justify-end md:justify-center gap-3 mt-1 md:mt-0">
-                    <button onClick={(e) => { e.stopPropagation(); handleEdit(volunteer); }} className="border p-2.5 md:p-2 rounded-xl md:rounded-lg hover:bg-blue-100 transition text-blue-600 bg-white" title="Edit"><FaEdit size={14} /></button>
-                    <button onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(volunteer.userID); }} className="bg-red-50 text-red-600 p-2.5 md:p-2 rounded-xl md:rounded-lg hover:bg-red-100 transition" title="Delete"><FaTrash size={14} /></button>
+                  <div className="hidden sm:flex items-center lg:justify-center gap-3 mt-1 sm:mt-0">
+                    <button onClick={(e) => { e.stopPropagation(); handleEdit(volunteer); }} className="border p-2.5 lg:p-2 rounded-xl lg:rounded-lg hover:bg-blue-100 transition text-blue-600 bg-white" title="Edit"><FaEdit size={14} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(volunteer.userID); }} className="bg-red-50 text-red-600 p-2.5 lg:p-2 rounded-xl lg:rounded-lg hover:bg-red-100 transition" title="Delete"><FaTrash size={14} /></button>
                   </div>
                 </div>
 
                 {expandedRowId === volunteer.userID && (
                   <div className="bg-[#FAF7F2] p-6 border-t border-gray-100 text-sm animate-fade-in shadow-inner">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       <div>
                         <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">About</h4>
                         <p className="text-gray-800 leading-relaxed">{volunteer.bio || "No bio provided."}</p>
@@ -458,11 +465,11 @@ const Volunteers = () => {
 
           {/* Pagination */}
           {totalCount > PAGE_SIZE && (
-            <div className="flex justify-between items-center p-4 border-t border-gray-200 bg-gray-50">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 p-4 border-t border-gray-200 bg-gray-50">
               <span className="text-sm text-gray-500">Page {page + 1} of {Math.ceil(totalCount / PAGE_SIZE)}</span>
-              <div className="flex gap-2">
-                <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm disabled:opacity-50 hover:bg-white transition bg-gray-50 text-gray-700 font-medium">Previous</button>
-                <button disabled={(page + 1) * PAGE_SIZE >= totalCount} onClick={() => setPage(p => p + 1)} className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm disabled:opacity-50 hover:bg-white transition bg-gray-50 text-gray-700 font-medium">Next</button>
+              <div className="flex gap-2 w-full sm:w-auto justify-between sm:justify-start">
+                <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm disabled:opacity-50 hover:bg-white transition bg-gray-50 text-gray-700 font-medium flex-1 sm:flex-none text-center">Previous</button>
+                <button disabled={(page + 1) * PAGE_SIZE >= totalCount} onClick={() => setPage(p => p + 1)} className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm disabled:opacity-50 hover:bg-white transition bg-gray-50 text-gray-700 font-medium flex-1 sm:flex-none text-center">Next</button>
               </div>
             </div>
           )}
