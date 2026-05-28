@@ -5,6 +5,7 @@ import { AdminListSkeleton } from "../../components/adminDashboard/AdminSkeleton
 import ConfirmModal from "../../components/adminDashboard/ConfirmModal";
 import toast from "react-hot-toast";
 import { logActivity } from "../../services/activityLog";
+import EditProfileModal from "../../components/profile/EditProfileModal";
 
 const Volunteers = () => {
   const [volunteers, setVolunteers] = useState([]);
@@ -13,9 +14,6 @@ const Volunteers = () => {
   const [expandedRowId, setExpandedRowId] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingVolunteer, setEditingVolunteer] = useState(null);
-  const [editFormData, setEditFormData] = useState({ firstName: "", lastName: "", emailID: "" });
-  const [editLoading, setEditLoading] = useState(false);
-  const [editError, setEditError] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [exportLoading, setExportLoading] = useState(false);
 
@@ -173,7 +171,7 @@ const Volunteers = () => {
        let query = supabase
         .schema("me_dataspace")
         .from("users")
-        .select("firstName, lastName, emailID, city, state, country, bloodGroup, dateOfBirth, created_at, preferences")
+        .select("firstName, lastName, emailID, city, state, country, bloodGroup, dateOfBirth, created_at, preferences, address, emergencyInfo")
         .eq("role", "VOLUNTEER")
         .order("created_at", { ascending: false });
 
@@ -198,10 +196,10 @@ const Volunteers = () => {
         v.firstName || "",
         v.lastName || "",
         v.emailID || "",
-        v.city || "",
-        v.state || "",
-        v.country || "",
-        v.bloodGroup || "",
+        v.city || v.address?.permanentAddress?.city || v.address?.presentAddress?.city || "",
+        v.state || v.address?.permanentAddress?.state || v.address?.presentAddress?.state || "",
+        v.country || v.address?.permanentAddress?.country || v.address?.presentAddress?.country || "",
+        v.bloodGroup || v.emergencyInfo?.bloodGroup || "",
         v.dateOfBirth || "",
         v.preferences?.gender || "",
         v.preferences?.whatsapp || "",
@@ -252,49 +250,18 @@ const Volunteers = () => {
 
   const handleEdit = (volunteer) => {
     setEditingVolunteer(volunteer);
-    setEditFormData({ firstName: volunteer.firstName || "", lastName: volunteer.lastName || "", emailID: volunteer.emailID || "" });
-    setEditError(null);
     setShowEditModal(true);
   };
 
   const toggleRow = (id) => setExpandedRowId(expandedRowId === id ? null : id);
 
-  const handleEditInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSaveEdit = async () => {
-    if (!editingVolunteer || !editFormData.firstName.trim() || !editFormData.lastName.trim() || !editFormData.emailID.trim()) {
-      setEditError("Please fill in all required fields");
-      return;
-    }
-    setEditLoading(true);
-    setEditError(null);
-    try {
-      const { error } = await supabase
-        .schema("me_dataspace")
-        .from("users")
-        .update({ firstName: editFormData.firstName.trim(), lastName: editFormData.lastName.trim(), emailID: editFormData.emailID.trim() })
-        .eq("userID", editingVolunteer.userID);
-      if (error) throw error;
-      toast.success("Volunteer updated");
-      await logActivity({ action: 'EDIT_VOLUNTEER', description: `Updated volunteer ${editFormData.firstName} ${editFormData.lastName}`, entity_type: 'volunteer', entity_id: editingVolunteer.userID });
-      fetchVolunteers();
-      setShowEditModal(false);
-      setEditingVolunteer(null);
-    } catch (err) {
-      setEditError(err.message || "Failed to update volunteer details");
-    } finally {
-      setEditLoading(false);
-    }
-  };
-
   const closeEditModal = () => {
     setShowEditModal(false);
     setEditingVolunteer(null);
-    setEditFormData({ firstName: "", lastName: "", emailID: "" });
-    setEditError(null);
+  };
+
+  const handleUserUpdated = () => {
+    fetchVolunteers();
   };
 
   return (
@@ -438,7 +405,14 @@ const Volunteers = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">Details</h4>
-                        <p className="text-gray-800 mb-1"><span className="font-medium">Location:</span> {[volunteer.city, volunteer.state, volunteer.country].filter(Boolean).join(", ") || "Not specified"}</p>
+                        <p className="text-gray-800 mb-1">
+                          <span className="font-medium">Location:</span>{" "}
+                          {[
+                            volunteer.city || volunteer.address?.permanentAddress?.city || volunteer.address?.presentAddress?.city,
+                            volunteer.state || volunteer.address?.permanentAddress?.state || volunteer.address?.presentAddress?.state,
+                            volunteer.country || volunteer.address?.permanentAddress?.country || volunteer.address?.presentAddress?.country
+                          ].filter(Boolean).join(", ") || "Not specified"}
+                        </p>
                         {volunteer.preferences?.gender && <p className="text-gray-800 mb-1"><span className="font-medium">Gender:</span> {volunteer.preferences.gender}</p>}
                         {volunteer.preferences?.whatsapp && <p className="text-gray-800 mb-1"><span className="font-medium">WhatsApp:</span> {volunteer.preferences.whatsapp}</p>}
                         {volunteer.preferences?.languages?.length > 0 && <p className="text-gray-800 mb-1"><span className="font-medium">Languages:</span> {volunteer.preferences.languages.join(", ")}</p>}
@@ -446,13 +420,16 @@ const Volunteers = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">Vital Info</h4>
-                        <p className="text-gray-800 mb-1"><span className="font-medium">Blood Group:</span> {volunteer.bloodGroup || "N/A"}</p>
+                        <p className="text-gray-800 mb-1">
+                          <span className="font-medium">Blood Group:</span>{" "}
+                          {volunteer.bloodGroup || volunteer.emergencyInfo?.bloodGroup || "N/A"}
+                        </p>
                         <p className="text-gray-800 mb-1"><span className="font-medium">DOB:</span> {volunteer.dateOfBirth || "N/A"}</p>
                         {volunteer.emergencyInfo && (
                           <div className="mt-2 p-3 bg-red-50 rounded-lg border border-red-100">
                             <p className="text-red-800 font-semibold mb-1 text-xs uppercase">Emergency Contact</p>
-                            <p className="text-red-900 font-medium">{volunteer.emergencyInfo.contactName}</p>
-                            <p className="text-red-700">{volunteer.emergencyInfo.contactNumber}</p>
+                            <p className="text-red-900 font-medium">{volunteer.emergencyInfo.contactName || "N/A"}</p>
+                            <p className="text-red-700">{volunteer.emergencyInfo.contactPhone || volunteer.emergencyInfo.contactNumber || "N/A"}</p>
                           </div>
                         )}
                       </div>
@@ -477,37 +454,12 @@ const Volunteers = () => {
       )}
 
       {/* Edit Modal */}
-      {showEditModal && editingVolunteer && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full max-h-screen overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-800">Edit Volunteer</h2>
-              <button onClick={closeEditModal} className="text-gray-500 hover:text-gray-700"><FaTimes size={20} /></button>
-            </div>
-            <div className="p-6">
-              {editError && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{editError}</div>}
-              <div className="space-y-4">
-                {[["firstName", "First Name"], ["lastName", "Last Name"]].map(([field, label]) => (
-                  <div key={field}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{label} *</label>
-                    <input type="text" name={field} value={editFormData[field]} onChange={handleEditInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A64200]" placeholder={`Enter ${label.toLowerCase()}`} />
-                  </div>
-                ))}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email ID *</label>
-                  <input type="email" name="emailID" value={editFormData.emailID} onChange={handleEditInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A64200]" placeholder="Enter email address" />
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-3 p-6 border-t border-gray-200 bg-gray-50">
-              <button onClick={closeEditModal} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition font-medium" disabled={editLoading}>Cancel</button>
-              <button onClick={handleSaveEdit} className="flex-1 px-4 py-2 bg-[#A64200] text-white rounded-lg hover:bg-[#8B3600] transition font-medium flex items-center justify-center gap-2" disabled={editLoading}>
-                {editLoading ? <><FaSpinner className="animate-spin" size={14} />Saving...</> : "Save Changes"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <EditProfileModal
+        user={editingVolunteer}
+        isOpen={showEditModal && !!editingVolunteer}
+        onClose={closeEditModal}
+        onUserUpdate={handleUserUpdated}
+      />
 
       <ConfirmModal
         isOpen={!!confirmDeleteId}
