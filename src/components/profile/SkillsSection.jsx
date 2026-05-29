@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../services/supabase-client";
 import { FaPlus } from "react-icons/fa";
+import { translations } from "../../translations";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const SkillsSection = ({ user }) => {
+    const { language } = useLanguage();
     const [skills, setSkills] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const [saving, setSaving] = useState(false);
@@ -42,9 +45,9 @@ const SkillsSection = ({ user }) => {
     };
 
     return (
-        <div className="bg-white rounded-2xl p-6 flex flex-col h-80">
-            <h2 className="text-2xl font-bold mb-4 text-[#8A7060]">
-                Skills 
+        <div className="bg-white rounded-2xl p-5 flex flex-col h-full">
+            <h2 className="text-2xl font-bold mb-3 text-[#8A7060]">
+                {translations.profile.skills[language]}
             </h2>
 
             <div className="flex flex-wrap gap-2 mb-4 overflow-y-auto flex-1 content-start">

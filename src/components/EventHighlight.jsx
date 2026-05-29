@@ -50,7 +50,7 @@ const EventHighlight = ({ language }) => {
                 tag: 'bg-blue-100 text-[#0a2e5c]'
             },
             mascot: '/starlet/Logo.png',
-            siteUrl: 'https://forms.gle/iThpACLBpYH3Q6go6', 
+            siteUrl: 'https://starlet.mind-empowered.org',
             stats: [
                 { label: 'Innovators', value: translations.starletHighlight.stats.participants[language] },
                 { label: 'Projects', value: translations.starletHighlight.stats.projects[language] },

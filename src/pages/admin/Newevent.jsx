@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUpload } from "react-icons/fa";
+import { FaUpload, FaTimes } from "react-icons/fa";
 import { supabase } from "../../services/supabase-client";
+import toast from "react-hot-toast";
 
 const AddEvent = () => {
   const navigate = useNavigate();
@@ -223,8 +224,8 @@ const AddEvent = () => {
 
       let bannerURL = null;
       if (bannerFile) {
-        const fileExt = bannerFile.name.split(".").pop();
-        const fileName = `banner_${Date.now()}.${fileExt}`;
+        const safeName = bannerFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+        const fileName = `banner_${Date.now()}_${safeName}`;
         const { error: uploadError } = await supabase.storage
           .from("events")
           .upload(fileName, bannerFile, { upsert: false });
@@ -263,25 +264,27 @@ const AddEvent = () => {
       setLoading(false);
 
       if (!error) {
+        toast.success("Event created successfully!");
         navigate("/admin/events");
       } else {
         console.error(error);
         // Handle unique constraint on eventURL
         if (error.code === "23505" && error.message?.includes("eventURL")) {
           setStep(1);
+          toast.error("This Event URL is already used by another event.");
           setErrors((prev) => ({
             ...prev,
             eventURL:
               "This Event URL is already used by another event. Please use a different URL.",
           }));
         } else {
-          alert("Failed to create event: " + error.message);
+          toast.error("Failed to create event: " + error.message);
         }
       }
     } catch (err) {
       setLoading(false);
       console.error("Error:", err);
-      alert("Something went wrong: " + err.message);
+      toast.error("Something went wrong: " + err.message);
     }
   };
 
@@ -436,13 +439,20 @@ const AddEvent = () => {
               <ErrMsg field="banner" />
 
               {bannerPreview && (
-                <div className="mb-4 mt-2">
+                <div className="mb-4 mt-2 relative">
                   <p className="text-xs text-gray-400 mb-1">Preview</p>
                   <img
                     src={bannerPreview}
                     alt="Banner preview"
                     className="w-full h-40 object-cover rounded-lg border border-gray-200"
                   />
+                  <button 
+                    onClick={() => { setBannerFile(null); setBannerPreview(null); }}
+                    className="absolute top-6 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition shadow"
+                    title="Remove banner"
+                  >
+                    <FaTimes size={12} />
+                  </button>
                 </div>
               )}
 

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { FaGoogle, FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
+import { translations } from "../../../translations";
+import { useLanguage } from "../../../contexts/LanguageContext";
 const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const { language } = useLanguage();
 
     return (
         <div className="relative h-screen overflow-hidden flex items-center justify-center">
@@ -27,7 +30,7 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                             className="flex items-center gap-2 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-400"
                         >
                             <FaArrowLeft />
-                            Back
+                            {translations.auth.back[language]}
                         </button>
                         {/* logo */}
                         <div className="flex justify-center">
@@ -36,13 +39,13 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                     </div>
 
                     {/* welcome text */}
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">Welcome Back</h1>
-                    <p className="text-sm sm:text-base text-center">Sign in to your account to continue</p>
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">{translations.auth.welcomeBack[language]}</h1>
+                    <p className="text-sm sm:text-base text-center">{translations.auth.signInToContinue[language]}</p>
                     {/* email field */}
                     <div className="flex flex-col gap-2">
                         <label htmlFor="email"
                         >
-                            Email address
+                            {translations.auth.emailAddress[language]}
                         </label>
                         <input
                             type="email"
@@ -50,12 +53,12 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                             id="email"
                             value={form.email}
                             onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
-                            placeholder="Email"
+                            placeholder={translations.auth.emailAddress[language]}
                             className="w-full rounded-xl bg-white px-4 py-2 text-sm sm:text-base placeholder-[#BBA898] border border-[#A64200] outline-none focus:ring-2 focus:ring-orange-400" />
                     </div>
                     {/* password field */}
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">{translations.auth.password[language]}</label>
                         <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
@@ -63,7 +66,7 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                                 id="password"
                                 value={form.password}
                                 onChange={(e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))}
-                                placeholder="Password"
+                                placeholder={translations.auth.password[language]}
                                 className="w-full rounded-xl bg-white px-4 py-2 pr-12 text-sm sm:text-base placeholder-[#BBA898] border border-[#A64200] outline-none focus:ring-2 focus:ring-orange-400" />
                             <button
                                 type="button"
@@ -80,13 +83,13 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                         {/* redirect to register page field */}
                         <div >
                             <p><Link to="/register" className="inline-block rounded px-2 py-1  hover:underline focus:outline-none focus:ring-2 focus:ring-orange-400 ">
-                                Create an account
+                                {translations.auth.createAccount[language]}
                             </Link></p>
                         </div>
                         {/* forgot password */}
                         <div>
                             <p><Link to="/reset-password" className="inline-block rounded px-2 py-1 hover:underline focus:outline-none focus:ring-2 focus:ring-orange-400">
-                                Forgot your password?
+                                {translations.auth.forgotPassword[language]}
                             </Link></p>
                         </div>
                     </div>
@@ -97,7 +100,7 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                         <button
                             onClick={handleSubmit}
                             className="w-full rounded-xl bg-gradient-to-r from-[#A64200] to-[#F0B04C] px-4 py-2 outline-none focus:ring-2 focus:ring-orange-400 text-white">
-                            Sign In
+                            {translations.auth.signIn[language]}
                         </button>
                     </div>
 
