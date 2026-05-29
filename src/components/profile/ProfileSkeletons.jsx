@@ -22,18 +22,27 @@ export const VolunteerProfileSkeleton = () => (
     </header>
 
     <main className="flex-1 overflow-y-auto">
-      <div className="flex flex-col lg:flex-row gap-6 px-4 py-6 max-w-7xl mx-auto w-full">
-        <div className="w-full lg:flex-1 space-y-6">
-          <SkeletonCard className="h-56 rounded-3xl" />
-          <SkeletonCard className="h-28 rounded-2xl" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <SkeletonCard className="h-80 rounded-2xl" />
-            <SkeletonCard className="h-80 rounded-2xl" />
+      <div className="flex flex-col xl:flex-row gap-4 px-4 sm:px-6 lg:px-8 py-4 w-full">
+        {/* Left Column */}
+        <div className="w-full xl:flex-1 space-y-4">
+          <SkeletonCard className="h-[14rem] rounded-3xl" />
+          
+          {/* Middle Row Grid (3 columns) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <SkeletonCard className="h-64 rounded-2xl" />
+            <SkeletonCard className="h-64 rounded-2xl" />
+            <SkeletonCard className="h-64 rounded-2xl" />
+          </div>
+          
+          {/* Bottom Row */}
+          <div className="w-full">
+            <SkeletonCard className="h-48 rounded-2xl" />
           </div>
         </div>
 
-        <aside className="w-full lg:w-1/3 flex-shrink-0">
-          <SkeletonCard className="h-[31rem] rounded-2xl" />
+        {/* Right Sidebar */}
+        <aside className="w-full xl:w-1/3 flex-shrink-0">
+          <SkeletonCard className="h-[40rem] rounded-2xl" />
         </aside>
       </div>
     </main>

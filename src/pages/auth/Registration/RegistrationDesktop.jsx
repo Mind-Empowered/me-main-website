@@ -737,7 +737,7 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 						<img src="/brand/logo.jpeg" alt="Logo" className="w-28 rounded-full" />
 					</div>
 
-					<div className="relative z-10 mx-auto my-6 flex w-[94%] max-w-2xl flex-col items-start justify-start gap-4 rounded-2xl bg-[#FAF6F1] p-6 sm:w-[88%] sm:gap-5 sm:p-8 md:my-8 md:p-10 lg:my-0 lg:w-1/2 lg:max-w-none lg:gap-6 lg:rounded-none lg:p-20 lg:overflow-y-auto lg:h-full">
+					<div className="relative z-10 mx-auto my-6 flex w-[94%] max-w-2xl flex-col items-start justify-start gap-4 rounded-2xl bg-[#FAF6F1] p-6 sm:w-[88%] sm:gap-5 sm:p-8 md:my-8 md:p-10 lg:my-0 lg:w-1/2 lg:max-w-none lg:gap-6 lg:rounded-none lg:p-20 lg:h-full">
 						<div className="w-full flex items-center justify-between flex-shrink-0">
 							<h1 className="font-playfairdisplay bg-[#1A0D00] bg-clip-text text-3xl font-normal leading-[120%] text-transparent sm:text-4xl lg:text-[40px]">
 								Complete Your Profile
@@ -752,7 +752,7 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 
 						<div className="w-full text-sm text-[#7A6A5A] font-semibold flex-shrink-0">Step 5 of 5</div>
 
-						<div className="w-full flex flex-col gap-6 overflow-y-auto flex-1">
+						<div className="w-full flex flex-col gap-6 overflow-y-auto flex-1 pr-2">
 							{/* Upload Section */}
 							<div className="w-full">
 								<label className="text-[#7A6A5A] font-semibold mb-3 block">Upload Your Photo</label>
@@ -847,24 +847,24 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 							</div>
 
 							{localError && <p className="text-red-400 text-xs sm:text-sm font-semibold">{localError}</p>}
-
-							{/* Register Button */}
-							<button
-								onClick={() => {
-									const validationError = validateStep5();
-									if (validationError) {
-										setLocalError(validationError);
-										showSnackbar(validationError);
-										return;
-									}
-									setLocalError(null);
-									onRegisterStep5(photoFile);
-								}}
-								className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-xs sm:text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none flex-shrink-0"
-							>
-								Register
-							</button>
 						</div>
+
+						{/* Register Button */}
+						<button
+							onClick={() => {
+								const validationError = validateStep5();
+								if (validationError) {
+									setLocalError(validationError);
+									showSnackbar(validationError);
+									return;
+								}
+								setLocalError(null);
+								onRegisterStep5(photoFile);
+							}}
+							className="w-auto self-center lg:self-end mt-2 rounded-xl bg-[#7A3A00] px-10 py-3 hover:bg-[#8B3D00] text-white text-xs sm:text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none flex-shrink-0"
+						>
+							Register
+						</button>
 					</div>
 				</div>
 			</>

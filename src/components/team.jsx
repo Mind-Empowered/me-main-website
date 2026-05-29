@@ -343,9 +343,9 @@ const Team = ({ language }) => {
                     flex-direction: column;
                     align-items: center;
                     text-align: center;
-                    padding: 1.5rem 1.25rem;
+                    padding: 1rem 0.75rem;
                     background: #fff;
-                    border-radius: 1.5rem;
+                    border-radius: 1rem;
                     box-shadow: 0 4px 20px rgba(70,23,17,0.06);
                     border: 1px solid #f5f0ee;
                     position: relative;
@@ -368,8 +368,8 @@ const Team = ({ language }) => {
 
                 .team-card-photo-wrap {
                     position: relative;
-                    width: 100px; height: 100px;
-                    margin-bottom: 1rem;
+                    width: 76px; height: 76px;
+                    margin-bottom: 0.75rem;
                 }
                 .team-card-glow {
                     position: absolute;
@@ -400,22 +400,22 @@ const Team = ({ language }) => {
                     transform: scale(1.1);
                 }
                 .team-card-name {
-                    font-size: 1.15rem;
+                    font-size: 1rem;
                     font-weight: 800;
                     color: #461711;
-                    margin: 0 0 0.25rem;
+                    margin: 0 0 0.2rem;
                     letter-spacing: -0.01em;
                 }
                 .team-card-role {
-                    font-size: 0.7rem;
+                    font-size: 0.65rem;
                     font-weight: 700;
                     color: #ff7612;
                     background: #fff3e8;
                     border: 1px solid #ffdcc0;
-                    padding: 0.15rem 0.6rem;
+                    padding: 0.15rem 0.5rem;
                     border-radius: 999px;
-                    margin-bottom: 0.75rem;
-                    max-width: 90%;
+                    margin-bottom: 0.6rem;
+                    max-width: 95%;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
@@ -463,7 +463,7 @@ const Team = ({ language }) => {
             <div className="relative">
                 <div
                     ref={scrollRef}
-                    className="flex overflow-x-auto md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory hide-scrollbar"
+                    className="flex overflow-x-auto md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5 pb-8 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory hide-scrollbar"
                 >
                     {translations.teamMembers.map((member) => (
                         <div

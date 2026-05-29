@@ -245,13 +245,17 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../services/supabase-client";
 import { FaSpinner, FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { SectionSkeleton } from "./ProfileSkeletons";
+import { translations } from "../../translations";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const ParticipatedEventsSection = () => {
+    const { language } = useLanguage();
     const [participatedEvents, setParticipatedEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
-    const EVENTS_PER_PAGE = 2;
+    const [expandedEventId, setExpandedEventId] = useState(null);
+    const EVENTS_PER_PAGE = 4;
 
     useEffect(() => {
         const fetchParticipatedEvents = async () => {
@@ -322,7 +326,7 @@ const ParticipatedEventsSection = () => {
                 const { data: events, error: eventsError } = await supabase
                     .schema("me_dataspace")
                     .from("events")
-                    .select("eventID, title, description, fromDateTime")
+                    .select("eventID, title, description, fullDetails, fromDateTime, toDateTime, venue, eventURL, agenda, bannerURL, bannerAltText")
                     .in("eventID", eventIds);
 
                 if (eventsError) {
@@ -342,7 +346,14 @@ const ParticipatedEventsSection = () => {
                         participatedAt: participation.created_at,
                         title: event?.title || "Unknown Event",
                         description: event?.description || "",
+                        fullDetails: event?.fullDetails || "",
                         date: event?.fromDateTime || null,
+                        toDateTime: event?.toDateTime || null,
+                        venue: event?.venue || "",
+                        eventURL: event?.eventURL || "",
+                        agenda: event?.agenda || "",
+                        bannerURL: event?.bannerURL || null,
+                        bannerAltText: event?.bannerAltText || "",
                     };
                 });
 
@@ -391,7 +402,7 @@ const ParticipatedEventsSection = () => {
         return (
             <div className="bg-white rounded-2xl p-6 flex flex-col">
                 <h2 className="text-2xl font-bold mb-4 text-[#8A7060]">
-                    Participated Events
+                    {translations.profile.participatedEvents[language]}
                 </h2>
                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                     {error}
@@ -401,72 +412,115 @@ const ParticipatedEventsSection = () => {
     }
 
     return (
-        <div className="bg-white rounded-2xl p-6 flex flex-col h-80">
-            <h2 className="text-2xl font-bold mb-4 text-[#8A7060]">
-                Participated Events
+        <div className="bg-white rounded-2xl p-5 flex flex-col h-full">
+            <h2 className="text-2xl font-bold mb-3 text-[#8A7060]">
+                {translations.profile.participatedEvents[language]}
             </h2>
 
             {participatedEvents.length === 0 ? (
                 <p className="text-gray-500 text-center py-8">
-                    No participated events yet
+                    {translations.profile.noEvents[language]}
                 </p>
             ) : (
                 <>
-                    <div className="space-y-3 mb-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 flex-1 items-start">
                         {paginatedEvents.map((event) => (
-                            <div className=" ">
-                                <div 
+                            <div 
                                 key={event.id}
-                                className="flex justify-between border rounded-lg p-4 hover:shadow-md transition"
+                                className="border rounded-xl hover:shadow-lg transition cursor-pointer flex flex-col bg-white overflow-hidden h-fit"
+                                onClick={() => setExpandedEventId(expandedEventId === event.id ? null : event.id)}
                             >
-                                <h3 className="text-md font-bold text-[#A64200]">
-                                    {event.title}
-                                </h3>
-                                {/* <p className="text-gray-600 text-sm line-clamp-1">
-                                    {event.description}
-                                </p> */}
-                                {event.date && (
-                                    <p className="text-sm text-gray-400 mt-1">
-                                        {new Date(event.date).toLocaleDateString()}
-                                    </p>
+                                {/* Event Poster */}
+                                <div className="h-32 w-full bg-gray-100 flex items-center justify-center">
+                                    {event.bannerURL ? (
+                                        <img 
+                                            src={event.bannerURL} 
+                                            alt={event.bannerAltText || event.title}
+                                            className="w-full h-full object-cover"
+                                            loading="lazy"
+                                        />
+                                    ) : (
+                                        <div className="text-gray-400 text-xs">No Poster</div>
+                                    )}
+                                </div>
+
+                                {/* Event Header */}
+                                <div className="p-3">
+                                    <h3 className="text-md font-bold text-[#A64200] line-clamp-2">
+                                        {event.title}
+                                    </h3>
+                                </div>
+                                
+                                {/* Expanded Details */}
+                                {expandedEventId === event.id && (
+                                    <div className="px-3 pb-3 pt-2 border-t animate-fade-in text-sm text-gray-700">
+                                        <div className="space-y-3">
+                                            {event.date && (
+                                                <div className="text-xs text-gray-500 font-medium">
+                                                    {new Date(event.date).toLocaleDateString()}
+                                                </div>
+                                            )}
+                                            {event.description && (
+                                                <div>
+                                                    <h4 className="font-bold text-gray-800 text-xs">Description</h4>
+                                                    <p className="text-xs">{event.description}</p>
+                                                </div>
+                                            )}
+                                            {event.fullDetails && (
+                                                <div>
+                                                    <h4 className="font-bold text-gray-800 text-xs">Details</h4>
+                                                    <p className="whitespace-pre-wrap text-xs">{event.fullDetails}</p>
+                                                </div>
+                                            )}
+                                            <div className="space-y-1">
+                                                <div>
+                                                    <span className="font-bold text-gray-800 text-xs">End Time:</span>
+                                                    <p className="text-xs">{event.toDateTime ? new Date(event.toDateTime).toLocaleString() : 'N/A'}</p>
+                                                </div>
+                                                {event.venue && (
+                                                    <div>
+                                                        <span className="font-bold text-gray-800 text-xs">Venue:</span>
+                                                        <p className="text-xs">{event.venue}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {event.eventURL && (
+                                                <div>
+                                                    <span className="font-bold text-gray-800 text-xs">Event Website</span>
+                                                    <a href={event.eventURL} target="_blank" rel="noopener noreferrer" className="block text-[#A64200] hover:underline break-all text-xs">
+                                                        {event.eventURL}
+                                                    </a>
+                                                </div>
+                                            )}
+                                            {event.agenda && (
+                                                <div>
+                                                    <h4 className="font-bold text-gray-800 text-xs">Agenda</h4>
+                                                    <p className="whitespace-pre-wrap text-xs">{event.agenda}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 )}
-                            </div>
                             </div>
                         ))}
                     </div>
 
                     {/* Pagination Controls */}
                     {totalPages > 1 && (
-                        <div className="flex items-center justify-between border-t pt-4 gap-2">
-                            <button
-                                onClick={handlePreviousPage}
-                                disabled={currentPage === 0}
-                                className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm transition flex-shrink-0 ${
-                                    currentPage === 0
-                                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                }`}
-                            >
-                                <FaChevronLeft size={12} />
-                                Previous
-                            </button>
-
-                            <div className="text-xs text-gray-600 whitespace-nowrap">
-                                {currentPage + 1} / {totalPages}
-                            </div>
-
-                            <button
-                                onClick={handleNextPage}
-                                disabled={currentPage === totalPages - 1}
-                                className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm transition flex-shrink-0 ${
-                                    currentPage === totalPages - 1
-                                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                        : "bg-[#A64200] text-white hover:bg-[#8a3600]"
-                                }`}
-                            >
-                                Next
-                                <FaChevronRight size={12} />
-                            </button>
+                        <div className="flex items-center justify-center border-t pt-4 mt-auto gap-2">
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setCurrentPage(i)}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-lg transition font-medium ${
+                                        currentPage === i 
+                                            ? 'bg-[#A64200] text-white' 
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
                         </div>
                     )}
                 </>

@@ -154,6 +154,20 @@ export const translations = {
             name: { en: "Jessica Susan John", ml: "ജെസീക്ക സൂസൻ ജോൺ" },
             role: { en: "Designer", ml: "ഡിസൈനർ" },
             bio: { en: "Jessica is a creative self-taught designer with a BCom degree. She has worked on various projects, including designing posters, newsletters, and websites for Mind Empowered. With her passion for design and a background in social volunteering, she brings fresh ideas and enthusiasm to every project she undertakes.", ml: "ബികോം ബിരുദധാരിയായ ജെസീക്ക, സ്വയം പഠിച്ച ഒരു ക്രിയേറ്റീവ് ഡിസൈനറാണ്. മൈൻഡ് എംപവേർഡിനായി പോസ്റ്ററുകൾ, വാർത്താക്കുറിപ്പുകൾ, വെബ്സൈറ്റുകൾ എന്നിവയുൾപ്പെടെ വിവിധ പ്രോജക്റ്റുകളിൽ അവർ പ്രവർത്തിച്ചിട്ടുണ്ട്. ഡിസൈനിനോടുള്ള അഭിനിവേശവും സാമൂഹിക സന്നദ്ധപ്രവർത്തന പശ്ചാത്തലവും ഉപയോഗിച്ച്, അവർ ഏറ്റെടുക്കുന്ന ഓരോ പ്രോജക്റ്റിലും പുതിയ ആശയങ്ങളും ആവേശവും കൊണ്ടുവരുന്നു." }
+        },
+        {
+            key: 'sai',
+            image: "/team/sai.png",
+            name: { en: "Sai", ml: "സായി" },
+            role: { en: "Tech lead", ml: "ടെക് ലീഡ്" },
+            bio: { en: "I’m Sai.. I'm someone who is passionate about tech, driven by faith, and committed to making a difference.", ml: "ഞാൻ സായി.. സാങ്കേതികവിദ്യയോട് താല്പര്യമുള്ള, വിശ്വാസത്താൽ നയിക്കപ്പെടുന്ന, മാറ്റങ്ങൾ വരുത്താൻ പ്രതിജ്ഞാബദ്ധനായ ഒരാളാണ് ഞാൻ." }
+        },
+        {
+            key: 'abiram',
+            image: "/team/abiram.png",
+            name: { en: "Abiram", ml: "അഭിറാം" },
+            role: { en: "Website developer", ml: "വെബ്സൈറ്റ് ഡെവലപ്പർ" },
+            bio: { en: "I truly believe that technology can make a positive impact on people's lives. I find my greatest joy in using my technical skills to support others, uplift voices, and create tools that make life a little bit easier and brighter.", ml: "സാങ്കേതികവിദ്യയ്ക്ക് ആളുകളുടെ ജീവിതത്തിൽ അനുകൂലമായ മാറ്റമുണ്ടാക്കാൻ കഴിയുമെന്ന് ഞാൻ വിശ്വസിക്കുന്നു. മറ്റുള്ളവരെ സഹായിക്കാനും അവരുടെ ശബ്ദങ്ങൾ ഉയർത്താനും ജീവിതം കുറച്ചുകൂടി എളുപ്പവും ശോഭനവുമാക്കുന്ന ഉപകരണങ്ങൾ സൃഷ്ടിക്കാനും എന്റെ സാങ്കേതിക കഴിവുകൾ ഉപയോഗിക്കുന്നതിലാണ് ഞാൻ എന്റെ ഏറ്റവും വലിയ സന്തോഷം കണ്ടെത്തുന്നത്." }
         }
     ],
     gallery: {
@@ -254,6 +268,57 @@ export const translations = {
         },
         button: { en: 'Sponsor a Girl', ml: 'സ്പോൺസർ ചെയ്യുക' },
         campaignButton: { en: 'Support Campaign', ml: 'കാമ്പെയ്‌നെ പിന്തുണയ്ക്കുക' }
+    },
+    auth: {
+        welcomeBack: { en: 'Welcome Back', ml: 'സ്വാഗതം' },
+        signInToContinue: { en: 'Sign in to your account to continue', ml: 'തുടരാൻ നിങ്ങളുടെ അക്കൗണ്ടിലേക്ക് സൈൻ ഇൻ ചെയ്യുക' },
+        emailAddress: { en: 'Email address', ml: 'ഇമെയിൽ വിലാസം' },
+        password: { en: 'Password', ml: 'പാസ്‌വേഡ്' },
+        createAccount: { en: 'Create an account', ml: 'ഒരു അക്കൗണ്ട് സൃഷ്ടിക്കുക' },
+        forgotPassword: { en: 'Forgot your password?', ml: 'പാസ്‌വേഡ് മറന്നുപോയോ?' },
+        signIn: { en: 'Sign In', ml: 'സൈൻ ഇൻ ചെയ്യുക' },
+        back: { en: 'Back', ml: 'മടങ്ങുക' },
+        error: { en: 'Invalid credentials', ml: 'അസാധുവായ ക്രെഡൻഷ്യലുകൾ' }
+    },
+    profile: {
+        viewMore: { en: 'View More', ml: 'കൂടുതൽ കാണുക' },
+        editProfile: { en: 'Edit Profile', ml: 'പ്രൊഫൈൽ എഡിറ്റ് ചെയ്യുക' },
+        changePhoto: { en: 'Change Photo', ml: 'ഫോട്ടോ മാറ്റുക' },
+        basicInfo: { en: 'Basic Info', ml: 'അടിസ്ഥാന വിവരങ്ങൾ' },
+        firstName: { en: 'First Name', ml: 'ആദ്യനാമം' },
+        lastName: { en: 'Last Name', ml: 'അവസാന നാമം' },
+        phone: { en: 'Phone', ml: 'ഫോൺ' },
+        permanentAddress: { en: 'Permanent Address', ml: 'സ്ഥിരമായ മേൽവിലാസം' },
+        building: { en: 'Building / House Name or Number', ml: 'കെട്ടിടം / വീട്ടുപേര് അല്ലെങ്കിൽ നമ്പർ' },
+        street: { en: 'Street / Road Name', ml: 'തെരുവ് / റോഡിന്റെ പേര്' },
+        area: { en: 'Area / Locality', ml: 'പ്രദേശം / സ്ഥലം' },
+        city: { en: 'City', ml: 'നഗരം' },
+        state: { en: 'State', ml: 'സംസ്ഥാനം' },
+        pincode: { en: 'PIN Code', ml: 'പിൻ കോഡ്' },
+        country: { en: 'Country', ml: 'രാജ്യം' },
+        presentAddress: { en: 'Present Address', ml: 'നിലവിലെ മേൽവിലാസം' },
+        sameAsPermanent: { en: 'Same as Permanent Address', ml: 'സ്ഥിരമായ മേൽവിലാസം തന്നെ' },
+        workEducation: { en: 'Work / Education', ml: 'ജോലി / വിദ്യാഭ്യാസം' },
+        currentStatus: { en: 'Current Status', ml: 'നിലവിലെ അവസ്ഥ' },
+        working: { en: 'Working', ml: 'ജോലി ചെയ്യുന്നു' },
+        student: { en: 'Student', ml: 'വിദ്യാർത്ഥി' },
+        companyName: { en: 'Company Name', ml: 'കമ്പനിയുടെ പേര്' },
+        collegeName: { en: 'College Name', ml: 'കോളേജിന്റെ പേര്' },
+        about: { en: 'About', ml: 'കുറിച്ച്' },
+        bioPlaceholder: { en: 'Tell us about yourself...', ml: 'നിങ്ങളെക്കുറിച്ച് ഞങ്ങളോട് പറയൂ...' },
+        socials: { en: 'Socials', ml: 'സോഷ്യൽ മീഡിയ' },
+        cancel: { en: 'Cancel', ml: 'റദ്ദാക്കുക' },
+        saveChanges: { en: 'Save Changes', ml: 'മാറ്റങ്ങൾ സംരക്ഷിക്കുക' },
+        saving: { en: 'Saving...', ml: 'സംരക്ഷിക്കുന്നു...' },
+        logout: { en: 'Logout', ml: 'ലോഗ്ഔട്ട്' },
+        backToOverview: { en: 'Back to Overview', ml: 'അവലോകനത്തിലേക്ക് മടങ്ങുക' },
+        skills: { en: 'Skills', ml: 'കഴിവുകൾ' },
+        noSkills: { en: 'No skills added yet', ml: 'കഴിവുകളൊന്നും ചേർത്തിട്ടില്ല' },
+        participatedEvents: { en: 'Participated Events', ml: 'പങ്കെടുത്ത ഇവന്റുകൾ' },
+        noEvents: { en: 'No events', ml: 'ഇവന്റുകളിലൊന്നും പങ്കെടുത്തിട്ടില്ല' },
+        upcomingEvents: { en: 'Upcoming Events', ml: 'വരാനിരിക്കുന്ന ഇവന്റുകൾ' },
+        register: { en: 'Register', ml: 'രജിസ്റ്റർ ചെയ്യുക' },
+        status: { en: 'Status', ml: 'അവസ്ഥ' }
     }
 };
 

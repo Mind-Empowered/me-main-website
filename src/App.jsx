@@ -23,6 +23,7 @@ import {
 } from "./components";
 import { translations } from "./translations";
 
+import { useLanguage } from "./contexts/LanguageContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./pages/auth/Registration/Register";
 import Signin from "./pages/auth/Signin/Signin"; 
@@ -38,6 +39,11 @@ import NewsLetter from "./pages/admin/NewsLetter";
 import PhotoGallery from "./pages/admin/PhtotoGallery";
 import NewEvent from "./pages/admin/Newevent";
 import Calendar from "./pages/admin/Calendar";
+import AdminSettings from "./pages/admin/AdminSettings";
+import ActivityLog from "./pages/admin/ActivityLog";
+import { supabase } from "./services/supabase-client";
+import { Toaster } from 'react-hot-toast';
+import { VolunteerProfileSkeleton } from "./components/profile/ProfileSkeletons";
 
 
 // --- Accessibility Constants for maintainability ---
@@ -61,13 +67,7 @@ function HomePage() {
   const newsletterRef = useRef(null);
   const sponsorRef = useRef(null);
 
-
-
-  // --- Background Music ---
-  const audioRef = useRef(null);
-  // ------------------------
-
-  const [language, setLanguage] = useState('en');
+  const { language, setLanguage } = useLanguage();
 
   // State for the new language selection flow
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
@@ -77,6 +77,25 @@ function HomePage() {
   const [isVolunteerModalOpen, setIsVolunteerModalOpen] = useState(false);
   const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState(null);
+  
+  // Fetch Site Settings for Contact Info and Social Links
+  const [siteSettings, setSiteSettings] = useState(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const { data } = await supabase
+        .schema("me_dataspace")
+        .from("site_settings")
+        .select("*")
+        .eq("id", 1)
+        .single();
+      
+      if (data) {
+        setSiteSettings(data);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleLanguageSelect = (lang) => {
     if (lang !== language) {
@@ -112,17 +131,17 @@ function HomePage() {
   // --- Data-driven footer social links ---
   const socialLinks = [
     {
-      href: "https://www.instagram.com/mind.empowered/",
+      href: siteSettings?.instagram_url || "https://www.instagram.com/mind.empowered/",
       label: "Instagram",
       icon: <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.012-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218 1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.08 2.525c.636-.247 1.363-.416 2.427-.465C9.53 2.013 9.884 2 12.315 2zM12 7a5 5 0 100 10 5 5 0 000-10zm0 8a3 3 0 110-6 3 3 0 010 6zm5.25-9.75a1.25 1.25 0 100-2.5 1.25 1.25 0 000 2.5z" clipRule="evenodd" /></svg>
     },
     {
-      href: "https://www.linkedin.com/company/mind-empowered/",
+      href: siteSettings?.linkedin_url || "https://www.linkedin.com/company/mind-empowered/",
       label: "LinkedIn",
       icon: <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" /></svg>
     },
     {
-      href: "mailto:Mindempowered2020@gmail.com",
+      href: `mailto:${siteSettings?.email || "Mindempowered2020@gmail.com"}`,
       label: "Email",
       icon: <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.75 3h20.5c.966 0 1.75.784 1.75 1.75v14.5A1.75 1.75 0 0122.25 21H1.75A1.75 1.75 0 010 19.25V4.75C0 3.784.784 3 1.75 3zM2.5 4.5v.815l9.5 6.333 9.5-6.333V4.5a.25.25 0 00-.25-.25H2.75a.25.25 0 00-.25.25zM2.5 19.5h19v-12.03l-9.532 6.355a.75.75 0 01-.936 0L2.5 7.47V19.5z" /></svg>
     }
@@ -132,11 +151,7 @@ function HomePage() {
   const [showAccessibilityMenu, setShowAccessibilityMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Refs for smooth parallax direct manipulation
-  const backgroundRef = useRef(null);
-  const heroContentRef = useRef(null);
-  const targetScrollY = useRef(0);
-  const currentScrollY = useRef(0);
+
 
   // --- State with localStorage persistence ---
   const [fontSize, setFontSize] = useState(() => localStorage.getItem('fontSize') || 'normal');
@@ -150,12 +165,16 @@ function HomePage() {
   const [wordSpacing, setWordSpacing] = useState(() => parseFloat(localStorage.getItem('wordSpacing')) || 0);
   const [hideImages, setHideImages] = useState(() => localStorage.getItem('hideImages') === 'true');
   const [bigCursor, setBigCursor] = useState(() => localStorage.getItem('bigCursor') === 'true');
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
   const [soundEnabled, setSoundEnabled] = useState(() => {
-    // Changed key to bgMusicEnabled to reset previous 'false' defaults
     const saved = localStorage.getItem('bgMusicEnabled');
     return saved === null ? true : saved === 'true';
   });
+
+  useEffect(() => {
+    const handleCustomChange = (e) => setSoundEnabled(e.detail);
+    window.addEventListener('bgMusicChanged', handleCustomChange);
+    return () => window.removeEventListener('bgMusicChanged', handleCustomChange);
+  }, []);
 
   // Effect to save settings to localStorage whenever they change
   useEffect(() => {
@@ -170,9 +189,9 @@ function HomePage() {
     localStorage.setItem('wordSpacing', wordSpacing);
     localStorage.setItem('hideImages', hideImages);
     localStorage.setItem('bigCursor', bigCursor);
-    localStorage.setItem('darkMode', darkMode);
     localStorage.setItem('bgMusicEnabled', soundEnabled);
-  }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, contentScale, lineHeight, letterSpacing, wordSpacing, hideImages, bigCursor, darkMode, soundEnabled]);
+    window.dispatchEvent(new CustomEvent('bgMusicChanged', { detail: soundEnabled }));
+  }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, contentScale, lineHeight, letterSpacing, wordSpacing, hideImages, bigCursor, soundEnabled]);
   // -----------------------------------------
 
   const scrollToSection = (ref) => {
@@ -236,7 +255,6 @@ function HomePage() {
     setWordSpacing(0);
     setHideImages(false);
     setBigCursor(false);
-    setDarkMode(false);
     setSoundEnabled(true);
   };
 
@@ -261,148 +279,36 @@ function HomePage() {
     root.style.setProperty('--word-spacing', `${wordSpacing}em`);
     root.classList.toggle('hide-images', hideImages);
     root.classList.toggle('big-cursor', bigCursor);
-    root.classList.toggle('dark-mode', darkMode);
-  }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, lineHeight, letterSpacing, wordSpacing, hideImages, bigCursor, darkMode]);
+  }, [fontSize, highContrast, reducedMotion, readableFont, highlightLinks, lineHeight, letterSpacing, wordSpacing, hideImages, bigCursor]);
 
-  // Optimized smooth parallax and navbar scroll effect
+  // Standard scroll listener for navbar state
   useEffect(() => {
-    if (reducedMotion) return;
-
-    let rafId;
-    
-    const updateParallax = () => {
-      // Linear interpolation (lerp) for smoother motion
-      // 0.1 is the smoothing factor (0.05 - 0.15 is usually best)
-      currentScrollY.current += (targetScrollY.current - currentScrollY.current) * 0.1;
-      
-      // Stop the loop and snap to target if the difference is very small
-      if (Math.abs(targetScrollY.current - currentScrollY.current) < 0.1) {
-        currentScrollY.current = targetScrollY.current;
-      }
-
-      const y = currentScrollY.current;
-
-      // 1. Background Image Parallax (Gentle constant motion)
-      if (backgroundRef.current) {
-        backgroundRef.current.style.transform = `translate3d(0, ${y * 0.15}px, 0)`;
-      }
-
-      // 2. Hero Content Parallax (Faster movement + Fade out)
-      if (heroContentRef.current) {
-        const opacity = Math.max(0, 1 - y / (window.innerHeight * 0.8));
-        const translate = y * 0.4;
-        heroContentRef.current.style.transform = `translate3d(0, ${translate}px, 0)`;
-        heroContentRef.current.style.opacity = opacity;
-        heroContentRef.current.style.visibility = opacity <= 0.01 ? 'hidden' : 'visible';
-      }
-
-      rafId = requestAnimationFrame(updateParallax);
-    };
-
     const onScroll = () => {
-      targetScrollY.current = window.scrollY;
-      
-      // Update Navbar State independently of the RAF loop
-      // We use a functional setter to avoid the dependency on 'scrolled'
       const isScrolled = window.scrollY > 10;
       setScrolled(prev => prev !== isScrolled ? isScrolled : prev);
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    rafId = requestAnimationFrame(updateParallax);
-
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, [reducedMotion]);
-
-  // Sync sound state with audio element
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.muted = !soundEnabled;
-      if (soundEnabled) {
-        const playAudio = () => {
-          audioRef.current.play().catch(() => {
-            // If still blocked, we don't set soundEnabled to false, 
-            // we just wait for the next interaction.
-          });
-        };
-
-        playAudio();
-
-        // Standard fix for modern browser autoplay restrictions:
-        // Attempt to play on the very first user interaction
-        const handleFirstInteraction = () => {
-          playAudio();
-          window.removeEventListener('click', handleFirstInteraction, true);
-          window.removeEventListener('keydown', handleFirstInteraction, true);
-          window.removeEventListener('touchstart', handleFirstInteraction, true);
-          window.removeEventListener('touchend', handleFirstInteraction, true);
-        };
-
-        window.addEventListener('click', handleFirstInteraction, true);
-        window.addEventListener('keydown', handleFirstInteraction, true);
-        window.addEventListener('touchstart', handleFirstInteraction, true);
-        window.addEventListener('touchend', handleFirstInteraction, true);
-
-        return () => {
-          window.removeEventListener('click', handleFirstInteraction, true);
-          window.removeEventListener('keydown', handleFirstInteraction, true);
-          window.removeEventListener('touchstart', handleFirstInteraction, true);
-          window.removeEventListener('touchend', handleFirstInteraction, true);
-        };
-      }
-    }
-  }, [soundEnabled]);
-
-  // Handle pausing background music when videos play
-  useEffect(() => {
-    const handleMediaPlay = (e) => {
-      if (e.target.tagName === 'VIDEO' && audioRef.current) {
-        audioRef.current.pause();
-      }
-    };
-
-    const handleMediaPause = (e) => {
-      if (e.target.tagName === 'VIDEO' && audioRef.current && soundEnabled) {
-        // Only resume if background music is supposed to be enabled
-        audioRef.current.play().catch(() => { });
-      }
-    };
-
-    // Use capture phase to intercept the events from any deep video element
-    document.addEventListener('play', handleMediaPlay, true);
-    document.addEventListener('pause', handleMediaPause, true);
-    document.addEventListener('ended', handleMediaPause, true);
-
-    return () => {
-      document.removeEventListener('play', handleMediaPlay, true);
-      document.removeEventListener('pause', handleMediaPause, true);
-      document.removeEventListener('ended', handleMediaPause, true);
-    };
-  }, [soundEnabled]);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 isolate">
-
-
-      {/* Background Music */}
-      <audio
-        ref={audioRef}
-        src="/MeSong.mpeg"
-        autoPlay
-        loop
-        muted={!soundEnabled}
-        preload="auto"
+    <>
+      <Toaster 
+        position="top-right" 
+        toastOptions={{ 
+          duration: 4000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        }} 
       />
-
+      <div className="min-h-screen bg-gray-50 isolate">
 
       {/* Fixed Background GIF with Parallax */}
-      <div
-        ref={backgroundRef}
-        className="fixed inset-0 -z-10 will-change-transform"
-      >
+      <div className="fixed inset-0 -z-10">
         <img src="/landing-bg.gif" alt="Mind Empowered background animation" className="w-full h-screen object-cover scale-125" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30" />
       </div>
@@ -421,10 +327,7 @@ function HomePage() {
 
       {/* Hero Section Spacer with Parallax Content */}
       <div className="relative h-screen overflow-hidden">
-        <div
-          ref={heroContentRef}
-          className="absolute inset-0 will-change-transform"
-        >
+        <div className="absolute inset-0">
           <Hero
             language={language}
             openDonateModal={() => setIsDonateModalOpen(true)}
@@ -484,15 +387,7 @@ function HomePage() {
                   {highlightLinks ? translations.nav.on[language] : translations.nav.off[language]}
                 </button>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.darkMode[language]}</span>
-                <button
-                  onClick={() => setDarkMode(!darkMode)}
-                  className={`px-3 py-1 text-xs rounded-md font-bold w-14 text-center ${darkMode ? 'bg-[#ff7612] text-white' : 'bg-gray-200'}`}
-                >
-                  {darkMode ? translations.nav.on[language] : translations.nav.off[language]}
-                </button>
-              </div>
+
               <div className="flex items-center justify-between">
                 <span className="text-sm sm:text-base text-gray-800 font-semibold" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>{translations.accessibility.backgroundMusic[language]}</span>
                 <button
@@ -800,7 +695,7 @@ function HomePage() {
         {/* 9. Contact Us */}
         <section ref={contactRef} className="content-section py-12 md:py-16 lg:py-20 bg-transparent">
           <div className="px-4 sm:px-6 lg:px-8">
-            <Contact language={language} />
+            <Contact language={language} siteSettings={siteSettings} />
           </div>
         </section>
 
@@ -833,6 +728,95 @@ function HomePage() {
         </div>
       </footer>
     </div>
+    </>
+  );
+}
+
+function GlobalAudio() {
+  const audioRef = useRef(null);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const saved = localStorage.getItem('bgMusicEnabled');
+    return saved === null ? true : saved === 'true';
+  });
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const saved = localStorage.getItem('bgMusicEnabled');
+      setSoundEnabled(saved === null ? true : saved === 'true');
+    };
+    const handleCustomChange = (e) => setSoundEnabled(e.detail);
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('bgMusicChanged', handleCustomChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('bgMusicChanged', handleCustomChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const audioEl = audioRef.current;
+    if (audioEl) {
+      audioEl.muted = !soundEnabled;
+      
+      const handleFirstInteraction = () => {
+        audioEl.play().catch(() => {});
+        window.removeEventListener('click', handleFirstInteraction, true);
+        window.removeEventListener('keydown', handleFirstInteraction, true);
+        window.removeEventListener('touchstart', handleFirstInteraction, true);
+        window.removeEventListener('touchend', handleFirstInteraction, true);
+      };
+
+      if (soundEnabled) {
+        audioEl.play().catch(() => {});
+        window.addEventListener('click', handleFirstInteraction, true);
+        window.addEventListener('keydown', handleFirstInteraction, true);
+        window.addEventListener('touchstart', handleFirstInteraction, true);
+        window.addEventListener('touchend', handleFirstInteraction, true);
+      } else {
+        audioEl.pause();
+      }
+
+      return () => {
+        audioEl.pause();
+        window.removeEventListener('click', handleFirstInteraction, true);
+        window.removeEventListener('keydown', handleFirstInteraction, true);
+        window.removeEventListener('touchstart', handleFirstInteraction, true);
+        window.removeEventListener('touchend', handleFirstInteraction, true);
+      };
+    }
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    const handleMediaPlay = (e) => {
+      if (e.target.tagName === 'VIDEO' && audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+    const handleMediaPause = (e) => {
+      if (e.target.tagName === 'VIDEO' && audioRef.current && soundEnabled) {
+        audioRef.current.play().catch(() => {});
+      }
+    };
+    document.addEventListener('play', handleMediaPlay, true);
+    document.addEventListener('pause', handleMediaPause, true);
+    document.addEventListener('ended', handleMediaPause, true);
+    return () => {
+      document.removeEventListener('play', handleMediaPlay, true);
+      document.removeEventListener('pause', handleMediaPause, true);
+      document.removeEventListener('ended', handleMediaPause, true);
+    };
+  }, [soundEnabled]);
+
+  return (
+    <audio
+      ref={audioRef}
+      src="/MeSong.mpeg"
+      autoPlay
+      loop
+      muted={!soundEnabled}
+      preload="auto"
+    />
   );
 }
 
@@ -852,56 +836,93 @@ function App() {
   return (
     <>
       {isInitialSkeletonVisible && (
-        <div className="fixed inset-0 z-[9999] bg-[#f8f4ef] text-[#461711]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,118,18,0.08),_transparent_45%),radial-gradient(circle_at_bottom_right,_rgba(255,219,91,0.15),_transparent_35%)]" />
-          <div className="relative flex min-h-screen flex-col">
-            <div className="border-b border-[#461711]/5 px-4 sm:px-6 lg:px-12 py-4 sm:py-5">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer shadow-sm" />
-                  <div className="space-y-2">
-                    <div className="h-4 w-36 sm:w-48 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
-                    <div className="h-3 w-24 sm:w-32 rounded-full bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
-                  </div>
+        (typeof window !== "undefined" && window.location.pathname === "/") ? (
+          /* Home Screen Skeleton */
+          <div className="fixed inset-0 z-[9999] bg-[#f8f4ef] text-[#461711] flex flex-col justify-between">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,118,18,0.08),_transparent_45%),radial-gradient(circle_at_bottom_right,_rgba(255,219,91,0.15),_transparent_35%)]" />
+            
+            {/* Top navbar skeleton */}
+            <div className="relative z-10 border-b border-[#461711]/5 px-4 sm:px-6 lg:px-12 py-4 sm:py-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer shadow-sm" />
+                  <div className="h-5 w-36 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
                 </div>
-
-                <div className="hidden md:flex items-center gap-3">
-                  <div className="h-11 w-24 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
-                  <div className="h-11 w-11 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
-                  <div className="h-11 w-11 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                <div className="hidden md:flex items-center gap-6">
+                  <div className="h-4 w-16 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="h-4 w-16 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="h-4 w-16 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="h-9 w-24 rounded-xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
                 </div>
               </div>
             </div>
 
-            <main className="flex-1 px-4 sm:px-6 lg:px-12 py-8 sm:py-10 lg:py-12">
-              <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-center">
-                <div className="space-y-5">
-                  <div className="h-5 w-32 rounded-full bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
-                  <div className="h-14 w-full max-w-2xl rounded-[2rem] bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
-                  <div className="h-14 w-5/6 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
-                  <div className="h-14 w-2/3 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
-                  <div className="flex flex-wrap gap-3 pt-4">
-                    <div className="h-12 w-32 rounded-2xl bg-gradient-to-r from-[#461711]/10 via-white to-[#461711]/10 bg-[length:200%_100%] animate-skeleton-shimmer" />
-                    <div className="h-12 w-32 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+            {/* Center Content skeleton */}
+            <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 -mt-20">
+              <div className="h-16 w-[80%] max-w-2xl rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer mb-6 shadow-sm" />
+              <div className="h-5 w-[60%] max-w-md rounded-full bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+            </div>
+
+            {/* Bottom Buttons skeleton */}
+            <div className="relative z-10 pb-20 flex flex-col sm:flex-row items-center justify-center gap-4 px-4">
+              <div className="h-14 w-full sm:w-56 rounded-2xl bg-gradient-to-r from-[#461711]/15 via-white/40 to-[#461711]/15 bg-[length:200%_100%] animate-skeleton-shimmer shadow-lg" />
+              <div className="h-14 w-full sm:w-56 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer shadow-md" />
+            </div>
+          </div>
+        ) : (
+          /* Default Page Skeleton */
+          <div className="fixed inset-0 z-[9999] bg-[#f8f4ef] text-[#461711]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,118,18,0.08),_transparent_45%),radial-gradient(circle_at_bottom_right,_rgba(255,219,91,0.15),_transparent_35%)]" />
+            <div className="relative flex min-h-screen flex-col">
+              <div className="border-b border-[#461711]/5 px-4 sm:px-6 lg:px-12 py-4 sm:py-5">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer shadow-sm" />
+                    <div className="space-y-2">
+                      <div className="h-4 w-36 sm:w-48 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                      <div className="h-3 w-24 sm:w-32 rounded-full bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                    </div>
+                  </div>
+
+                  <div className="hidden md:flex items-center gap-3">
+                    <div className="h-11 w-24 rounded-full bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                    <div className="h-11 w-11 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                    <div className="h-11 w-11 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  </div>
+                </div>
+              </div>
+
+              <main className="flex-1 px-4 sm:px-6 lg:px-12 py-8 sm:py-10 lg:py-12">
+                <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-center">
+                  <div className="space-y-5">
+                    <div className="h-5 w-32 rounded-full bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                    <div className="h-14 w-full max-w-2xl rounded-[2rem] bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                    <div className="h-14 w-5/6 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                    <div className="h-14 w-2/3 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                    <div className="flex flex-wrap gap-3 pt-4">
+                      <div className="h-12 w-32 rounded-2xl bg-gradient-to-r from-[#461711]/10 via-white to-[#461711]/10 bg-[length:200%_100%] animate-skeleton-shimmer" />
+                      <div className="h-12 w-32 rounded-2xl bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                    </div>
+                  </div>
+
+                  <div className="rounded-[2.5rem] border border-white/80 bg-white/70 p-4 shadow-2xl shadow-black/5 backdrop-blur-xl">
+                    <div className="aspect-[4/5] rounded-[2rem] bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
                   </div>
                 </div>
 
-                <div className="rounded-[2.5rem] border border-white/80 bg-white/70 p-4 shadow-2xl shadow-black/5 backdrop-blur-xl">
-                  <div className="aspect-[4/5] rounded-[2rem] bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                <div className="mt-8 grid gap-4 md:grid-cols-3">
+                  <div className="h-32 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="h-32 rounded-[2rem] bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
+                  <div className="h-32 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
                 </div>
-              </div>
-
-              <div className="mt-8 grid gap-4 md:grid-cols-3">
-                <div className="h-32 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
-                <div className="h-32 rounded-[2rem] bg-gradient-to-r from-[#e9e0d8] via-white to-[#e9e0d8] bg-[length:200%_100%] animate-skeleton-shimmer" />
-                <div className="h-32 rounded-[2rem] bg-gradient-to-r from-[#ece4dc] via-white to-[#ece4dc] bg-[length:200%_100%] animate-skeleton-shimmer" />
-              </div>
-            </main>
+              </main>
+            </div>
           </div>
-        </div>
+        )
       )}
 
       <div className={isInitialSkeletonVisible ? 'opacity-0 pointer-events-none select-none' : 'opacity-100 transition-opacity duration-300'}>
+        <GlobalAudio />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -909,7 +930,7 @@ function App() {
             <Route path="/signin" element={<Signin />} />
             <Route path="/reset-password" element={<ResetPass />} />
             <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
-            <Route path="/volunteer-profile" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]}><VolunteerProfile /></ProtectedRoute>  } />
+            <Route path="/volunteer-profile" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<VolunteerProfileSkeleton />}><VolunteerProfile /></ProtectedRoute>  } />
             <Route path="/admin" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminLayout /></ProtectedRoute>}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="volunteers" element={<Volunteers />} />
@@ -918,6 +939,8 @@ function App() {
               <Route path="photogallery" element={<PhotoGallery />} />
               <Route path="newevent" element={<NewEvent />} />
               <Route path="calendar" element={<Calendar />} />
+              <Route path="settings" element={<AdminSettings />} />
+              <Route path="activity" element={<ActivityLog />} />
             </Route>
           </Routes>
         </BrowserRouter>
