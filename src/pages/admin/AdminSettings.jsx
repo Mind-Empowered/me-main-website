@@ -93,6 +93,8 @@ const AdminSettings = () => {
                     address: siteSettings.address,
                     instagram_url: siteSettings.instagram_url,
                     linkedin_url: siteSettings.linkedin_url,
+                    map_url: siteSettings.map_url,
+                    map: siteSettings.map,
                     updated_at: new Date().toISOString()
                 })
                 .eq("id", 1);
@@ -129,7 +131,7 @@ const AdminSettings = () => {
             });
 
             if (error) throw error;
-            
+
             setPasswordMessage({ type: "success", text: "Password updated successfully!" });
             setPasswordData({ newPassword: "", confirmPassword: "" });
         } catch (error) {
@@ -152,23 +154,23 @@ const AdminSettings = () => {
             </div>
 
             <div className="p-6 max-w-5xl mx-auto flex flex-col md:flex-row gap-8">
-                
+
                 {/* Tabs Sidebar */}
                 <div className="w-full md:w-64 shrink-0">
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2 flex flex-col gap-1">
-                        <button 
+                        <button
                             onClick={() => setActiveTab("site")}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition ${activeTab === "site" ? "bg-[#C1622A] text-white" : "text-gray-600 hover:bg-orange-50 hover:text-[#C1622A]"}`}
                         >
                             <FaGlobe /> Site Configuration
                         </button>
-                        <button 
+                        <button
                             onClick={() => setActiveTab("security")}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition ${activeTab === "security" ? "bg-[#C1622A] text-white" : "text-gray-600 hover:bg-orange-50 hover:text-[#C1622A]"}`}
                         >
                             <FaLock /> Security
                         </button>
-                        <button 
+                        <button
                             onClick={() => setActiveTab("preferences")}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition ${activeTab === "preferences" ? "bg-[#C1622A] text-white" : "text-gray-600 hover:bg-orange-50 hover:text-[#C1622A]"}`}
                         >
@@ -216,7 +218,7 @@ const AdminSettings = () => {
                             {activeTab === "site" && (
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 animate-fade-in-fast">
                                     <h2 className="text-xl font-bold text-[#461711] mb-6">Contact & Social Links</h2>
-                                    
+
                                     {siteMessage.text && (
                                         <div className={`p-4 rounded-lg mb-6 text-sm font-semibold ${siteMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
                                             {siteMessage.text}
@@ -227,40 +229,64 @@ const AdminSettings = () => {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                                    <FaEnvelope className="text-gray-400"/> Contact Email
+                                                    <FaEnvelope className="text-gray-400" /> Contact Email
                                                 </label>
-                                                <input 
-                                                    type="email" 
+                                                <input
+                                                    type="email"
                                                     required
                                                     value={siteSettings.email}
-                                                    onChange={(e) => setSiteSettings({...siteSettings, email: e.target.value})}
+                                                    onChange={(e) => setSiteSettings({ ...siteSettings, email: e.target.value })}
                                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
                                                 />
                                             </div>
                                             <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                                    <FaPhone className="text-gray-400"/> Phone Number
+                                                    <FaPhone className="text-gray-400" /> Phone Number
                                                 </label>
-                                                <input 
-                                                    type="text" 
+                                                <input
+                                                    type="text"
                                                     required
                                                     value={siteSettings.phone}
-                                                    onChange={(e) => setSiteSettings({...siteSettings, phone: e.target.value})}
+                                                    onChange={(e) => setSiteSettings({ ...siteSettings, phone: e.target.value })}
                                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
                                                 />
                                             </div>
                                         </div>
-                                        
+
                                         <div className="space-y-2">
                                             <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                                <FaMapMarkerAlt className="text-gray-400"/> Physical Address
+                                                <FaMapMarkerAlt className="text-gray-400" /> Physical Address
                                             </label>
-                                            <textarea 
+                                            <textarea
                                                 required
                                                 rows="2"
                                                 value={siteSettings.address}
-                                                onChange={(e) => setSiteSettings({...siteSettings, address: e.target.value})}
+                                                onChange={(e) => setSiteSettings({ ...siteSettings, address: e.target.value })}
                                                 className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50 resize-none"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                                <FaMapMarkerAlt className="text-gray-400" /> Google Maps Embed URL
+                                            </label>
+                                            <input
+                                                type="url"
+                                                value={siteSettings.map_url || ""}
+                                                onChange={(e) => setSiteSettings({ ...siteSettings, map_url: e.target.value })}
+                                                placeholder="https://www.google.com/maps/embed?pb=..."
+                                                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                                <FaMapMarkerAlt className="text-gray-400" /> Google Maps URL
+                                            </label>
+                                            <input
+                                                type="url"
+                                                value={siteSettings.map|| ""}
+                                                onChange={(e) => setSiteSettings({ ...siteSettings, map: e.target.value })}
+                                                placeholder="https://www.google.com/maps/.."
+                                                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
                                             />
                                         </div>
 
@@ -270,31 +296,31 @@ const AdminSettings = () => {
                                             <h3 className="font-semibold text-gray-700">Social Media URLs</h3>
                                             <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-600 flex items-center gap-2">
-                                                    <FaInstagram className="text-pink-600"/> Instagram URL
+                                                    <FaInstagram className="text-pink-600" /> Instagram URL
                                                 </label>
-                                                <input 
-                                                    type="url" 
+                                                <input
+                                                    type="url"
                                                     value={siteSettings.instagram_url}
-                                                    onChange={(e) => setSiteSettings({...siteSettings, instagram_url: e.target.value})}
+                                                    onChange={(e) => setSiteSettings({ ...siteSettings, instagram_url: e.target.value })}
                                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
                                                 />
                                             </div>
                                             <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-600 flex items-center gap-2">
-                                                    <FaLinkedin className="text-blue-600"/> LinkedIn URL
+                                                    <FaLinkedin className="text-blue-600" /> LinkedIn URL
                                                 </label>
-                                                <input 
-                                                    type="url" 
+                                                <input
+                                                    type="url"
                                                     value={siteSettings.linkedin_url}
-                                                    onChange={(e) => setSiteSettings({...siteSettings, linkedin_url: e.target.value})}
+                                                    onChange={(e) => setSiteSettings({ ...siteSettings, linkedin_url: e.target.value })}
                                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="flex justify-end pt-4">
-                                            <button 
-                                                type="submit" 
+                                            <button
+                                                type="submit"
                                                 disabled={isSavingSite}
                                                 className="bg-[#C1622A] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#a8521f] transition disabled:opacity-50 flex items-center gap-2"
                                             >
@@ -310,7 +336,7 @@ const AdminSettings = () => {
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 animate-fade-in-fast">
                                     <h2 className="text-xl font-bold text-[#461711] mb-2">Change Password</h2>
                                     <p className="text-gray-500 text-sm mb-6">Update your admin account password.</p>
-                                    
+
                                     {passwordMessage.text && (
                                         <div className={`p-4 rounded-lg mb-6 text-sm font-semibold ${passwordMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
                                             {passwordMessage.text}
@@ -321,11 +347,11 @@ const AdminSettings = () => {
                                         <div className="space-y-2">
                                             <label className="text-sm font-semibold text-gray-700">New Password</label>
                                             <div className="relative">
-                                                <input 
+                                                <input
                                                     type={showNewPassword ? "text" : "password"}
                                                     required
                                                     value={passwordData.newPassword}
-                                                    onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                                                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                                                     className="w-full px-4 py-2 pr-12 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
                                                 />
                                                 <button
@@ -341,11 +367,11 @@ const AdminSettings = () => {
                                         <div className="space-y-2">
                                             <label className="text-sm font-semibold text-gray-700">Confirm New Password</label>
                                             <div className="relative">
-                                                <input 
+                                                <input
                                                     type={showConfirmPassword ? "text" : "password"}
                                                     required
                                                     value={passwordData.confirmPassword}
-                                                    onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                                                    onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                                                     className="w-full px-4 py-2 pr-12 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
                                                 />
                                                 <button
@@ -358,10 +384,10 @@ const AdminSettings = () => {
                                                 </button>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="pt-2">
-                                            <button 
-                                                type="submit" 
+                                            <button
+                                                type="submit"
                                                 disabled={isSavingPassword}
                                                 className="w-full bg-[#461711] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#ff7612] transition disabled:opacity-50"
                                             >
@@ -389,7 +415,7 @@ const AdminSettings = () => {
                                             </div>
                                             <span className="text-[#C1622A]">{language === 'en' ? 'English' : 'മലയാളം (Malayalam)'}</span>
                                         </button>
-                                        
+
                                         <button
                                             onClick={toggleSound}
                                             className="w-full flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-[#FAF7F2] border border-gray-200 rounded-xl transition"

@@ -120,7 +120,7 @@ const Contact = ({ language, siteSettings }) => {
                                 </svg>
                             </a>
                             {/* Location */}
-                            <a href="https://www.google.com/maps/search/?api=1&query=ERRA+34,+Elamana+Road,+Tripunithura,+Ernakulam,+Kerala+682301"
+                            <a href={siteSettings?.map || "https://www.google.com/maps/place/ERRA+34,+Elamana+Road,+Tripunithura,+Ernakulam,+Kerala+682301"}
                                 target="_blank" rel="noopener noreferrer"
                                 className="w-14 h-14 rounded-2xl bg-white border-2 border-gray-100 shadow-sm flex items-center justify-center"
                                 aria-label="Location">
@@ -165,7 +165,7 @@ const Contact = ({ language, siteSettings }) => {
                     <div className="w-full h-64 rounded-2xl overflow-hidden border-4 border-white shadow-xl relative group">
                         <iframe
                             title="Mind Empowered Location"
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.941656828594!2d76.3312061!3d9.9387431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b08739958997381%3A0x6bba92053f317b6a!2sElamana%20Rd%2C%20Thrippunithura%2C%20Ernakulam%2C%20Kerala!5e0!3m2!1sen!2sin!4v1710150000000!5m2!1sen!2sin"
+                            src={siteSettings?.map_url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.941656828594!2d76.3312061!3d9.9387431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b08739958997381%3A0x6bba92053f317b6a!2sElamana%20Rd%2C%20Thrippunithura%2C%20Ernakulam%2C%20Kerala!5e0!3m2!1sen!2sin!4v1710150000000!5m2!1sen!2sin"}
                             className="w-full h-full border-none grayscale-[0.2] group-hover:grayscale-0 transition-all duration-500"
                             allowFullScreen=""
                             loading="lazy"
