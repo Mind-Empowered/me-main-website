@@ -335,9 +335,6 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 								</button>
 							</div>
 						</div>
-
-						{localError && <p className="text-red-400 text-sm font-semibold">{localError}</p>}
-
 						<button
 							onClick={handleNext}
 							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none"
@@ -471,9 +468,6 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 								</div>
 							</div>
 						</div>
-
-						{localError && <p className="text-red-400 text-sm font-semibold">{localError}</p>}
-
 						<button
 							onClick={handleNext}
 							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none"
@@ -620,9 +614,6 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 								</div>
 							</div>
 						</div>
-
-						{localError && <p className="text-red-400 text-sm font-semibold">{localError}</p>}
-
 						<button
 							onClick={handleNext}
 							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none"
@@ -714,9 +705,6 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 								/>
 							</div>
 						)}
-
-						{localError && <p className="text-red-400 text-sm font-semibold">{localError}</p>}
-
 						<button
 							onClick={handleNext}
 							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none"
@@ -953,8 +941,6 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 									className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] text-[#1A0D00] outline-none resize-none focus:ring-2 focus:ring-orange-400 text-sm"
 								/>
 							</div>
-
-							{localError && <p className="text-red-400 text-xs sm:text-sm font-semibold">{localError}</p>}
 						</div>
 
 						{/* Register Button */}
