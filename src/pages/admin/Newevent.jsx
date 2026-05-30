@@ -210,6 +210,90 @@ const AddEvent = () => {
     if (validateStep1()) setStep(2);
   };
 
+// const handleSubmit = async (status) => {
+//   if (!validateStep2()) return;
+
+//   setLoading(true);
+//   try {
+//     const fromDateTime = new Date(
+//       `${form.startDate}T${form.startTime}`,
+//     ).toISOString();
+//     const toDateTime = new Date(
+//       `${form.endDate}T${form.endTime}`,
+//     ).toISOString();
+
+//     let bannerURL = null;
+//     if (bannerFile) {
+//       const safeName = bannerFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+//       const fileName = `banner_${Date.now()}_${safeName}`;
+//       const { error: uploadError } = await supabase.storage
+//         .from("events")
+//         .upload(fileName, bannerFile, { upsert: false });
+//       if (uploadError) throw uploadError;
+//       const { data } = supabase.storage.from("events").getPublicUrl(fileName);
+//       bannerURL = data.publicUrl;
+//     }
+
+//     const { error } = await supabase
+//       .schema("me_dataspace")
+//       .from("events")
+//       .insert({
+//         title: form.title.trim(),
+//         description: form.description.trim(),
+//         agenda: form.agenda.trim() || null,
+//         eventURL: form.eventURL.trim() || null,
+//         fromDateTime,
+//         toDateTime,
+//         venue: form.venue.trim() || null,
+//         max_participants: form.maxParticipants
+//           ? parseInt(form.maxParticipants)
+//           : null,
+//         reg_deadline: form.registrationDeadline
+//           ? new Date(form.registrationDeadline).toISOString()
+//           : null,
+//         max_volunteers: form.volunteersNeeded
+//           ? parseInt(form.volunteersNeeded)
+//           : null,
+//         bannerURL,
+//         bannerAltText: form.bannerAltText.trim() || form.title.trim(),
+//         is_food_available: form.food,
+//         venue_url: form.mapUrl.trim() || null,
+//         status: status === "publish" ? "published" : "draft", 
+//       });
+
+//     setLoading(false);
+
+//     if (!error) {
+//       toast.success(
+//         status === "publish"
+//           ? "Event published successfully!"
+//           : "Event saved as draft!"
+//       );
+//       navigate("/admin/events");
+//     } else {
+//       console.error(error);
+//       if (error.code === "23505" && error.message?.includes("eventURL")) {
+//         setStep(1);
+//         toast.error("This Event URL is already used by another event.");
+//         setErrors((prev) => ({
+//           ...prev,
+//           eventURL:
+//             "This Event URL is already used by another event. Please use a different URL.",
+//         }));
+//       } else {
+//         toast.error("Failed to create event: " + error.message);
+//       }
+//     }
+//   } catch (err) {
+//     setLoading(false);
+//     console.error("Error:", err);
+//     toast.error("Something went wrong: " + err.message);
+//   }
+// };
+
+
+
+
 const handleSubmit = async (status) => {
   if (!validateStep2()) return;
 
@@ -234,7 +318,7 @@ const handleSubmit = async (status) => {
       bannerURL = data.publicUrl;
     }
 
-    const { error } = await supabase
+    const { data: insertedData, error } = await supabase
       .schema("me_dataspace")
       .from("events")
       .insert({
@@ -259,11 +343,21 @@ const handleSubmit = async (status) => {
         is_food_available: form.food,
         venue_url: form.mapUrl.trim() || null,
         status: status === "publish" ? "published" : "draft", 
-      });
+      })
+      .select();
 
     setLoading(false);
 
     if (!error) {
+      
+      const { logActivity } = await import("../../services/activityLog");
+      await logActivity({
+        action: 'CREATE_EVENT',
+        description: `Created new event: ${form.title.trim()}${status === "publish" ? " (published)" : " (draft)"}`,
+        entity_type: 'event',
+        entity_id: insertedData?.[0]?.eventID
+      });
+
       toast.success(
         status === "publish"
           ? "Event published successfully!"
@@ -290,7 +384,6 @@ const handleSubmit = async (status) => {
     toast.error("Something went wrong: " + err.message);
   }
 };
-
 
 
   // Helper: error message component

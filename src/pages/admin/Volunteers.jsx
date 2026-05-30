@@ -260,9 +260,17 @@ const Volunteers = () => {
     setEditingVolunteer(null);
   };
 
-  const handleUserUpdated = () => {
-    fetchVolunteers();
-  };
+ const handleUserUpdated = async (updatedData) => {
+  
+  await logActivity({
+    action: 'EDIT_VOLUNTEER',
+    description: `Updated volunteer profile: ${editingVolunteer?.firstName} ${editingVolunteer?.lastName}`,
+    entity_type: 'volunteer',
+    entity_id: editingVolunteer?.userID
+  });
+  
+  fetchVolunteers();
+};
 
   return (
     <div className="p-6 bg-[#F7F2EC] min-h-screen">

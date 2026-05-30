@@ -9,31 +9,34 @@ import {
   FaTimes,
   FaEye,
   FaCheckCircle,
+  FaEdit,
+  FaCheck,
 } from "react-icons/fa";
 import { AdminNewsletterSkeleton } from "../../components/adminDashboard/AdminSkeletons";
 import ConfirmModal from "../../components/adminDashboard/ConfirmModal";
 import { Toaster, toast } from "react-hot-toast";
+import { logActivity } from "../../services/activityLog";
 
 const MONTHS = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December"
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
 ];
 
 const Newsletter = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [newsletters, setNewsletters] = useState([]);
-  const [preview, setPreview] = useState(null);   // local object URL for the upload form
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);  // Preview modal (before publish)
- 
-  // Existing newsletter lightbox
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [lightboxUrl, setLightboxUrl] = useState(null);
-
   const [form, setForm] = useState({ month: "", year: "" });
 
-  //fetch news letters
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({ month: "", year: "" });
+  const [editSaving, setEditSaving] = useState(false);
+
   const fetchNewsletters = async () => {
     setLoading(true);
     try {
@@ -62,58 +65,67 @@ const Newsletter = () => {
     setPreview(null);
     setForm({ month: "", year: "" });
   };
+const handleUpload = async () => {
+  if (!file) return toast.error("Choose a newsletter image first");
+  const monthNum = parseInt(form.month);
+  const yearNum = parseInt(form.year);
+  if (!form.month || isNaN(monthNum) || monthNum < 1 || monthNum > 12)
+    return toast.error("Please enter a valid month (1–12)");
+  if (!form.year || isNaN(yearNum) || yearNum < 2000 || yearNum > 2100)
+    return toast.error("Please enter a valid year");
 
-  const handleUpload = async () => {
-    if (!file) return toast.error("Choose a newsletter image first");
-    const monthNum = parseInt(form.month);
-    const yearNum = parseInt(form.year);
-    if (!form.month || isNaN(monthNum) || monthNum < 1 || monthNum > 12)
-      return toast.error("Please enter a valid month (1–12)");
-    if (!form.year || isNaN(yearNum) || yearNum < 2000 || yearNum > 2100)
-      return toast.error("Please enter a valid year");
+  try {
+    setUploading(true);
+    setShowPreviewModal(false);
 
-    try {
-      setUploading(true);
-      setShowPreviewModal(false);
+    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+    const fileName = `${Date.now()}_${safeName}`;
 
-      const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-      const fileName = `${Date.now()}_${safeName}`;
+    const { error: uploadError } = await supabase.storage
+      .from("newsletters")
+      .upload(fileName, file);
+    if (uploadError) throw uploadError;
 
-      const { error: uploadError } = await supabase.storage
-        .from("newsletters")
-        .upload(fileName, file);
-      if (uploadError) throw uploadError;
+    const { data: { publicUrl } } = supabase.storage
+      .from("newsletters")
+      .getPublicUrl(fileName);
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("newsletters")
-        .getPublicUrl(fileName);
 
-      const { error: dbError } = await supabase
-        .schema("me_dataspace")
-        .from("newsletters")
-        .insert([{
-          newsletter_url: publicUrl,
-          published_at: new Date().toISOString(),
-          publish_month: monthNum,
-          publish_yr: yearNum,
-        }]);
-      if (dbError) throw dbError;
+    const { data: insertedData, error: dbError } = await supabase
+      .schema("me_dataspace")
+      .from("newsletters")
+      .insert([{
+        newsletter_url: publicUrl,
+        published_at: new Date().toISOString(),
+        publish_month: monthNum,
+        publish_yr: yearNum,
+      }])
+      .select(); 
+    if (dbError) throw dbError;
 
-      setFile(null);
-      setPreview(null);
-      setForm({ month: "", year: "" });
-      fetchNewsletters();
-      toast.success("Newsletter published!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Upload failed: " + err.message);
-    } finally {
-      setUploading(false);
-    }
-  };
+    setFile(null);
+    setPreview(null);
+    setForm({ month: "", year: "" });
+    fetchNewsletters();
+    toast.success("Newsletter published!");
+    
+    await logActivity({
+      action: 'UPLOAD_NEWSLETTER',
+      description: `Uploaded newsletter for ${MONTHS[monthNum - 1]} ${yearNum}`,
+      entity_type: 'newsletter',
+      entity_id: insertedData?.[0]?.id  // ✅ THIS WORKS NOW
+    });
+  } catch (err) {
+    console.error(err);
+    toast.error("Upload failed: " + err.message);
+  } finally {
+    setUploading(false);
+  }
+};
 
   const confirmDelete = async () => {
     if (!confirmDeleteId) return;
+    const newsletterToDelete = newsletters.find(n => n.id === confirmDeleteId);
     const { error } = await supabase
       .schema("me_dataspace")
       .from("newsletters")
@@ -122,33 +134,82 @@ const Newsletter = () => {
 
     if (!error) {
       toast.success("Newsletter deleted");
+      await logActivity({
+      action: 'DELETE_NEWSLETTER',
+      description: `Deleted newsletter: ${MONTHS[newsletterToDelete?.publish_month - 1]} ${newsletterToDelete?.publish_yr}`,
+      entity_type: 'newsletter',
+      entity_id: confirmDeleteId
+    });
       fetchNewsletters();
     } else {
       toast.error("Failed to delete newsletter");
     }
     setConfirmDeleteId(null);
   };
-  
-  const handlePreviewClick = () => {
-  const monthNum = parseInt(form.month);
-  const yearNum = parseInt(form.year);
-  
-  if (!file) {
-    toast.error("Choose a newsletter image first");
-    return;
-  }
-  if (!form.month || isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
-    toast.error("Enter a valid month (1–12) before previewing");
-    return;
-  }
-  if (!form.year || isNaN(yearNum) || yearNum < 2000 || yearNum > 2100) {
-    toast.error("Enter a valid year before previewing");
-    return;
-  }
-  
-  setShowPreviewModal(true);
-};
 
+  const startEdit = (item) => {
+    setEditingId(item.id);
+    setEditForm({ month: String(item.publish_month), year: String(item.publish_yr) });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditForm({ month: "", year: "" });
+  };
+
+  const saveEdit = async (id) => {
+    const monthNum = parseInt(editForm.month);
+    const yearNum = parseInt(editForm.year);
+    if (isNaN(monthNum) || monthNum < 1 || monthNum > 12)
+      return toast.error("Month must be between 1 and 12");
+    if (isNaN(yearNum) || yearNum < 2000 || yearNum > 2100)
+      return toast.error("Please enter a valid year");
+
+    setEditSaving(true);
+    try {
+       const oldNewsletter = newsletters.find(n => n.id === id);
+      const { error } = await supabase
+        .schema("me_dataspace")
+        .from("newsletters")
+        .update({ publish_month: monthNum, publish_yr: yearNum })
+        .eq("id", id);
+      if (error) throw error;
+
+      toast.success("Newsletter updated!");
+       await logActivity({
+      action: 'EDIT_NEWSLETTER',
+      description: `Updated newsletter from ${MONTHS[oldNewsletter?.publish_month - 1]} ${oldNewsletter?.publish_yr} to ${MONTHS[monthNum - 1]} ${yearNum}`,
+      entity_type: 'newsletter',
+      entity_id: id
+    });
+      setEditingId(null);
+      fetchNewsletters();
+    } catch (err) {
+      toast.error("Update failed: " + err.message);
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
+  const handlePreviewClick = () => {
+    const monthNum = parseInt(form.month);
+    const yearNum = parseInt(form.year);
+
+    if (!file) {
+      toast.error("Choose a newsletter image first");
+      return;
+    }
+    if (!form.month || isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+      toast.error("Enter a valid month (1–12) before previewing");
+      return;
+    }
+    if (!form.year || isNaN(yearNum) || yearNum < 2000 || yearNum > 2100) {
+      toast.error("Enter a valid year before previewing");
+      return;
+    }
+
+    setShowPreviewModal(true);
+  };
 
   return (
     <div className="bg-[#F5F0E8] min-h-screen p-4 sm:p-8">
@@ -156,7 +217,7 @@ const Newsletter = () => {
         <AdminNewsletterSkeleton />
       ) : (
         <>
-           <Toaster position="top-right" />
+          <Toaster position="top-right" />
           {/* Stats Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
             <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -240,7 +301,6 @@ const Newsletter = () => {
                       >
                         <FaTimes size={14} />
                       </button>
-                      {/* Preview before publish */}
                       <button
                         onClick={handlePreviewClick}
                         className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-4 py-2.5 rounded-lg text-sm font-semibold transition"
@@ -296,32 +356,72 @@ const Newsletter = () => {
                             <FaTrash size={10} />
                           </button>
                         </div>
-                        <div>
-                          <p className="font-semibold text-gray-800">
-                            {MONTHS[item.publish_month - 1] || item.publish_month} {item.publish_yr}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-0.5">
-                            Published {new Date(item.published_at).toLocaleDateString("en-GB")}
-                          </p>
+                        <div className="flex-1 min-w-0">
+                          {editingId === item.id ? (
+                            /* ── Inline Edit Form ── */
+                            <div className="space-y-2">
+                              <p className="text-xs font-semibold text-[#C1622A] mb-1">Edit Month / Year</p>
+                              <div className="flex gap-2">
+                                <input
+                                  type="number" min="1" max="12"
+                                  value={editForm.month}
+                                  onChange={e => setEditForm(f => ({ ...f, month: e.target.value }))}
+                                  placeholder="Month"
+                                  className="w-20 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C1622A]/40"
+                                />
+                                <input
+                                  type="number"
+                                  value={editForm.year}
+                                  onChange={e => setEditForm(f => ({ ...f, year: e.target.value }))}
+                                  placeholder="Year"
+                                  className="w-24 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C1622A]/40"
+                                />
+                                <button
+                                  onClick={() => saveEdit(item.id)}
+                                  disabled={editSaving}
+                                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 transition disabled:opacity-60"
+                                >
+                                  <FaCheck size={11} /> Save
+                                </button>
+                                <button
+                                  onClick={cancelEdit}
+                                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm transition"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            /* ── Display Mode ── */
+                            <div>
+                              <p className="font-semibold text-gray-800">
+                                {MONTHS[item.publish_month - 1] || item.publish_month} {item.publish_yr}
+                              </p>
+                              <p className="text-xs text-gray-400 mt-0.5">
+                                Published {new Date(item.published_at).toLocaleDateString("en-GB")}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => setLightboxUrl(item.newsletter_url)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm hover:bg-blue-100 transition"
-                        >
-                          <FaEye size={12} /> Preview
-                        </button>
-                        <a
-                          href={item.newsletter_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-3 py-1.5 bg-[#C1622A] text-white rounded-lg text-sm hover:bg-[#a24f21] transition"
-                        >
-                          Open
-                        </a>
-                      </div>
+                      {editingId !== item.id && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => startEdit(item)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm hover:bg-blue-100 transition"
+                          >
+                            <FaEdit size={12} /> Edit
+                          </button>
+                          <button
+                            onClick={() => setLightboxUrl(item.newsletter_url)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-sm hover:bg-blue-100 transition"
+                          >
+                            <FaEye size={12} /> Preview
+                          </button>
+
+                        </div>
+                      )}
                     </div>
                   ))
                 )}
@@ -334,7 +434,6 @@ const Newsletter = () => {
       {/* ── Pre-publish Preview Modal ── */}
       {showPreviewModal && preview && (
         <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex flex-col">
-          {/* Top bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3 sm:px-6 sm:py-4 bg-white/10 border-b border-white/10 gap-3">
             <div className="flex items-center gap-3">
               <FaEye className="text-white hidden sm:block" />
@@ -363,7 +462,6 @@ const Newsletter = () => {
             </div>
           </div>
 
-          {/* Preview Image */}
           <div className="flex-1 flex items-center justify-center p-4 sm:p-6 overflow-auto">
             <img
               src={preview}
