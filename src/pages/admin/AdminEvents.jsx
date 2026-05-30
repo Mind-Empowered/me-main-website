@@ -22,7 +22,7 @@ const Events = () => {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [volunteerCounts, setVolunteerCounts] = useState({});
   const [filter, setFilter] = useState("All");
-  const [statusFilter, setStatusFilter] = useState("All"); // admin_status filter
+  const [statusFilter, setStatusFilter] = useState("All");
   const [statusUpdating, setStatusUpdating] = useState({});
 
   const [showEditModal, setShowEditModal] = useState(false);
@@ -70,23 +70,48 @@ const Events = () => {
   };
 
   const fetchEvents = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data, error } = await supabase
-        .schema("me_dataspace")
-        .from("events")
-        .select("*")
-        .order("fromDateTime", { ascending: true });
-      if (error) throw error;
-      setEvents(data || []);
-      if (data) fetchVolunteerCounts(data);
-    } catch (err) {
-      setError(err.message || "Failed to fetch events");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  setError(null);
+  try {
+    const { data, error } = await supabase
+      .schema("me_dataspace")
+      .from("events")
+      .select("*")
+      .order("fromDateTime", { ascending: true });
+    if (error) throw error;
+
+    //  Auto-update completed events
+    const now = new Date();
+    const updatedEvents = (data || []).map((event) => {
+      const isCompleted = new Date(event.toDateTime) < now;
+      if (isCompleted && event.status === "published") {
+        // Update in DB
+        supabase
+          .schema("me_dataspace")
+          .from("events")
+          .update({ status: "completed" })
+          .eq("eventID", event.eventID)
+          .then(() => {
+            logActivity({
+              action: 'UPDATE_STATUS',
+              description: `Auto-marked event as completed: ${event.title}`,
+              entity_type: 'event',
+              entity_id: event.eventID
+            });
+          });
+        return { ...event, status: "completed" };
+      }
+      return event;
+    });
+
+    setEvents(updatedEvents);
+    if (updatedEvents) fetchVolunteerCounts(updatedEvents);
+  } catch (err) {
+    setError(err.message || "Failed to fetch events");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const confirmDelete = async () => {
     if (!confirmDeleteId) return;
@@ -99,7 +124,7 @@ const Events = () => {
         .eq("eventID", confirmDeleteId);
 
       if (error) throw error;
-      
+
       toast.success("Event deleted");
       await logActivity({ action: 'DELETE_EVENT', description: `Deleted event`, entity_type: 'event', entity_id: confirmDeleteId });
       setEvents(events.filter((e) => e.eventID !== confirmDeleteId));
@@ -279,6 +304,7 @@ const Events = () => {
     return errs;
   };
 
+
   const handleSaveEdit = async () => {
     const validationErrors = validateEditForm();
     if (validationErrors.length > 0) {
@@ -329,6 +355,8 @@ const Events = () => {
         toDateTime,
         is_food_available: editFormData.is_food_available,
         eventURL: editFormData.eventURL.trim() || null,
+        
+        status: editingEvent.status === "published" ? "postponed" : editingEvent.status,
       };
 
       const { error } = await supabase
@@ -343,8 +371,13 @@ const Events = () => {
         ),
       );
       setShowEditModal(false);
-      toast.success("Event updated");
-      await logActivity({ action: 'EDIT_EVENT', description: `Updated event: ${editFormData.title}`, entity_type: 'event', entity_id: editingEvent.eventID });
+      toast.success("Event updated and postponed!");
+      await logActivity({
+        action: 'EDIT_EVENT',
+        description: `Updated and postponed event: ${editFormData.title}`,
+        entity_type: 'event',
+        entity_id: editingEvent.eventID
+      });
     } catch (err) {
       if (err.code === "23505" && err.message?.includes("eventURL"))
         setEditError(
@@ -407,6 +440,10 @@ const Events = () => {
   const handleToggleAttendance = async (participationId, currentlyAttended) => {
     setAttendanceUpdating((prev) => ({ ...prev, [participationId]: true }));
     const newStatus = currentlyAttended ? "volunteer" : "attended";
+
+    // Get volunteer info BEFORE updating state
+    const volunteer = registeredVolunteers.find(v => v.participationId === participationId);
+
     try {
       const { error } = await supabase
         .schema("me_dataspace")
@@ -414,6 +451,7 @@ const Events = () => {
         .update({ registered_as: newStatus })
         .eq("id", participationId);
       if (error) throw error;
+
       setRegisteredVolunteers((prev) =>
         prev.map((v) =>
           v.participationId === participationId
@@ -421,20 +459,27 @@ const Events = () => {
             : v,
         ),
       );
+
+      // Now log with the volunteer info
+      await logActivity({
+        action: 'TOGGLE_ATTENDANCE',
+        description: `Marked ${volunteer?.firstName} ${volunteer?.lastName} as ${newStatus === "attended" ? "attended" : "not attended"}`,
+        entity_type: 'event_participation',
+        entity_id: participationId
+      });
     } catch (err) {
       alert("Failed to update attendance: " + err.message);
     } finally {
       setAttendanceUpdating((prev) => ({ ...prev, [participationId]: false }));
     }
   };
-
   // Admin-set status config
   const ADMIN_STATUSES = [
-    { value: "published",  label: "Published",  color: "bg-green-100 text-green-700 border-green-200" },
-    { value: "draft",      label: "Draft",       color: "bg-gray-100 text-gray-600 border-gray-200" },
-    { value: "postponed",  label: "Postponed",   color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-    { value: "cancelled",  label: "Cancelled",   color: "bg-red-100 text-red-600 border-red-200" },
-    { value: "completed",  label: "Completed",   color: "bg-purple-100 text-purple-700 border-purple-200" },
+    { value: "published", label: "Published", color: "bg-green-100 text-green-700 border-green-200" },
+    { value: "draft", label: "Draft", color: "bg-gray-100 text-gray-600 border-gray-200" },
+    { value: "postponed", label: "Postponed", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
+    { value: "cancelled", label: "Cancelled", color: "bg-red-100 text-red-600 border-red-200" },
+    { value: "completed", label: "Completed", color: "bg-purple-100 text-purple-700 border-purple-200" },
   ];
 
   const getAdminStatusStyle = (statusVal) =>
@@ -443,14 +488,26 @@ const Events = () => {
   const handleUpdateAdminStatus = async (eventID, newStatus) => {
     setStatusUpdating(prev => ({ ...prev, [eventID]: true }));
     try {
+      const event = events.find(e => e.eventID === eventID);
+      const oldStatus = event?.status || "published";
+
       const { error } = await supabase
         .schema("me_dataspace")
         .from("events")
-        .update({ admin_status: newStatus })
+        .update({ status: newStatus })
         .eq("eventID", eventID);
       if (error) throw error;
-      setEvents(prev => prev.map(e => e.eventID === eventID ? { ...e, admin_status: newStatus } : e));
+
+      setEvents(prev => prev.map(e => e.eventID === eventID ? { ...e, status: newStatus } : e));
       toast.success("Status updated");
+
+      // Log the status change
+      await logActivity({
+        action: 'UPDATE_STATUS',
+        description: `Changed event status from ${oldStatus} to ${newStatus}: ${event?.title}`,
+        entity_type: 'event',
+        entity_id: eventID
+      });
     } catch (err) {
       toast.error("Failed to update status: " + err.message);
     } finally {
@@ -519,6 +576,12 @@ const Events = () => {
         },
       ]);
 
+      // Update volunteer count
+      setVolunteerCounts((prev) => ({
+        ...prev,
+        [selectedEvent.eventID]: (prev[selectedEvent.eventID] || 0) + 1,
+      }));
+
       // Remove from walk-in results
       setWalkinResults((prev) => prev.filter((v) => v.userID !== volunteer.userID));
       toast.success(`${volunteer.firstName} ${volunteer.lastName} marked as attended!`);
@@ -547,9 +610,9 @@ const Events = () => {
   const formatTime = (dt) =>
     dt
       ? new Date(dt).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
+        hour: "2-digit",
+        minute: "2-digit",
+      })
       : "";
   const formatDate = (dt) =>
     dt
@@ -575,7 +638,7 @@ const Events = () => {
   const filteredEvents = events.filter((e) => {
     const timeStatus = getStatus(e.fromDateTime, e.toDateTime);
     const passesTimeFilter = filter === "All" || timeStatus === filter;
-    const passesAdminFilter = statusFilter === "All" || (e.admin_status || "published") === statusFilter;
+    const passesAdminFilter = statusFilter === "All" || (e.status || "published") === statusFilter;
     return passesTimeFilter && passesAdminFilter;
   });
   const inputCls =
@@ -678,11 +741,10 @@ const Events = () => {
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition border ${
-                  statusFilter === s
-                    ? "bg-[#C97736] text-white border-[#C97736]"
-                    : "border-gray-200 text-gray-500 hover:border-[#C97736] hover:text-[#C97736]"
-                }`}
+                className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition border ${statusFilter === s
+                  ? "bg-[#C97736] text-white border-[#C97736]"
+                  : "border-gray-200 text-gray-500 hover:border-[#C97736] hover:text-[#C97736]"
+                  }`}
               >
                 {s === "All" ? "All" : ADMIN_STATUSES.find(x => x.value === s)?.label}
               </button>
@@ -742,10 +804,10 @@ const Events = () => {
                         <span className="text-xs text-gray-400 flex items-center gap-1"><FaSpinner className="animate-spin" size={10} /> Saving...</span>
                       ) : (
                         <select
-                          value={event.admin_status || "published"}
+                          value={event.status || "published"}
                           onChange={(e) => { e.stopPropagation(); handleUpdateAdminStatus(event.eventID, e.target.value); }}
                           onClick={(e) => e.stopPropagation()}
-                          className={`text-xs font-bold px-2 py-0.5 rounded-full border cursor-pointer appearance-none pr-5 ${getAdminStatusStyle(event.admin_status || "published")}`}
+                          className={`text-xs font-bold px-2 py-0.5 rounded-full border cursor-pointer appearance-none pr-5 ${getAdminStatusStyle(event.status || "published")}`}
                           title="Set admin status"
                         >
                           {ADMIN_STATUSES.map(s => (
@@ -797,6 +859,63 @@ const Events = () => {
                     <FaTrash size={12} />
                     <span className="hidden md:inline">Delete</span>
                   </button>
+
+                  {/* Draft: Show Publish Button */}
+                  {event.status === "draft" && (
+                    <button
+                      onClick={() => handleUpdateAdminStatus(event.eventID, "published")}
+                      disabled={statusUpdating[event.eventID]}
+                      className="flex-1 py-2.5 text-sm bg-green-100 hover:bg-green-200 text-green-700 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5 disabled:opacity-60"
+                      title="Publish this event"
+                    >
+                      {statusUpdating[event.eventID] ? (
+                        <FaSpinner className="animate-spin" size={12} />
+                      ) : (
+                        "✓ Publish"
+                      )}
+                    </button>
+                  )}
+
+                  {/* Published & NOT Completed: Show Postpone & Cancel */}
+                  {event.status === "published" && getStatus(event.fromDateTime, event.toDateTime) !== "Completed" && (
+                    <>
+                      <button
+                        onClick={() => handleEdit(event)}
+                        className="flex-1 py-2.5 text-sm bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5"
+                        title="Edit and reschedule event"
+                      >
+                        <span>⏸ Postpone</span>
+                      </button>
+                      <button
+                        onClick={() => handleUpdateAdminStatus(event.eventID, "cancelled")}
+                        disabled={statusUpdating[event.eventID]}
+                        className="flex-1 py-2.5 text-sm bg-red-100 hover:bg-red-200 text-red-700 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5 disabled:opacity-60"
+                        title="Cancel this event"
+                      >
+                        {statusUpdating[event.eventID] ? (
+                          <FaSpinner className="animate-spin" size={12} />
+                        ) : (
+                          "✕ Cancel"
+                        )}
+                      </button>
+                    </>
+                  )}
+
+                  {/* Postponed & NOT Completed: Show Cancel Button Only */}
+                  {event.status === "postponed" && getStatus(event.fromDateTime, event.toDateTime) !== "Completed" && (
+                    <button
+                      onClick={() => handleUpdateAdminStatus(event.eventID, "cancelled")}
+                      disabled={statusUpdating[event.eventID]}
+                      className="flex-1 py-2.5 text-sm bg-red-100 hover:bg-red-200 text-red-700 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5 disabled:opacity-60"
+                      title="Cancel this event"
+                    >
+                      {statusUpdating[event.eventID] ? (
+                        <FaSpinner className="animate-spin" size={12} />
+                      ) : (
+                        "✕ Cancel"
+                      )}
+                    </button>
+                  )}
                   <button
                     onClick={() => handleViewVolunteers(event)}
                     className="flex-grow py-2.5 text-sm text-white bg-[#C97736] hover:bg-[#a85f27] font-medium transition flex items-center justify-center gap-1.5 px-2"
@@ -807,6 +926,7 @@ const Events = () => {
                     <span className="inline md:hidden">View</span>
                   </button>
                 </div>
+
               </div>
             );
           })}
@@ -1105,11 +1225,10 @@ const Events = () => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => { setShowWalkinPanel(!showWalkinPanel); setWalkinSearch(""); setWalkinResults([]); }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition border ${
-                    showWalkinPanel
-                      ? "bg-[#C97736] text-white border-[#C97736]"
-                      : "bg-white text-[#C97736] border-[#C97736] hover:bg-orange-50"
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition border ${showWalkinPanel
+                    ? "bg-[#C97736] text-white border-[#C97736]"
+                    : "bg-white text-[#C97736] border-[#C97736] hover:bg-orange-50"
+                    }`}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
                   Add Walk-in
@@ -1295,7 +1414,7 @@ const Events = () => {
         </div>
       )}
 
-      <ConfirmModal 
+      <ConfirmModal
         isOpen={!!confirmDeleteId}
         title="Delete Event?"
         message="Are you sure you want to delete this event? This action cannot be undone."

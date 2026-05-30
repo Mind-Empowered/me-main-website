@@ -101,8 +101,7 @@ const Dashboard = () => {
         supabase
           .schema("me_dataspace")
           .from("events")
-          // .select(" admin_status")  implement status
-          .select("eventID, title, fromDateTime, toDateTime, bannerURL, max_participants, max_volunteers, is_food_available, description, venue, venue_url")
+          .select("eventID, title, fromDateTime, toDateTime, bannerURL, max_participants, max_volunteers, is_food_available, description, venue, venue_url, status")
           .gte("fromDateTime", today)
           .order("fromDateTime", { ascending: true })
           .limit(6),
@@ -222,7 +221,7 @@ const Dashboard = () => {
                   Cancelled: "bg-red-50 text-red-700 border-red-200",
                   Postponed: "bg-orange-50 text-orange-700 border-orange-200",
                 };
-                const statusClass = statusColors[event.admin_status] || "bg-gray-100 text-gray-600 border-gray-200";
+                const statusClass = statusColors[event.status] || "bg-gray-100 text-gray-600 border-gray-200";
 
                 return (
                   <div
@@ -288,9 +287,9 @@ const Dashboard = () => {
                       <div className="space-y-3.5 text-xs text-gray-600">
                         {/* Status Badges */}
                         <div className="flex flex-wrap gap-2 items-center">
-                          {event.admin_status && (
+                          {event.status && (
                             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusClass}`}>
-                              {event.admin_status}
+                              {event.status}
                             </span>
                           )}
                           {event.is_food_available && (
