@@ -51,11 +51,11 @@ const Contact = ({ language, siteSettings }) => {
                         {language === 'en' ? 'Thank You!' : 'നന്ദി!'}
                     </h3>
                     <p className="text-gray-600 text-lg mb-8" style={{ fontFamily: language === 'ml' ? 'Manjari, sans-serif' : 'inherit' }}>
-                        {language === 'en' 
-                            ? "Your message has been sent successfully. We'll get back to you shortly." 
+                        {language === 'en'
+                            ? "Your message has been sent successfully. We'll get back to you shortly."
                             : "നിങ്ങളുടെ സന്ദേശം വിജയകരമായി അയച്ചു. ഞങ്ങൾ ഉടൻ നിങ്ങളെ ബന്ധപ്പെടും."}
                     </p>
-                    <button 
+                    <button
                         onClick={() => setIsSuccess(false)}
                         className="px-8 py-3 bg-[#461711] text-white rounded-xl font-bold hover:bg-[#ff7612] transition-colors"
                     >
@@ -171,9 +171,13 @@ const Contact = ({ language, siteSettings }) => {
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
                         ></iframe>
-                        <div className="absolute inset-x-0 bottom-0 py-2 bg-[#461711]/10 backdrop-blur-sm flex justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                        <a href={siteSettings?.map || "https://maps.google.com/?q=Mind+Empowered+ME+Space+Tripunithura+Kerala"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="absolute inset-x-0 bottom-0 py-2 bg-[#461711]/10 backdrop-blur-sm flex justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
                             <span className="text-[10px] font-bold text-[#461711] uppercase tracking-widest">View on Larger Map</span>
-                        </div>
+                        </a>
                     </div>
                 </div>
 
@@ -207,7 +211,7 @@ const Contact = ({ language, siteSettings }) => {
                                 <textarea name="message" value={formData.message} onChange={handleChange} required rows="5"
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-4 focus:ring-orange-100 focus:border-[#ff7612] outline-none transition-all resize-none" />
                             </div>
-                            
+
                             {error && <p className="text-red-500 text-sm font-bold animate-shake">{error}</p>}
 
                             <button type="submit" disabled={isSending}

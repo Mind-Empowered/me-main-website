@@ -300,6 +300,18 @@ const UpcomingEventsSection = () => {
                           <div>
                             <span className="font-bold text-gray-800">Venue</span>
                             <p>{event.venue}</p>
+                            {event.venue_url && (
+                              <a
+                                href={event.venue_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-1 mt-1 text-xs text-[#A64200] hover:underline"
+                              >
+                                <FaMapMarkerAlt size={10} />
+                                View on Map
+                              </a>
+                            )}
                           </div>
                         )}
 
@@ -376,23 +388,22 @@ const UpcomingEventsSection = () => {
                               }`}
                           > */}
                           <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRegisterAsVolunteer(event);
-                         
-                        }}
-                        disabled={
-                          registeringEventId === event.eventID ||
-                          registerStatus[event.eventID] === "success" ||
-                          registerStatus[event.eventID] === "already" ||
-                          event.status === "cancelled"  
-                        }
-                        className={`mt-3 px-4 py-2 bg-[#A64200] text-white rounded-xl hover:bg-[#8a3600] transition self-start font-medium flex items-center justify-center gap-2 ${
-                            event.status === "cancelled"
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-[#A64200] hover:bg-[#8a3600]"
-                          }`}
-                      >
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRegisterAsVolunteer(event);
+
+                            }}
+                            disabled={
+                              registeringEventId === event.eventID ||
+                              registerStatus[event.eventID] === "success" ||
+                              registerStatus[event.eventID] === "already" ||
+                              event.status === "cancelled"
+                            }
+                            className={`mt-3 px-4 py-2 bg-[#A64200] text-white rounded-xl hover:bg-[#8a3600] transition self-start font-medium flex items-center justify-center gap-2 ${event.status === "cancelled"
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-[#A64200] hover:bg-[#8a3600]"
+                              }`}
+                          >
                             {registeringEventId === event.eventID ? (
                               <>
                                 <FaSpinner className="animate-spin" size={14} />
