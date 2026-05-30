@@ -9,6 +9,9 @@ const Register = () => {
 		lastName: "",
 		email: "",
 		phone: "",
+		dateOfBirth: "",
+		gender: "",
+		bloodGroup: "",
 		password: "",
 		confirmPassword: "",
 		permanentAddress: {
@@ -34,7 +37,13 @@ const Register = () => {
 		github: "",
 		linkedin: "",
 		instagram: "",
-		bio: ""
+		bio: "",
+		emergencyInfo: {
+			bloodGroup: "",
+			tShirtSize: "",
+			contactName: "",
+			contactPhone: ""
+		}
 	});
 
 	const [error, setError] = useState(null);
@@ -99,6 +108,9 @@ const Register = () => {
                 firstName: form.firstName.trim(),
                 lastName: form.lastName.trim(),
                 phone: form.phone.trim(),
+				dateOfBirth: form.dateOfBirth || null,
+				gender: form.gender || null,
+				bloodGroup: form.bloodGroup || null,
                 address: {
                     permanentAddress: {
                         building: form.permanentAddress.building.trim(),
@@ -121,6 +133,12 @@ const Register = () => {
                 },
                 is_working: form.status === 'working',
                 workspace_name: form.workspaceName.trim(),
+				emergencyInfo: {
+					bloodGroup: form.emergencyInfo.bloodGroup || form.bloodGroup || null,
+					tShirtSize: form.emergencyInfo.tShirtSize?.trim() || null,
+					contactName: form.emergencyInfo.contactName?.trim() || null,
+					contactPhone: form.emergencyInfo.contactPhone?.trim() || null
+				},
                 socials: {
                     github: form.github?.trim() || null,
                     linkedin: form.linkedin?.trim() || null,

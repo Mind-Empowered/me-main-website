@@ -5,6 +5,7 @@ const PreferencesSection = ({ user }) => {
     const { language } = useLanguage();
 
     const preferences = user?.preferences || {};
+    const gender = user?.gender || preferences.gender;
 
     return (
         <div className="bg-white rounded-2xl p-6 h-full flex flex-col">
@@ -12,13 +13,13 @@ const PreferencesSection = ({ user }) => {
                 {language === 'ml' ? 'മുൻഗണനകൾ' : 'Preferences'}
             </h2>
             <div className="space-y-4 flex-1">
-                {preferences.gender && (
+                {gender && (
                     <div>
                         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2 mb-1">
                             <FaUser className="text-[#E49E5F]" /> {language === 'ml' ? 'ലിംഗഭേദം' : 'Gender'}
                         </h3>
                         <span className="text-gray-700 font-medium text-sm pl-6">
-                            {preferences.gender}
+                            {gender}
                         </span>
                     </div>
                 )}
