@@ -172,7 +172,7 @@ const Dashboard = () => {
         {/* Stat Cards */}
         {isLoading ? (
           <div className="mb-6">
-            <AdminStatsSkeleton cards={2} />
+            <AdminStatsSkeleton cards={3} />
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
