@@ -59,17 +59,21 @@ const SkillsSection = ({ user }) => {
                 ))}
             </div>
 
-            <div className="flex gap-2 mb-4">
+            <div className="flex items-center gap-2 w-full">
                 <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addSkill()}
                     placeholder="Add a skill..."
-                    className="flex-1 px-3 py-2 border rounded"
+                    className="flex-1 min-w-0 h-12 px-4 border rounded-lg"
                 />
-                <button onClick={addSkill} className="px-4 py-2 text-[#A64200] rounded-xl border border-[#A64200]">
-                    <FaPlus className="inline" /> Add
+
+                <button
+                    onClick={addSkill}
+                    className="shrink-0 flex items-center justify-center gap-1 h-12 px-4 border border-[#A64200] text-[#A64200] rounded-xl"
+                >
+                    <FaPlus />
+                    <span>Add</span>
                 </button>
             </div>
         </div>
