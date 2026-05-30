@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../services/supabase-client";
-import { FaLock, FaGlobe, FaSave, FaEnvelope, FaPhone, FaMapMarkerAlt, FaInstagram, FaLinkedin, FaCog, FaSlidersH, FaMusic, FaLanguage } from "react-icons/fa";
+import { FaLock, FaGlobe, FaSave, FaEnvelope, FaPhone, FaMapMarkerAlt, FaInstagram, FaLinkedin, FaCog, FaSlidersH, FaMusic, FaLanguage, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { AdminListSkeleton, SkeletonBlock } from "../../components/adminDashboard/AdminSkeletons";
 
@@ -50,6 +50,8 @@ const AdminSettings = () => {
     });
     const [isSavingPassword, setIsSavingPassword] = useState(false);
     const [passwordMessage, setPasswordMessage] = useState({ type: "", text: "" });
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // Fetch Site Settings on mount
     useEffect(() => {
@@ -318,23 +320,43 @@ const AdminSettings = () => {
                                     <form onSubmit={handlePasswordUpdate} className="space-y-5 max-w-md">
                                         <div className="space-y-2">
                                             <label className="text-sm font-semibold text-gray-700">New Password</label>
-                                            <input 
-                                                type="password" 
-                                                required
-                                                value={passwordData.newPassword}
-                                                onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                                                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
-                                            />
+                                            <div className="relative">
+                                                <input 
+                                                    type={showNewPassword ? "text" : "password"}
+                                                    required
+                                                    value={passwordData.newPassword}
+                                                    onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                                                    className="w-full px-4 py-2 pr-12 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowNewPassword(prev => !prev)}
+                                                    aria-label={showNewPassword ? "Hide password" : "Show password"}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#C1622A] hover:text-[#a8521f] transition"
+                                                >
+                                                    {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                                                </button>
+                                            </div>
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-semibold text-gray-700">Confirm New Password</label>
-                                            <input 
-                                                type="password" 
-                                                required
-                                                value={passwordData.confirmPassword}
-                                                onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                                                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
-                                            />
+                                            <div className="relative">
+                                                <input 
+                                                    type={showConfirmPassword ? "text" : "password"}
+                                                    required
+                                                    value={passwordData.confirmPassword}
+                                                    onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                                                    className="w-full px-4 py-2 pr-12 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowConfirmPassword(prev => !prev)}
+                                                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#C1622A] hover:text-[#a8521f] transition"
+                                                >
+                                                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                                </button>
+                                            </div>
                                         </div>
                                         
                                         <div className="pt-2">
