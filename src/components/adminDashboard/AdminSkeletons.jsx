@@ -123,4 +123,73 @@ export const AdminNewsletterSkeleton = () => (
       ))}
     </div>
   </div>
+
+);
+
+export const AdminCalendarSkeleton = () => (
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    {/* Upload Section */}
+    <div>
+      <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <SkeletonBlock className="h-6 w-40 rounded-full mb-5" />
+        
+        {/* Upload Area */}
+        <SkeletonBlock className="h-[280px] w-full rounded-2xl mb-4" />
+        
+        {/* Month/Year Inputs */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <SkeletonBlock className="h-11 rounded-lg" />
+          <SkeletonBlock className="h-11 rounded-lg" />
+        </div>
+        
+        {/* File Info Section (appears after file upload) */}
+        <div className="rounded-xl bg-[#FAF6F1] p-4 space-y-4">
+          <div className="flex justify-between items-start">
+            <div className="flex-1 space-y-2">
+              <SkeletonBlock className="h-4 w-48 rounded-full" />
+              <SkeletonBlock className="h-3 w-20 rounded-full" />
+            </div>
+            <SkeletonBlock className="h-10 w-10 rounded-lg flex-shrink-0" />
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex gap-2 justify-end">
+            <SkeletonBlock className="h-10 w-24 rounded-lg" />
+            <SkeletonBlock className="h-10 w-28 rounded-lg" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Recent Calendars Section */}
+    <div className="rounded-2xl bg-white p-6 shadow-sm">
+      <div className="flex justify-between items-center mb-6">
+        <SkeletonBlock className="h-6 w-40 rounded-full" />
+        <SkeletonBlock className="h-4 w-20 rounded-full" />
+      </div>
+
+      <div className="space-y-4 overflow-y-auto max-h-[60vh]">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="rounded-xl border border-gray-100 bg-white p-4">
+            <div className="flex items-center gap-4">
+              {/* Calendar Thumbnail */}
+              <SkeletonBlock className="h-20 w-20 rounded-lg flex-shrink-0" />
+              
+              {/* Calendar Info */}
+              <div className="flex-1 min-w-0 space-y-3">
+                <SkeletonBlock className="h-4 w-32 rounded-full" />
+                <SkeletonBlock className="h-3 w-40 rounded-full" />
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex gap-2 flex-shrink-0">
+                <SkeletonBlock className="h-9 w-16 rounded-lg" />
+                <SkeletonBlock className="h-9 w-16 rounded-lg" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
 );
