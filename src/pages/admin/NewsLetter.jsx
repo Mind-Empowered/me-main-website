@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 import { AdminNewsletterSkeleton } from "../../components/adminDashboard/AdminSkeletons";
 import ConfirmModal from "../../components/adminDashboard/ConfirmModal";
-import toast from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 
 const MONTHS = [
   "January","February","March","April","May","June",
@@ -26,15 +26,14 @@ const Newsletter = () => {
   const [preview, setPreview] = useState(null);   // local object URL for the upload form
   const [loading, setLoading] = useState(true);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
-
-  // Preview modal (before publish)
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
-
+  const [showPreviewModal, setShowPreviewModal] = useState(false);  // Preview modal (before publish)
+ 
   // Existing newsletter lightbox
   const [lightboxUrl, setLightboxUrl] = useState(null);
 
   const [form, setForm] = useState({ month: "", year: "" });
 
+  //fetch news letters
   const fetchNewsletters = async () => {
     setLoading(true);
     try {
@@ -130,14 +129,35 @@ const Newsletter = () => {
     setConfirmDeleteId(null);
   };
 
-  const canOpenPreview = () => {
-    const monthNum = parseInt(form.month);
-    const yearNum = parseInt(form.year);
-    if (!file) { toast.error("Choose a newsletter image first"); return false; }
-    if (!form.month || isNaN(monthNum) || monthNum < 1 || monthNum > 12) { toast.error("Enter a valid month (1–12) before previewing"); return false; }
-    if (!form.year || isNaN(yearNum) || yearNum < 2000 || yearNum > 2100) { toast.error("Enter a valid year before previewing"); return false; }
-    return true;
-  };
+  // const canOpenPreview = () => {
+  //   const monthNum = parseInt(form.month);
+  //   const yearNum = parseInt(form.year);
+  //   if (!file) { toast.error("Choose a newsletter image first"); return false; }
+  //   if (!form.month || isNaN(monthNum) || monthNum < 1 || monthNum > 12) { toast.error("Enter a valid month (1–12) before previewing"); return false; }
+  //   if (!form.year || isNaN(yearNum) || yearNum < 2000 || yearNum > 2100) { toast.error("Enter a valid year before previewing"); return false; }
+  //   return true;
+  // };
+
+  const handlePreviewClick = () => {
+  const monthNum = parseInt(form.month);
+  const yearNum = parseInt(form.year);
+  
+  if (!file) {
+    toast.error("Choose a newsletter image first");
+    return;
+  }
+  if (!form.month || isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+    toast.error("Enter a valid month (1–12) before previewing");
+    return;
+  }
+  if (!form.year || isNaN(yearNum) || yearNum < 2000 || yearNum > 2100) {
+    toast.error("Enter a valid year before previewing");
+    return;
+  }
+  
+  setShowPreviewModal(true);
+};
+
 
   return (
     <div className="bg-[#F5F0E8] min-h-screen p-4 sm:p-8">
@@ -145,6 +165,7 @@ const Newsletter = () => {
         <AdminNewsletterSkeleton />
       ) : (
         <>
+           <Toaster position="top-right" />
           {/* Stats Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
             <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -230,7 +251,7 @@ const Newsletter = () => {
                       </button>
                       {/* Preview before publish */}
                       <button
-                        onClick={() => { if (canOpenPreview()) setShowPreviewModal(true); }}
+                        onClick={handlePreviewClick}
                         className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-4 py-2.5 rounded-lg text-sm font-semibold transition"
                       >
                         <FaEye size={13} /> Preview

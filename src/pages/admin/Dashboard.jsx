@@ -101,7 +101,8 @@ const Dashboard = () => {
         supabase
           .schema("me_dataspace")
           .from("events")
-          .select("eventID, title, fromDateTime, toDateTime, bannerURL, description, venue, venue_url, max_participants, max_volunteers, is_food_available, admin_status")
+          // .select(" admin_status")  implement status
+          .select("eventID, title, fromDateTime, toDateTime, bannerURL, max_participants, max_volunteers, is_food_available, description, venue, venue_url")
           .gte("fromDateTime", today)
           .order("fromDateTime", { ascending: true })
           .limit(6),
