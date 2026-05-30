@@ -70,23 +70,48 @@ const Events = () => {
   };
 
   const fetchEvents = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data, error } = await supabase
-        .schema("me_dataspace")
-        .from("events")
-        .select("*")
-        .order("fromDateTime", { ascending: true });
-      if (error) throw error;
-      setEvents(data || []);
-      if (data) fetchVolunteerCounts(data);
-    } catch (err) {
-      setError(err.message || "Failed to fetch events");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  setError(null);
+  try {
+    const { data, error } = await supabase
+      .schema("me_dataspace")
+      .from("events")
+      .select("*")
+      .order("fromDateTime", { ascending: true });
+    if (error) throw error;
+
+    //  Auto-update completed events
+    const now = new Date();
+    const updatedEvents = (data || []).map((event) => {
+      const isCompleted = new Date(event.toDateTime) < now;
+      if (isCompleted && event.status === "published") {
+        // Update in DB
+        supabase
+          .schema("me_dataspace")
+          .from("events")
+          .update({ status: "completed" })
+          .eq("eventID", event.eventID)
+          .then(() => {
+            logActivity({
+              action: 'UPDATE_STATUS',
+              description: `Auto-marked event as completed: ${event.title}`,
+              entity_type: 'event',
+              entity_id: event.eventID
+            });
+          });
+        return { ...event, status: "completed" };
+      }
+      return event;
+    });
+
+    setEvents(updatedEvents);
+    if (updatedEvents) fetchVolunteerCounts(updatedEvents);
+  } catch (err) {
+    setError(err.message || "Failed to fetch events");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const confirmDelete = async () => {
     if (!confirmDeleteId) return;
@@ -330,7 +355,7 @@ const Events = () => {
         toDateTime,
         is_food_available: editFormData.is_food_available,
         eventURL: editFormData.eventURL.trim() || null,
-        // ✅ ADD THIS: If event is published, change to postponed when editing
+        
         status: editingEvent.status === "published" ? "postponed" : editingEvent.status,
       };
 
@@ -454,7 +479,7 @@ const Events = () => {
     { value: "draft", label: "Draft", color: "bg-gray-100 text-gray-600 border-gray-200" },
     { value: "postponed", label: "Postponed", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
     { value: "cancelled", label: "Cancelled", color: "bg-red-100 text-red-600 border-red-200" },
-    //{ value: "completed", label: "Completed", color: "bg-purple-100 text-purple-700 border-purple-200" },
+    { value: "completed", label: "Completed", color: "bg-purple-100 text-purple-700 border-purple-200" },
   ];
 
   const getAdminStatusStyle = (statusVal) =>
@@ -851,8 +876,8 @@ const Events = () => {
                     </button>
                   )}
 
-                  {/* Published: Show Postpone & Cancel */}
-                  {event.status === "published" && (
+                  {/* Published & NOT Completed: Show Postpone & Cancel */}
+                  {event.status === "published" && getStatus(event.fromDateTime, event.toDateTime) !== "Completed" && (
                     <>
                       <button
                         onClick={() => handleEdit(event)}
@@ -876,8 +901,8 @@ const Events = () => {
                     </>
                   )}
 
-                  {/* Postponed: Show Cancel Button Only */}
-                  {event.status === "postponed" && (
+                  {/* Postponed & NOT Completed: Show Cancel Button Only */}
+                  {event.status === "postponed" && getStatus(event.fromDateTime, event.toDateTime) !== "Completed" && (
                     <button
                       onClick={() => handleUpdateAdminStatus(event.eventID, "cancelled")}
                       disabled={statusUpdating[event.eventID]}
@@ -891,7 +916,6 @@ const Events = () => {
                       )}
                     </button>
                   )}
-
                   <button
                     onClick={() => handleViewVolunteers(event)}
                     className="flex-grow py-2.5 text-sm text-white bg-[#C97736] hover:bg-[#a85f27] font-medium transition flex items-center justify-center gap-1.5 px-2"
