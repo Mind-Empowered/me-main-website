@@ -128,16 +128,7 @@ const Newsletter = () => {
     }
     setConfirmDeleteId(null);
   };
-
-  // const canOpenPreview = () => {
-  //   const monthNum = parseInt(form.month);
-  //   const yearNum = parseInt(form.year);
-  //   if (!file) { toast.error("Choose a newsletter image first"); return false; }
-  //   if (!form.month || isNaN(monthNum) || monthNum < 1 || monthNum > 12) { toast.error("Enter a valid month (1–12) before previewing"); return false; }
-  //   if (!form.year || isNaN(yearNum) || yearNum < 2000 || yearNum > 2100) { toast.error("Enter a valid year before previewing"); return false; }
-  //   return true;
-  // };
-
+  
   const handlePreviewClick = () => {
   const monthNum = parseInt(form.month);
   const yearNum = parseInt(form.year);
