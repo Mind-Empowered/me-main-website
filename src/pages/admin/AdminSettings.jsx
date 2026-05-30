@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../services/supabase-client";
 import { FaLock, FaGlobe, FaSave, FaEnvelope, FaPhone, FaMapMarkerAlt, FaInstagram, FaLinkedin, FaCog, FaSlidersH, FaMusic, FaLanguage } from "react-icons/fa";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { AdminListSkeleton, SkeletonBlock } from "../../components/adminDashboard/AdminSkeletons";
 
 const AdminSettings = () => {
     const [activeTab, setActiveTab] = useState("site");
@@ -40,6 +41,8 @@ const AdminSettings = () => {
     const [isSavingSite, setIsSavingSite] = useState(false);
     const [siteMessage, setSiteMessage] = useState({ type: "", text: "" });
 
+    const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+
     // Password State
     const [passwordData, setPasswordData] = useState({
         newPassword: "",
@@ -51,15 +54,22 @@ const AdminSettings = () => {
     // Fetch Site Settings on mount
     useEffect(() => {
         const fetchSettings = async () => {
-            const { data, error } = await supabase
-                .schema("me_dataspace")
-                .from("site_settings")
-                .select("*")
-                .eq("id", 1)
-                .single();
+            setIsLoadingSettings(true);
+            try {
+                const { data, error } = await supabase
+                    .schema("me_dataspace")
+                    .from("site_settings")
+                    .select("*")
+                    .eq("id", 1)
+                    .single();
 
-            if (data && !error) {
-                setSiteSettings(data);
+                if (data && !error) {
+                    setSiteSettings(data);
+                }
+            } catch (err) {
+                // keep existing behavior; show message in UI if needed
+            } finally {
+                setIsLoadingSettings(false);
             }
         };
         fetchSettings();
@@ -167,178 +177,213 @@ const AdminSettings = () => {
 
                 {/* Content Area */}
                 <div className="flex-1">
-                    {/* --- Site Configuration Tab --- */}
-                    {activeTab === "site" && (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 animate-fade-in-fast">
-                            <h2 className="text-xl font-bold text-[#461711] mb-6">Contact & Social Links</h2>
-                            
-                            {siteMessage.text && (
-                                <div className={`p-4 rounded-lg mb-6 text-sm font-semibold ${siteMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
-                                    {siteMessage.text}
-                                </div>
-                            )}
-
-                            <form onSubmit={handleSiteUpdate} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                            <FaEnvelope className="text-gray-400"/> Contact Email
-                                        </label>
-                                        <input 
-                                            type="email" 
-                                            required
-                                            value={siteSettings.email}
-                                            onChange={(e) => setSiteSettings({...siteSettings, email: e.target.value})}
-                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                            <FaPhone className="text-gray-400"/> Phone Number
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            required
-                                            value={siteSettings.phone}
-                                            onChange={(e) => setSiteSettings({...siteSettings, phone: e.target.value})}
-                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
-                                        />
-                                    </div>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                        <FaMapMarkerAlt className="text-gray-400"/> Physical Address
-                                    </label>
-                                    <textarea 
-                                        required
-                                        rows="2"
-                                        value={siteSettings.address}
-                                        onChange={(e) => setSiteSettings({...siteSettings, address: e.target.value})}
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50 resize-none"
-                                    />
-                                </div>
-
-                                <hr className="border-gray-100" />
-
-                                <div className="space-y-4">
-                                    <h3 className="font-semibold text-gray-700">Social Media URLs</h3>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-semibold text-gray-600 flex items-center gap-2">
-                                            <FaInstagram className="text-pink-600"/> Instagram URL
-                                        </label>
-                                        <input 
-                                            type="url" 
-                                            value={siteSettings.instagram_url}
-                                            onChange={(e) => setSiteSettings({...siteSettings, instagram_url: e.target.value})}
-                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-semibold text-gray-600 flex items-center gap-2">
-                                            <FaLinkedin className="text-blue-600"/> LinkedIn URL
-                                        </label>
-                                        <input 
-                                            type="url" 
-                                            value={siteSettings.linkedin_url}
-                                            onChange={(e) => setSiteSettings({...siteSettings, linkedin_url: e.target.value})}
-                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
-                                        />
+                    {isLoadingSettings ? (
+                        <div className="animate-fade-in-fast">
+                            <div className="flex flex-col md:flex-row gap-8">
+                                <div className="w-full md:w-64 shrink-0">
+                                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                                        <SkeletonBlock className="h-4 w-32 mb-4" />
+                                        <div className="space-y-2">
+                                            <SkeletonBlock className="h-12 w-full rounded-lg" />
+                                            <SkeletonBlock className="h-12 w-full rounded-lg" />
+                                            <SkeletonBlock className="h-12 w-full rounded-lg" />
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="flex justify-end pt-4">
-                                    <button 
-                                        type="submit" 
-                                        disabled={isSavingSite}
-                                        className="bg-[#C1622A] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#a8521f] transition disabled:opacity-50 flex items-center gap-2"
-                                    >
-                                        <FaSave /> {isSavingSite ? "Saving..." : "Save Changes"}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
-
-                    {/* --- Security Tab --- */}
-                    {activeTab === "security" && (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 animate-fade-in-fast">
-                            <h2 className="text-xl font-bold text-[#461711] mb-2">Change Password</h2>
-                            <p className="text-gray-500 text-sm mb-6">Update your admin account password.</p>
-                            
-                            {passwordMessage.text && (
-                                <div className={`p-4 rounded-lg mb-6 text-sm font-semibold ${passwordMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
-                                    {passwordMessage.text}
-                                </div>
-                            )}
-
-                            <form onSubmit={handlePasswordUpdate} className="space-y-5 max-w-md">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-gray-700">New Password</label>
-                                    <input 
-                                        type="password" 
-                                        required
-                                        value={passwordData.newPassword}
-                                        onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-gray-700">Confirm New Password</label>
-                                    <input 
-                                        type="password" 
-                                        required
-                                        value={passwordData.confirmPassword}
-                                        onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
-                                    />
-                                </div>
-                                
-                                <div className="pt-2">
-                                    <button 
-                                        type="submit" 
-                                        disabled={isSavingPassword}
-                                        className="w-full bg-[#461711] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#ff7612] transition disabled:opacity-50"
-                                    >
-                                        {isSavingPassword ? "Updating..." : "Update Password"}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
-
-                    {/* --- Preferences Tab --- */}
-                    {activeTab === "preferences" && (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 animate-fade-in-fast">
-                            <h2 className="text-xl font-bold text-[#461711] mb-2">Dashboard Preferences</h2>
-                            <p className="text-gray-500 text-sm mb-6">Manage your local admin dashboard settings.</p>
-
-                            <div className="space-y-4 max-w-md">
-                                <button
-                                    onClick={toggleLanguage}
-                                    className="w-full flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-[#FAF7F2] border border-gray-200 rounded-xl transition"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <FaLanguage className="text-[#C1622A] text-lg" />
-                                        Dashboard Language
+                                <div className="flex-1 space-y-6">
+                                    <div className="rounded-xl bg-white p-6 shadow-sm border border-gray-100">
+                                        <SkeletonBlock className="h-6 w-48 mb-4" />
+                                        <SkeletonBlock className="h-10 w-full mb-4 rounded-xl" />
+                                        <SkeletonBlock className="h-40 w-full rounded-2xl" />
                                     </div>
-                                    <span className="text-[#C1622A]">{language === 'en' ? 'English' : 'മലയാളം (Malayalam)'}</span>
-                                </button>
-                                
-                                <button
-                                    onClick={toggleSound}
-                                    className="w-full flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-[#FAF7F2] border border-gray-200 rounded-xl transition"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <FaMusic className="text-[#C1622A]" />
-                                        Background Music
+
+                                    <div className="rounded-xl bg-white p-6 shadow-sm border border-gray-100">
+                                        <SkeletonBlock className="h-5 w-40 mb-3" />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <SkeletonBlock className="h-12 w-full rounded-lg" />
+                                            <SkeletonBlock className="h-12 w-full rounded-lg" />
+                                        </div>
                                     </div>
-                                    <div className={`w-10 h-5 rounded-full transition-colors flex items-center px-0.5 ${soundEnabled ? 'bg-[#C1622A]' : 'bg-gray-300'}`}>
-                                        <div className={`w-4 h-4 rounded-full bg-white transition-transform ${soundEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
-                                    </div>
-                                </button>
+                                </div>
                             </div>
                         </div>
+                    ) : (
+                        <>
+                            {/* --- Site Configuration Tab --- */}
+                            {activeTab === "site" && (
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 animate-fade-in-fast">
+                                    <h2 className="text-xl font-bold text-[#461711] mb-6">Contact & Social Links</h2>
+                                    
+                                    {siteMessage.text && (
+                                        <div className={`p-4 rounded-lg mb-6 text-sm font-semibold ${siteMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                                            {siteMessage.text}
+                                        </div>
+                                    )}
+
+                                    <form onSubmit={handleSiteUpdate} className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                                    <FaEnvelope className="text-gray-400"/> Contact Email
+                                                </label>
+                                                <input 
+                                                    type="email" 
+                                                    required
+                                                    value={siteSettings.email}
+                                                    onChange={(e) => setSiteSettings({...siteSettings, email: e.target.value})}
+                                                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                                    <FaPhone className="text-gray-400"/> Phone Number
+                                                </label>
+                                                <input 
+                                                    type="text" 
+                                                    required
+                                                    value={siteSettings.phone}
+                                                    onChange={(e) => setSiteSettings({...siteSettings, phone: e.target.value})}
+                                                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                                <FaMapMarkerAlt className="text-gray-400"/> Physical Address
+                                            </label>
+                                            <textarea 
+                                                required
+                                                rows="2"
+                                                value={siteSettings.address}
+                                                onChange={(e) => setSiteSettings({...siteSettings, address: e.target.value})}
+                                                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50 resize-none"
+                                            />
+                                        </div>
+
+                                        <hr className="border-gray-100" />
+
+                                        <div className="space-y-4">
+                                            <h3 className="font-semibold text-gray-700">Social Media URLs</h3>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                                                    <FaInstagram className="text-pink-600"/> Instagram URL
+                                                </label>
+                                                <input 
+                                                    type="url" 
+                                                    value={siteSettings.instagram_url}
+                                                    onChange={(e) => setSiteSettings({...siteSettings, instagram_url: e.target.value})}
+                                                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                                                    <FaLinkedin className="text-blue-600"/> LinkedIn URL
+                                                </label>
+                                                <input 
+                                                    type="url" 
+                                                    value={siteSettings.linkedin_url}
+                                                    onChange={(e) => setSiteSettings({...siteSettings, linkedin_url: e.target.value})}
+                                                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-end pt-4">
+                                            <button 
+                                                type="submit" 
+                                                disabled={isSavingSite}
+                                                className="bg-[#C1622A] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#a8521f] transition disabled:opacity-50 flex items-center gap-2"
+                                            >
+                                                <FaSave /> {isSavingSite ? "Saving..." : "Save Changes"}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
+
+                            {/* --- Security Tab --- */}
+                            {activeTab === "security" && (
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 animate-fade-in-fast">
+                                    <h2 className="text-xl font-bold text-[#461711] mb-2">Change Password</h2>
+                                    <p className="text-gray-500 text-sm mb-6">Update your admin account password.</p>
+                                    
+                                    {passwordMessage.text && (
+                                        <div className={`p-4 rounded-lg mb-6 text-sm font-semibold ${passwordMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                                            {passwordMessage.text}
+                                        </div>
+                                    )}
+
+                                    <form onSubmit={handlePasswordUpdate} className="space-y-5 max-w-md">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">New Password</label>
+                                            <input 
+                                                type="password" 
+                                                required
+                                                value={passwordData.newPassword}
+                                                onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                                                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">Confirm New Password</label>
+                                            <input 
+                                                type="password" 
+                                                required
+                                                value={passwordData.confirmPassword}
+                                                onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                                                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C1622A]/50"
+                                            />
+                                        </div>
+                                        
+                                        <div className="pt-2">
+                                            <button 
+                                                type="submit" 
+                                                disabled={isSavingPassword}
+                                                className="w-full bg-[#461711] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#ff7612] transition disabled:opacity-50"
+                                            >
+                                                {isSavingPassword ? "Updating..." : "Update Password"}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
+
+                            {/* --- Preferences Tab --- */}
+                            {activeTab === "preferences" && (
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 animate-fade-in-fast">
+                                    <h2 className="text-xl font-bold text-[#461711] mb-2">Dashboard Preferences</h2>
+                                    <p className="text-gray-500 text-sm mb-6">Manage your local admin dashboard settings.</p>
+
+                                    <div className="space-y-4 max-w-md">
+                                        <button
+                                            onClick={toggleLanguage}
+                                            className="w-full flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-[#FAF7F2] border border-gray-200 rounded-xl transition"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <FaLanguage className="text-[#C1622A] text-lg" />
+                                                Dashboard Language
+                                            </div>
+                                            <span className="text-[#C1622A]">{language === 'en' ? 'English' : 'മലയാളം (Malayalam)'}</span>
+                                        </button>
+                                        
+                                        <button
+                                            onClick={toggleSound}
+                                            className="w-full flex items-center justify-between px-4 py-4 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-[#FAF7F2] border border-gray-200 rounded-xl transition"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <FaMusic className="text-[#C1622A]" />
+                                                Background Music
+                                            </div>
+                                            <div className={`w-10 h-5 rounded-full transition-colors flex items-center px-0.5 ${soundEnabled ? 'bg-[#C1622A]' : 'bg-gray-300'}`}>
+                                                <div className={`w-4 h-4 rounded-full bg-white transition-transform ${soundEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
