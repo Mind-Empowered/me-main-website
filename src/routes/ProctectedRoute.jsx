@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children, allowedRoles = [], fallback }) => {
     checkUser();
   }, []);
 
-  if (loading) return fallback || <div>Loading...</div>;
+  if (loading) return fallback || <div></div>;
   
   if (!user) return <Navigate to="/signin" />;
 
