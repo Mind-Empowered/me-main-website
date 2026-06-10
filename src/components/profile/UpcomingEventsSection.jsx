@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../services/supabase-client";
-import { FaTimes, FaSpinner, FaChevronRight, FaChevronLeft, FaMapMarkerAlt, FaUtensils } from "react-icons/fa";
+import {
+  FaTimes,
+  FaSpinner,
+  FaChevronRight,
+  FaChevronLeft,
+  FaMapMarkerAlt,
+  FaUtensils,
+} from "react-icons/fa";
 import { SectionSkeleton } from "./ProfileSkeletons";
 import { translations } from "../../translations";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -44,12 +51,14 @@ const UpcomingEventsSection = () => {
   }, []);
 
   const handleVolunteerClick = (event) => {
-    setExpandedEventId(expandedEventId === event.eventID ? null : event.eventID);
+    setExpandedEventId(
+      expandedEventId === event.eventID ? null : event.eventID,
+    );
   };
 
   const handleRegisterAsVolunteer = async (event) => {
     setRegisteringEventId(event.eventID);
-    setRegisterStatus(prev => ({ ...prev, [event.eventID]: null }));
+    setRegisterStatus((prev) => ({ ...prev, [event.eventID]: null }));
 
     try {
       // Get current logged-in user
@@ -60,7 +69,7 @@ const UpcomingEventsSection = () => {
 
       if (userError || !user) {
         console.error("Auth User error:", userError);
-        setRegisterStatus(prev => ({ ...prev, [event.eventID]: 'error' }));
+        setRegisterStatus((prev) => ({ ...prev, [event.eventID]: "error" }));
         setRegisteringEventId(null);
         return;
       }
@@ -78,14 +87,14 @@ const UpcomingEventsSection = () => {
 
       if (userDataError) {
         console.error("User lookup error:", userDataError);
-        setRegisterStatus(prev => ({ ...prev, [event.eventID]: 'error' }));
+        setRegisterStatus((prev) => ({ ...prev, [event.eventID]: "error" }));
         setRegisteringEventId(null);
         return;
       }
 
       if (!userData) {
         console.error("User not found in database");
-        setRegisterStatus(prev => ({ ...prev, [event.eventID]: 'error' }));
+        setRegisterStatus((prev) => ({ ...prev, [event.eventID]: "error" }));
         setRegisteringEventId(null);
         return;
       }
@@ -103,14 +112,14 @@ const UpcomingEventsSection = () => {
 
       if (checkError && checkError.code !== "PGRST116") {
         console.error("Check error:", checkError);
-        setRegisterStatus(prev => ({ ...prev, [event.eventID]: 'error' }));
+        setRegisterStatus((prev) => ({ ...prev, [event.eventID]: "error" }));
         setRegisteringEventId(null);
         return;
       }
 
       if (existingRegistration) {
         console.log("User already registered for this event");
-        setRegisterStatus(prev => ({ ...prev, [event.eventID]: 'already' }));
+        setRegisterStatus((prev) => ({ ...prev, [event.eventID]: "already" }));
         setRegisteringEventId(null);
         return;
       }
@@ -135,21 +144,24 @@ const UpcomingEventsSection = () => {
           insertError.message?.includes("duplicate") ||
           insertError.message?.includes("Duplicate")
         ) {
-          setRegisterStatus(prev => ({ ...prev, [event.eventID]: 'already' }));
+          setRegisterStatus((prev) => ({
+            ...prev,
+            [event.eventID]: "already",
+          }));
           setRegisteringEventId(null);
           return;
         }
 
-        setRegisterStatus(prev => ({ ...prev, [event.eventID]: 'error' }));
+        setRegisterStatus((prev) => ({ ...prev, [event.eventID]: "error" }));
         setRegisteringEventId(null);
         return;
       }
 
       console.log("Registration successful:", insertedData);
-      setRegisterStatus(prev => ({ ...prev, [event.eventID]: 'success' }));
+      setRegisterStatus((prev) => ({ ...prev, [event.eventID]: "success" }));
     } catch (err) {
       console.error("Unexpected error:", err);
-      setRegisterStatus(prev => ({ ...prev, [event.eventID]: 'error' }));
+      setRegisterStatus((prev) => ({ ...prev, [event.eventID]: "error" }));
     } finally {
       setRegisteringEventId(null);
     }
@@ -159,7 +171,7 @@ const UpcomingEventsSection = () => {
   const totalPages = Math.ceil(events.length / EVENTS_PER_PAGE);
   const paginatedEvents = events.slice(
     currentPage * EVENTS_PER_PAGE,
-    (currentPage + 1) * EVENTS_PER_PAGE
+    (currentPage + 1) * EVENTS_PER_PAGE,
   );
 
   const handleNextPage = () => {
@@ -174,7 +186,10 @@ const UpcomingEventsSection = () => {
     }
   };
 
-  if (loading) return <SectionSkeleton titleWidth="w-44" itemCount={4} cardHeight="h-28" />;
+  if (loading)
+    return (
+      <SectionSkeleton titleWidth="w-44" itemCount={4} cardHeight="h-28" />
+    );
 
   return (
     <>
@@ -187,12 +202,19 @@ const UpcomingEventsSection = () => {
           <p className="text-gray-600">No upcoming events</p>
         ) : (
           <>
-            <div className="space-y-2 flex-1 mb-3 overflow-y-auto pr-1" style={{ maxHeight: '60vh' }}>
+            <div
+              className="space-y-2 flex-1 mb-3 overflow-y-auto pr-1"
+              style={{ maxHeight: "60vh" }}
+            >
               {paginatedEvents.map((event) => (
                 <div
                   key={event.eventID}
                   className="border rounded-lg p-3 hover:shadow-md transition cursor-pointer"
-                  onClick={() => setExpandedEventId(expandedEventId === event.eventID ? null : event.eventID)}
+                  onClick={() =>
+                    setExpandedEventId(
+                      expandedEventId === event.eventID ? null : event.eventID,
+                    )
+                  }
                 >
                   <div className="flex gap-3">
                     {event.bannerURL && (
@@ -211,13 +233,21 @@ const UpcomingEventsSection = () => {
                         </h3>
                         {/* Status Badge */}
                         {event.status && (
-                          <span className={`inline-block text-xs font-semibold px-2 py-1 rounded mt-1 ${event.status === "published" ? "bg-green-100 text-green-700" :
-                            event.status === "draft" ? "bg-gray-100 text-gray-600" :
-                              event.status === "postponed" ? "bg-yellow-100 text-yellow-700" :
-                                event.status === "cancelled" ? "bg-red-100 text-red-600" :
-                                  "bg-gray-100 text-gray-600"
-                            }`}>
-                            {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                          <span
+                            className={`inline-block text-xs font-semibold px-2 py-1 rounded mt-1 ${
+                              event.status === "published"
+                                ? "bg-green-100 text-green-700"
+                                : event.status === "draft"
+                                  ? "bg-gray-100 text-gray-600"
+                                  : event.status === "postponed"
+                                    ? "bg-yellow-100 text-yellow-700"
+                                    : event.status === "cancelled"
+                                      ? "bg-red-100 text-red-600"
+                                      : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            {event.status.charAt(0).toUpperCase() +
+                              event.status.slice(1)}
                           </span>
                         )}
                         <p className="text-sm text-gray-500 mt-2">
@@ -242,7 +272,10 @@ const UpcomingEventsSection = () => {
                         }}
                         className="mt-3 px-4 py-2 bg-[#A64200] text-white rounded-xl hover:bg-[#8a3600] transition self-start"
                       >
-                        {expandedEventId === event.eventID ? (translations.profile.viewLess?.[language] || "Hide Details") : translations.profile.register[language]}
+                        {expandedEventId === event.eventID
+                          ? translations.profile.viewLess?.[language] ||
+                            "Hide Details"
+                          : translations.profile.register[language]}
                       </button>
                       {/* <button
                         onClick={(e) => {
@@ -273,65 +306,93 @@ const UpcomingEventsSection = () => {
                       <div className="space-y-4">
                         {event.description && (
                           <div>
-                            <h4 className="font-bold text-gray-800">Description</h4>
+                            <h4 className="font-bold text-gray-800">
+                              Description
+                            </h4>
                             <p>{event.description}</p>
                           </div>
                         )}
 
                         {event.fullDetails && (
                           <div>
-                            <h4 className="font-bold text-gray-800">Event Details</h4>
-                            <p className="whitespace-pre-wrap">{event.fullDetails}</p>
+                            <h4 className="font-bold text-gray-800">
+                              Event Details
+                            </h4>
+                            <p className="whitespace-pre-wrap">
+                              {event.fullDetails}
+                            </p>
                           </div>
                         )}
 
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <span className="font-bold text-gray-800">Start Time</span>
-                            <p>{new Date(event.fromDateTime).toLocaleString()}</p>
+                            <span className="font-bold text-gray-800">
+                              Start Time
+                            </span>
+                            <p>
+                              {new Date(event.fromDateTime).toLocaleString()}
+                            </p>
                           </div>
                           <div>
-                            <span className="font-bold text-gray-800">End Time</span>
+                            <span className="font-bold text-gray-800">
+                              End Time
+                            </span>
                             <p>{new Date(event.toDateTime).toLocaleString()}</p>
                           </div>
                         </div>
 
                         {event.venue && (
                           <div>
-                            <span className="font-bold text-gray-800">Venue</span>
-                            <p>{event.venue}</p>
-                            {event.venue_url && (
-                              <a
-                                href={event.venue_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="inline-flex items-center gap-1 mt-1 text-xs text-[#A64200] hover:underline"
-                              >
-                                <FaMapMarkerAlt size={10} />
-                                View on Map
-                              </a>
-                            )}
+                            <span className="font-bold text-gray-800">
+                              Venue
+                            </span>
+                            {event.venue.split(" | ").map((v, i) => (
+                              <div key={i} className="mt-1.5">
+                                <p>{v}</p>
+                                {event.venue_url?.split(" | ")[i] && (
+                                  <a
+                                    href={event.venue_url.split(" | ")[i]}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-1 mt-0.5 text-xs text-[#A64200] hover:underline"
+                                  >
+                                    <FaMapMarkerAlt size={10} />
+                                    View on Map
+                                  </a>
+                                )}
+                              </div>
+                            ))}
                           </div>
                         )}
 
                         {event.reg_deadline && (
                           <div>
-                            <span className="font-bold text-gray-800">Registration Deadline</span>
-                            <p>{new Date(event.reg_deadline).toLocaleDateString()}</p>
+                            <span className="font-bold text-gray-800">
+                              Registration Deadline
+                            </span>
+                            <p>
+                              {new Date(
+                                event.reg_deadline,
+                              ).toLocaleDateString()}
+                            </p>
                           </div>
                         )}
 
                         <div className="grid grid-cols-2 gap-4">
                           {event.max_participants != null && (
                             <div>
-                              <span className="font-bold text-gray-800">Max Participants</span>
+                              <span className="font-bold text-gray-800">
+                                Max Participants
+                              </span>
                               <p>{event.max_participants}</p>
                             </div>
                           )}
                           {event.max_volunteers != null && (
                             <div>
-                              <span className="font-bold text-gray-800">Max Volunteers</span>
+                              <span className="font-bold text-gray-800">
+                                Max Volunteers
+                              </span>
                               <p>{event.max_volunteers}</p>
                             </div>
                           )}
@@ -339,8 +400,15 @@ const UpcomingEventsSection = () => {
 
                         {event.eventURL && (
                           <div>
-                            <span className="font-bold text-gray-800">Event Website</span>
-                            <a href={event.eventURL} target="_blank" rel="noopener noreferrer" className="block text-[#A64200] hover:underline break-all">
+                            <span className="font-bold text-gray-800">
+                              Event Website
+                            </span>
+                            <a
+                              href={event.eventURL}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block text-[#A64200] hover:underline break-all"
+                            >
                               {event.eventURL}
                             </a>
                           </div>
@@ -349,7 +417,9 @@ const UpcomingEventsSection = () => {
                         {event.agenda && (
                           <div>
                             <h4 className="font-bold text-gray-800">Agenda</h4>
-                            <p className="whitespace-pre-wrap">{event.agenda}</p>
+                            <p className="whitespace-pre-wrap">
+                              {event.agenda}
+                            </p>
                           </div>
                         )}
 
@@ -391,7 +461,6 @@ const UpcomingEventsSection = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               handleRegisterAsVolunteer(event);
-
                             }}
                             disabled={
                               registeringEventId === event.eventID ||
@@ -399,10 +468,11 @@ const UpcomingEventsSection = () => {
                               registerStatus[event.eventID] === "already" ||
                               event.status === "cancelled"
                             }
-                            className={`mt-3 px-4 py-2 bg-[#A64200] text-white rounded-xl hover:bg-[#8a3600] transition self-start font-medium flex items-center justify-center gap-2 ${event.status === "cancelled"
+                            className={`mt-3 px-4 py-2 bg-[#A64200] text-white rounded-xl hover:bg-[#8a3600] transition self-start font-medium flex items-center justify-center gap-2 ${
+                              event.status === "cancelled"
                                 ? "bg-gray-400 cursor-not-allowed"
                                 : "bg-[#A64200] hover:bg-[#8a3600]"
-                              }`}
+                            }`}
                           >
                             {registeringEventId === event.eventID ? (
                               <>
@@ -431,10 +501,11 @@ const UpcomingEventsSection = () => {
                 <button
                   onClick={handlePreviousPage}
                   disabled={currentPage === 0}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${currentPage === 0
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                    currentPage === 0
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
                 >
                   <FaChevronLeft size={14} />
                   Previous
@@ -447,10 +518,11 @@ const UpcomingEventsSection = () => {
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages - 1}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${currentPage === totalPages - 1
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-[#A64200] text-white hover:bg-[#8a3600]"
-                    }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                    currentPage === totalPages - 1
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-[#A64200] text-white hover:bg-[#8a3600]"
+                  }`}
                 >
                   Next
                   <FaChevronRight size={14} />
@@ -460,8 +532,6 @@ const UpcomingEventsSection = () => {
           </>
         )}
       </div>
-
-
     </>
   );
 };
