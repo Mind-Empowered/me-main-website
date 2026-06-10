@@ -10,7 +10,10 @@ import {
   FaTrash,
   FaEdit,
 } from "react-icons/fa";
-import { AdminStatsSkeleton, AdminTableSkeleton } from "../../components/adminDashboard/AdminSkeletons";
+import {
+  AdminStatsSkeleton,
+  AdminTableSkeleton,
+} from "../../components/adminDashboard/AdminSkeletons";
 import ConfirmModal from "../../components/adminDashboard/ConfirmModal";
 import toast from "react-hot-toast";
 import { logActivity } from "../../services/activityLog";
@@ -70,48 +73,48 @@ const Events = () => {
   };
 
   const fetchEvents = async () => {
-  setLoading(true);
-  setError(null);
-  try {
-    const { data, error } = await supabase
-      .schema("me_dataspace")
-      .from("events")
-      .select("*")
-      .order("fromDateTime", { ascending: true });
-    if (error) throw error;
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase
+        .schema("me_dataspace")
+        .from("events")
+        .select("*")
+        .order("fromDateTime", { ascending: true });
+      if (error) throw error;
 
-    //  Auto-update completed events
-    const now = new Date();
-    const updatedEvents = (data || []).map((event) => {
-      const isCompleted = new Date(event.toDateTime) < now;
-      if (isCompleted && event.status === "published") {
-        // Update in DB
-        supabase
-          .schema("me_dataspace")
-          .from("events")
-          .update({ status: "completed" })
-          .eq("eventID", event.eventID)
-          .then(() => {
-            logActivity({
-              action: 'UPDATE_STATUS',
-              description: `Auto-marked event as completed: ${event.title}`,
-              entity_type: 'event',
-              entity_id: event.eventID
+      //  Auto-update completed events
+      const now = new Date();
+      const updatedEvents = (data || []).map((event) => {
+        const isCompleted = new Date(event.toDateTime) < now;
+        if (isCompleted && event.status === "published") {
+          // Update in DB
+          supabase
+            .schema("me_dataspace")
+            .from("events")
+            .update({ status: "completed" })
+            .eq("eventID", event.eventID)
+            .then(() => {
+              logActivity({
+                action: "UPDATE_STATUS",
+                description: `Auto-marked event as completed: ${event.title}`,
+                entity_type: "event",
+                entity_id: event.eventID,
+              });
             });
-          });
-        return { ...event, status: "completed" };
-      }
-      return event;
-    });
+          return { ...event, status: "completed" };
+        }
+        return event;
+      });
 
-    setEvents(updatedEvents);
-    if (updatedEvents) fetchVolunteerCounts(updatedEvents);
-  } catch (err) {
-    setError(err.message || "Failed to fetch events");
-  } finally {
-    setLoading(false);
-  }
-};
+      setEvents(updatedEvents);
+      if (updatedEvents) fetchVolunteerCounts(updatedEvents);
+    } catch (err) {
+      setError(err.message || "Failed to fetch events");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const confirmDelete = async () => {
     if (!confirmDeleteId) return;
@@ -126,7 +129,12 @@ const Events = () => {
       if (error) throw error;
 
       toast.success("Event deleted");
-      await logActivity({ action: 'DELETE_EVENT', description: `Deleted event`, entity_type: 'event', entity_id: confirmDeleteId });
+      await logActivity({
+        action: "DELETE_EVENT",
+        description: `Deleted event`,
+        entity_type: "event",
+        entity_id: confirmDeleteId,
+      });
       setEvents(events.filter((e) => e.eventID !== confirmDeleteId));
     } catch (err) {
       console.error(err);
@@ -159,8 +167,12 @@ const Events = () => {
       title: event.title || "",
       description: event.description || "",
       agenda: event.agenda || "",
-      venue: event.venue || "",
-      venue_url: event.venue_url || "",
+      venues: event.venue
+        ? event.venue.split(" | ").map((v, i) => ({
+            venue: v,
+            mapUrl: (event.venue_url || "").split(" | ")[i] || "",
+          }))
+        : [{ venue: "", mapUrl: "" }],
       max_participants: event.max_participants ?? "",
       max_volunteers: event.max_volunteers ?? "",
       bannerURL: event.bannerURL || "",
@@ -184,7 +196,24 @@ const Events = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+  const handleEditVenueChange = (index, field, value) => {
+    const updated = [...editFormData.venues];
+    updated[index][field] = value;
+    setEditFormData((p) => ({ ...p, venues: updated }));
+  };
 
+  const addEditVenue = () => {
+    if (editFormData.venues.length >= 5) return;
+    setEditFormData((p) => ({
+      ...p,
+      venues: [...p.venues, { venue: "", mapUrl: "" }],
+    }));
+  };
+
+  const removeEditVenue = (index) => {
+    const updated = editFormData.venues.filter((_, i) => i !== index);
+    setEditFormData((p) => ({ ...p, venues: updated }));
+  };
   const handleBannerFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -279,14 +308,14 @@ const Events = () => {
       }
     }
 
-    if (editFormData.venue_url && !isValidURL(editFormData.venue_url))
-      errs.push("Map URL must start with http:// or https://.");
-    else if (
-      editFormData.venue_url &&
-      !isValidGoogleMapsURL(editFormData.venue_url)
-    )
-      errs.push("Map URL must be a valid Google Maps link.");
-
+    (editFormData.venues || []).forEach((v, i) => {
+      if (v.mapUrl && !isValidURL(v.mapUrl))
+        errs.push(
+          `Venue ${i + 1}: Map URL must start with http:// or https://.`,
+        );
+      else if (v.mapUrl && !isValidGoogleMapsURL(v.mapUrl))
+        errs.push(`Venue ${i + 1}: Map URL must be a valid Google Maps link.`);
+    });
     if (editFormData.max_participants !== "") {
       const val = parseInt(editFormData.max_participants);
       if (isNaN(val) || val < 1)
@@ -303,7 +332,6 @@ const Events = () => {
 
     return errs;
   };
-
 
   const handleSaveEdit = async () => {
     const validationErrors = validateEditForm();
@@ -337,8 +365,16 @@ const Events = () => {
         title: editFormData.title.trim(),
         description: editFormData.description.trim(),
         agenda: editFormData.agenda.trim() || null,
-        venue: editFormData.venue.trim() || null,
-        venue_url: editFormData.venue_url.trim() || null,
+        venue:
+          editFormData.venues
+            .map((v) => v.venue.trim())
+            .filter(Boolean)
+            .join(" | ") || null,
+        venue_url:
+          editFormData.venues
+            .map((v) => v.mapUrl.trim())
+            .filter(Boolean)
+            .join(" | ") || null,
         max_participants:
           editFormData.max_participants !== ""
             ? parseInt(editFormData.max_participants)
@@ -355,8 +391,11 @@ const Events = () => {
         toDateTime,
         is_food_available: editFormData.is_food_available,
         eventURL: editFormData.eventURL.trim() || null,
-        
-        status: editingEvent.status === "published" ? "postponed" : editingEvent.status,
+
+        status:
+          editingEvent.status === "published"
+            ? "postponed"
+            : editingEvent.status,
       };
 
       const { error } = await supabase
@@ -373,10 +412,10 @@ const Events = () => {
       setShowEditModal(false);
       toast.success("Event updated and postponed!");
       await logActivity({
-        action: 'EDIT_EVENT',
+        action: "EDIT_EVENT",
         description: `Updated and postponed event: ${editFormData.title}`,
-        entity_type: 'event',
-        entity_id: editingEvent.eventID
+        entity_type: "event",
+        entity_id: editingEvent.eventID,
       });
     } catch (err) {
       if (err.code === "23505" && err.message?.includes("eventURL"))
@@ -442,7 +481,9 @@ const Events = () => {
     const newStatus = currentlyAttended ? "volunteer" : "attended";
 
     // Get volunteer info BEFORE updating state
-    const volunteer = registeredVolunteers.find(v => v.participationId === participationId);
+    const volunteer = registeredVolunteers.find(
+      (v) => v.participationId === participationId,
+    );
 
     try {
       const { error } = await supabase
@@ -462,10 +503,10 @@ const Events = () => {
 
       // Now log with the volunteer info
       await logActivity({
-        action: 'TOGGLE_ATTENDANCE',
+        action: "TOGGLE_ATTENDANCE",
         description: `Marked ${volunteer?.firstName} ${volunteer?.lastName} as ${newStatus === "attended" ? "attended" : "not attended"}`,
-        entity_type: 'event_participation',
-        entity_id: participationId
+        entity_type: "event_participation",
+        entity_id: participationId,
       });
     } catch (err) {
       alert("Failed to update attendance: " + err.message);
@@ -475,20 +516,41 @@ const Events = () => {
   };
   // Admin-set status config
   const ADMIN_STATUSES = [
-    { value: "published", label: "Published", color: "bg-green-100 text-green-700 border-green-200" },
-    { value: "draft", label: "Draft", color: "bg-gray-100 text-gray-600 border-gray-200" },
-    { value: "postponed", label: "Postponed", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-    { value: "cancelled", label: "Cancelled", color: "bg-red-100 text-red-600 border-red-200" },
-    { value: "completed", label: "Completed", color: "bg-purple-100 text-purple-700 border-purple-200" },
+    {
+      value: "published",
+      label: "Published",
+      color: "bg-green-100 text-green-700 border-green-200",
+    },
+    {
+      value: "draft",
+      label: "Draft",
+      color: "bg-gray-100 text-gray-600 border-gray-200",
+    },
+    {
+      value: "postponed",
+      label: "Postponed",
+      color: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    },
+    {
+      value: "cancelled",
+      label: "Cancelled",
+      color: "bg-red-100 text-red-600 border-red-200",
+    },
+    {
+      value: "completed",
+      label: "Completed",
+      color: "bg-purple-100 text-purple-700 border-purple-200",
+    },
   ];
 
   const getAdminStatusStyle = (statusVal) =>
-    ADMIN_STATUSES.find(s => s.value === statusVal)?.color || "bg-gray-100 text-gray-600 border-gray-200";
+    ADMIN_STATUSES.find((s) => s.value === statusVal)?.color ||
+    "bg-gray-100 text-gray-600 border-gray-200";
 
   const handleUpdateAdminStatus = async (eventID, newStatus) => {
-    setStatusUpdating(prev => ({ ...prev, [eventID]: true }));
+    setStatusUpdating((prev) => ({ ...prev, [eventID]: true }));
     try {
-      const event = events.find(e => e.eventID === eventID);
+      const event = events.find((e) => e.eventID === eventID);
       const oldStatus = event?.status || "published";
 
       const { error } = await supabase
@@ -498,20 +560,24 @@ const Events = () => {
         .eq("eventID", eventID);
       if (error) throw error;
 
-      setEvents(prev => prev.map(e => e.eventID === eventID ? { ...e, status: newStatus } : e));
+      setEvents((prev) =>
+        prev.map((e) =>
+          e.eventID === eventID ? { ...e, status: newStatus } : e,
+        ),
+      );
       toast.success("Status updated");
 
       // Log the status change
       await logActivity({
-        action: 'UPDATE_STATUS',
+        action: "UPDATE_STATUS",
         description: `Changed event status from ${oldStatus} to ${newStatus}: ${event?.title}`,
-        entity_type: 'event',
-        entity_id: eventID
+        entity_type: "event",
+        entity_id: eventID,
       });
     } catch (err) {
       toast.error("Failed to update status: " + err.message);
     } finally {
-      setStatusUpdating(prev => ({ ...prev, [eventID]: false }));
+      setStatusUpdating((prev) => ({ ...prev, [eventID]: false }));
     }
   };
 
@@ -529,7 +595,9 @@ const Events = () => {
         .from("users")
         .select("userID, firstName, lastName, emailID, photo")
         .eq("role", "VOLUNTEER")
-        .or(`firstName.ilike.%${query}%,lastName.ilike.%${query}%,emailID.ilike.%${query}%`)
+        .or(
+          `firstName.ilike.%${query}%,lastName.ilike.%${query}%,emailID.ilike.%${query}%`,
+        )
         .limit(10);
       if (error) throw error;
 
@@ -583,9 +651,18 @@ const Events = () => {
       }));
 
       // Remove from walk-in results
-      setWalkinResults((prev) => prev.filter((v) => v.userID !== volunteer.userID));
-      toast.success(`${volunteer.firstName} ${volunteer.lastName} marked as attended!`);
-      await logActivity({ action: 'ADD_WALKIN', description: `Marked ${volunteer.firstName} ${volunteer.lastName} as walk-in attended`, entity_type: 'event', entity_id: selectedEvent.eventID });
+      setWalkinResults((prev) =>
+        prev.filter((v) => v.userID !== volunteer.userID),
+      );
+      toast.success(
+        `${volunteer.firstName} ${volunteer.lastName} marked as attended!`,
+      );
+      await logActivity({
+        action: "ADD_WALKIN",
+        description: `Marked ${volunteer.firstName} ${volunteer.lastName} as walk-in attended`,
+        entity_type: "event",
+        entity_id: selectedEvent.eventID,
+      });
     } catch (err) {
       if (err.code === "23505") {
         toast.error("This volunteer is already registered for this event.");
@@ -610,9 +687,9 @@ const Events = () => {
   const formatTime = (dt) =>
     dt
       ? new Date(dt).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+          hour: "2-digit",
+          minute: "2-digit",
+        })
       : "";
   const formatDate = (dt) =>
     dt
@@ -638,7 +715,8 @@ const Events = () => {
   const filteredEvents = events.filter((e) => {
     const timeStatus = getStatus(e.fromDateTime, e.toDateTime);
     const passesTimeFilter = filter === "All" || timeStatus === filter;
-    const passesAdminFilter = statusFilter === "All" || (e.status || "published") === statusFilter;
+    const passesAdminFilter =
+      statusFilter === "All" || (e.status || "published") === statusFilter;
     return passesTimeFilter && passesAdminFilter;
   });
   const inputCls =
@@ -723,7 +801,9 @@ const Events = () => {
         <div className="flex flex-col gap-2 mt-5">
           {/* Time-based tabs */}
           <div className="flex gap-2 bg-white rounded-xl px-4 py-2 border border-gray-100 overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <span className="text-xs text-gray-400 self-center mr-1 font-medium">Schedule:</span>
+            <span className="text-xs text-gray-400 self-center mr-1 font-medium">
+              Schedule:
+            </span>
             {["All", "Ongoing", "Upcoming", "Completed"].map((f) => (
               <button
                 key={f}
@@ -736,17 +816,22 @@ const Events = () => {
           </div>
           {/* Admin status filter */}
           <div className="flex gap-2 bg-white rounded-xl px-4 py-2 border border-gray-100 overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <span className="text-xs text-gray-400 self-center mr-1 font-medium">Status:</span>
-            {["All", ...ADMIN_STATUSES.map(s => s.value)].map((s) => (
+            <span className="text-xs text-gray-400 self-center mr-1 font-medium">
+              Status:
+            </span>
+            {["All", ...ADMIN_STATUSES.map((s) => s.value)].map((s) => (
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition border ${statusFilter === s
-                  ? "bg-[#C97736] text-white border-[#C97736]"
-                  : "border-gray-200 text-gray-500 hover:border-[#C97736] hover:text-[#C97736]"
-                  }`}
+                className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition border ${
+                  statusFilter === s
+                    ? "bg-[#C97736] text-white border-[#C97736]"
+                    : "border-gray-200 text-gray-500 hover:border-[#C97736] hover:text-[#C97736]"
+                }`}
               >
-                {s === "All" ? "All" : ADMIN_STATUSES.find(x => x.value === s)?.label}
+                {s === "All"
+                  ? "All"
+                  : ADMIN_STATUSES.find((x) => x.value === s)?.label}
               </button>
             ))}
           </div>
@@ -794,31 +879,48 @@ const Events = () => {
                   </div>
                   <div className="flex flex-col items-end gap-1.5">
                     {/* Auto time-based status */}
-                    <span className={`text-xs font-semibold flex items-center gap-1 ${statusStyle(status)}`}>
+                    <span
+                      className={`text-xs font-semibold flex items-center gap-1 ${statusStyle(status)}`}
+                    >
                       <span className="w-1.5 h-1.5 rounded-full bg-current inline-block"></span>
                       {status}
                     </span>
                     {/* Admin-set status dropdown */}
                     <div className="relative">
                       {statusUpdating[event.eventID] ? (
-                        <span className="text-xs text-gray-400 flex items-center gap-1"><FaSpinner className="animate-spin" size={10} /> Saving...</span>
+                        <span className="text-xs text-gray-400 flex items-center gap-1">
+                          <FaSpinner className="animate-spin" size={10} />{" "}
+                          Saving...
+                        </span>
                       ) : (
                         <select
                           value={event.status || "published"}
-                          onChange={(e) => { e.stopPropagation(); handleUpdateAdminStatus(event.eventID, e.target.value); }}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            handleUpdateAdminStatus(
+                              event.eventID,
+                              e.target.value,
+                            );
+                          }}
                           onClick={(e) => e.stopPropagation()}
                           className={`text-xs font-bold px-2 py-0.5 rounded-full border cursor-pointer appearance-none pr-5 ${getAdminStatusStyle(event.status || "published")}`}
                           title="Set admin status"
                         >
-                          {ADMIN_STATUSES.map(s => (
-                            <option key={s.value} value={s.value}>{s.label}</option>
+                          {ADMIN_STATUSES.map((s) => (
+                            <option key={s.value} value={s.value}>
+                              {s.label}
+                            </option>
                           ))}
                         </select>
                       )}
                     </div>
                     <span className="flex items-center gap-1 text-xs text-gray-400">
                       <FaUsers size={10} />
-                      {volunteerCount}{event.max_volunteers ? `/${event.max_volunteers}` : ""}{" "}volunteers
+                      {volunteerCount}
+                      {event.max_volunteers
+                        ? `/${event.max_volunteers}`
+                        : ""}{" "}
+                      volunteers
                     </span>
                   </div>
                 </div>
@@ -863,7 +965,9 @@ const Events = () => {
                   {/* Draft: Show Publish Button */}
                   {event.status === "draft" && (
                     <button
-                      onClick={() => handleUpdateAdminStatus(event.eventID, "published")}
+                      onClick={() =>
+                        handleUpdateAdminStatus(event.eventID, "published")
+                      }
                       disabled={statusUpdating[event.eventID]}
                       className="flex-1 py-2.5 text-sm bg-green-100 hover:bg-green-200 text-green-700 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5 disabled:opacity-60"
                       title="Publish this event"
@@ -877,17 +981,42 @@ const Events = () => {
                   )}
 
                   {/* Published & NOT Completed: Show Postpone & Cancel */}
-                  {event.status === "published" && getStatus(event.fromDateTime, event.toDateTime) !== "Completed" && (
-                    <>
+                  {event.status === "published" &&
+                    getStatus(event.fromDateTime, event.toDateTime) !==
+                      "Completed" && (
+                      <>
+                        <button
+                          onClick={() => handleEdit(event)}
+                          className="flex-1 py-2.5 text-sm bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5"
+                          title="Edit and reschedule event"
+                        >
+                          <span>⏸ Postpone</span>
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleUpdateAdminStatus(event.eventID, "cancelled")
+                          }
+                          disabled={statusUpdating[event.eventID]}
+                          className="flex-1 py-2.5 text-sm bg-red-100 hover:bg-red-200 text-red-700 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5 disabled:opacity-60"
+                          title="Cancel this event"
+                        >
+                          {statusUpdating[event.eventID] ? (
+                            <FaSpinner className="animate-spin" size={12} />
+                          ) : (
+                            "✕ Cancel"
+                          )}
+                        </button>
+                      </>
+                    )}
+
+                  {/* Postponed & NOT Completed: Show Cancel Button Only */}
+                  {event.status === "postponed" &&
+                    getStatus(event.fromDateTime, event.toDateTime) !==
+                      "Completed" && (
                       <button
-                        onClick={() => handleEdit(event)}
-                        className="flex-1 py-2.5 text-sm bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5"
-                        title="Edit and reschedule event"
-                      >
-                        <span>⏸ Postpone</span>
-                      </button>
-                      <button
-                        onClick={() => handleUpdateAdminStatus(event.eventID, "cancelled")}
+                        onClick={() =>
+                          handleUpdateAdminStatus(event.eventID, "cancelled")
+                        }
                         disabled={statusUpdating[event.eventID]}
                         className="flex-1 py-2.5 text-sm bg-red-100 hover:bg-red-200 text-red-700 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5 disabled:opacity-60"
                         title="Cancel this event"
@@ -898,24 +1027,7 @@ const Events = () => {
                           "✕ Cancel"
                         )}
                       </button>
-                    </>
-                  )}
-
-                  {/* Postponed & NOT Completed: Show Cancel Button Only */}
-                  {event.status === "postponed" && getStatus(event.fromDateTime, event.toDateTime) !== "Completed" && (
-                    <button
-                      onClick={() => handleUpdateAdminStatus(event.eventID, "cancelled")}
-                      disabled={statusUpdating[event.eventID]}
-                      className="flex-1 py-2.5 text-sm bg-red-100 hover:bg-red-200 text-red-700 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5 disabled:opacity-60"
-                      title="Cancel this event"
-                    >
-                      {statusUpdating[event.eventID] ? (
-                        <FaSpinner className="animate-spin" size={12} />
-                      ) : (
-                        "✕ Cancel"
-                      )}
-                    </button>
-                  )}
+                    )}
                   <button
                     onClick={() => handleViewVolunteers(event)}
                     className="flex-grow py-2.5 text-sm text-white bg-[#C97736] hover:bg-[#a85f27] font-medium transition flex items-center justify-center gap-1.5 px-2"
@@ -926,7 +1038,6 @@ const Events = () => {
                     <span className="inline md:hidden">View</span>
                   </button>
                 </div>
-
               </div>
             );
           })}
@@ -1097,33 +1208,52 @@ const Events = () => {
               </div>
 
               {/* Venue + Map URL */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Venue / Location
-                  </label>
-                  <input
-                    name="venue"
-                    value={editFormData.venue}
-                    onChange={handleEditInput}
-                    placeholder="e.g. Community Hall"
-                    className={inputCls}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Map URL
-                  </label>
-                  <input
-                    name="venue_url"
-                    value={editFormData.venue_url}
-                    onChange={handleEditInput}
-                    placeholder="https://maps.google.com/..."
-                    className={inputCls}
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-2">
+                  Venue / Location & Map URL
+                </label>
+                {(editFormData.venues || []).map((v, i) => (
+                  <div
+                    key={i}
+                    className="grid grid-cols-2 gap-2 mb-2 items-start"
+                  >
+                    <input
+                      value={v.venue}
+                      onChange={(e) =>
+                        handleEditVenueChange(i, "venue", e.target.value)
+                      }
+                      placeholder="e.g. Community Hall"
+                      className={inputCls}
+                    />
+                    <div className="flex gap-1 items-center">
+                      <input
+                        value={v.mapUrl}
+                        onChange={(e) =>
+                          handleEditVenueChange(i, "mapUrl", e.target.value)
+                        }
+                        placeholder="https://maps.google.com/..."
+                        className={`${inputCls} flex-1`}
+                      />
+                      {editFormData.venues.length > 1 && (
+                        <button
+                          onClick={() => removeEditVenue(i)}
+                          className="text-red-400 hover:text-red-600 flex-shrink-0"
+                        >
+                          <FaTimes size={12} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {editFormData.venues.length < 5 && (
+                  <button
+                    onClick={addEditVenue}
+                    className="text-xs text-[#C97736] hover:underline mt-1"
+                  >
+                    + Add another venue
+                  </button>
+                )}
               </div>
-
               {/* Registration Deadline */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -1224,13 +1354,30 @@ const Events = () => {
               </div>
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => { setShowWalkinPanel(!showWalkinPanel); setWalkinSearch(""); setWalkinResults([]); }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition border ${showWalkinPanel
-                    ? "bg-[#C97736] text-white border-[#C97736]"
-                    : "bg-white text-[#C97736] border-[#C97736] hover:bg-orange-50"
-                    }`}
+                  onClick={() => {
+                    setShowWalkinPanel(!showWalkinPanel);
+                    setWalkinSearch("");
+                    setWalkinResults([]);
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition border ${
+                    showWalkinPanel
+                      ? "bg-[#C97736] text-white border-[#C97736]"
+                      : "bg-white text-[#C97736] border-[#C97736] hover:bg-orange-50"
+                  }`}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
                   Add Walk-in
                 </button>
                 <button
@@ -1246,10 +1393,25 @@ const Events = () => {
             {showWalkinPanel && (
               <div className="px-5 py-4 bg-orange-50 border-b border-orange-200">
                 <h3 className="text-sm font-bold text-[#C97736] mb-3 flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                    />
+                  </svg>
                   Mark Walk-in Attendance
                 </h3>
-                <p className="text-xs text-orange-700 mb-3">Search for a volunteer who showed up without registering and mark them as attended directly.</p>
+                <p className="text-xs text-orange-700 mb-3">
+                  Search for a volunteer who showed up without registering and
+                  mark them as attended directly.
+                </p>
                 <div className="relative">
                   <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
                   <input
@@ -1266,26 +1428,42 @@ const Events = () => {
                     <FaSpinner className="animate-spin text-[#C97736]" />
                   </div>
                 )}
-                {!walkinLoading && walkinSearch.length >= 2 && walkinResults.length === 0 && (
-                  <p className="text-xs text-gray-500 text-center py-3">No volunteers found. They may already be registered.</p>
-                )}
+                {!walkinLoading &&
+                  walkinSearch.length >= 2 &&
+                  walkinResults.length === 0 && (
+                    <p className="text-xs text-gray-500 text-center py-3">
+                      No volunteers found. They may already be registered.
+                    </p>
+                  )}
                 {walkinResults.length > 0 && (
                   <div className="mt-2 space-y-2 max-h-48 overflow-y-auto">
                     {walkinResults.map((v) => (
-                      <div key={v.userID} className="flex items-center gap-3 bg-white rounded-lg p-3 border border-orange-100">
+                      <div
+                        key={v.userID}
+                        className="flex items-center gap-3 bg-white rounded-lg p-3 border border-orange-100"
+                      >
                         <div className="w-9 h-9 rounded-full bg-[#C97736] text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
-                          {v.firstName?.charAt(0)}{v.lastName?.charAt(0)}
+                          {v.firstName?.charAt(0)}
+                          {v.lastName?.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-gray-800 truncate">{v.firstName} {v.lastName}</p>
-                          <p className="text-xs text-gray-500 truncate">{v.emailID}</p>
+                          <p className="text-sm font-semibold text-gray-800 truncate">
+                            {v.firstName} {v.lastName}
+                          </p>
+                          <p className="text-xs text-gray-500 truncate">
+                            {v.emailID}
+                          </p>
                         </div>
                         <button
                           onClick={() => handleAddWalkin(v)}
                           disabled={!!walkinAdding[v.userID]}
                           className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-bold transition disabled:opacity-60"
                         >
-                          {walkinAdding[v.userID] ? <FaSpinner className="animate-spin" size={10} /> : <FaCheck size={10} />}
+                          {walkinAdding[v.userID] ? (
+                            <FaSpinner className="animate-spin" size={10} />
+                          ) : (
+                            <FaCheck size={10} />
+                          )}
                           Mark Attended
                         </button>
                       </div>
