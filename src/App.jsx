@@ -41,6 +41,8 @@ import NewEvent from "./pages/admin/Newevent";
 import Calendar from "./pages/admin/Calendar";
 import AdminSettings from "./pages/admin/AdminSettings";
 import ActivityLog from "./pages/admin/ActivityLog";
+import AdminNotifications from "./pages/admin/AdminNotifications";
+import NotificationsPage from "./pages/NotificationsPage";
 import { supabase } from "./services/supabase-client";
 import { Toaster } from 'react-hot-toast';
 import { VolunteerProfileSkeleton } from "./components/profile/ProfileSkeletons";
@@ -931,6 +933,7 @@ function App() {
             <Route path="/reset-password" element={<ResetPass />} />
             <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
             <Route path="/volunteer-profile" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<VolunteerProfileSkeleton />}><VolunteerProfile /></ProtectedRoute>  } />
+            <Route path="/notifications" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<div className="flex items-center justify-center min-h-screen bg-[#F5EDE0]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A64200]"></div></div>}><NotificationsPage /></ProtectedRoute> } />
             <Route path="/admin" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminLayout /></ProtectedRoute>}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="volunteers" element={<Volunteers />} />
@@ -941,6 +944,7 @@ function App() {
               <Route path="calendar" element={<Calendar />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="activity" element={<ActivityLog />} />
+              <Route path="notifications" element={<AdminNotifications />} />
             </Route>
           </Routes>
         </BrowserRouter>

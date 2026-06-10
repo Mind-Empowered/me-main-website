@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaThLarge, FaImages, FaCalendarAlt, FaEnvelope, FaUsers, FaSignOutAlt, FaBars, FaTimes, FaHome, FaCog, FaLanguage, FaMusic, FaHistory } from "react-icons/fa";
+import { FaThLarge, FaImages, FaCalendarAlt, FaEnvelope, FaUsers, FaSignOutAlt, FaBars, FaTimes, FaHome, FaCog, FaLanguage, FaMusic, FaHistory, FaBell } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "../../services/supabase-client";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -69,6 +69,11 @@ const Sidebar = ({ onCloseMobile }) => {
                     label: "Activity Log",
                     icon: <FaHistory />,
                     path: "/admin/activity",
+                },
+                {
+                    label: "Notifications",
+                    icon: <FaBell />,
+                    path: "/admin/notifications",
                 },
             ],
         },
