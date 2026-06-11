@@ -9,6 +9,7 @@ import {
 	unsubscribeFromNotifications,
 } from "../services/notificationService";
 import Header from "../components/profile/Header";
+import toast from "react-hot-toast";
 import {
 	FaBell,
 	FaBullhorn,

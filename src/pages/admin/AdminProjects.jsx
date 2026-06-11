@@ -10,13 +10,16 @@ import {
   FaSearch,
   FaTrash,
   FaEdit,
+  FaExclamationTriangle,
+  FaCalendarAlt,
+  FaPlus,
 } from "react-icons/fa";
 import { AdminStatsSkeleton, AdminTableSkeleton } from "../../components/adminDashboard/AdminSkeletons";
 import ConfirmModal from "../../components/adminDashboard/ConfirmModal";
 import toast from "react-hot-toast";
 import { logActivity } from "../../services/activityLog";
 
-const Events = () => {
+const AdminProjects = () => {
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,8 +35,11 @@ const Events = () => {
   const [editFormData, setEditFormData] = useState({});
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState(null);
-  const [applyToAllOccurrences, setApplyToAllOccurrences] = useState(false);
+
+  // Projects states
   const [deleteProjectAll, setDeleteProjectAll] = useState(false);
+  const [applyToAllOccurrences, setApplyToAllOccurrences] = useState(false);
+  const [expandedProjects, setExpandedProjects] = useState([]);
 
   useEffect(() => {
     fetchEvents();
@@ -67,13 +73,13 @@ const Events = () => {
         .schema("me_dataspace")
         .from("events")
         .select("*")
-        .or("is_project.eq.false,is_project.is.null")
+        .eq("is_project", true)
         .order("fromDateTime", { ascending: true });
       if (error) throw error;
       setEvents(data || []);
       if (data) fetchVolunteerCounts(data);
     } catch (err) {
-      setError(err.message || "Failed to fetch events");
+      setError(err.message || "Failed to fetch projects");
     } finally {
       setLoading(false);
     }
@@ -85,26 +91,45 @@ const Events = () => {
     if (!eventToDelete) return;
 
     try {
-      const { error } = await supabase
-        .schema("me_dataspace")
-        .from("events")
-        .delete()
-        .eq("eventID", confirmDeleteId);
+      if (eventToDelete.is_project && eventToDelete.parent_project_id && deleteProjectAll) {
+        const { error } = await supabase
+          .schema("me_dataspace")
+          .from("events")
+          .delete()
+          .eq("parent_project_id", eventToDelete.parent_project_id);
 
-      if (error) throw error;
-      toast.success("Event deleted");
-      await logActivity({
-        action: 'DELETE_EVENT',
-        description: `Deleted event occurrence of: ${eventToDelete.title}`,
-        entity_type: 'event',
-        entity_id: confirmDeleteId,
-      });
-      setEvents(events.filter((e) => e.eventID !== confirmDeleteId));
+        if (error) throw error;
+        toast.success("All project dates deleted");
+        await logActivity({
+          action: 'DELETE_EVENT',
+          description: `Deleted all occurrences of project: ${eventToDelete.title}`,
+          entity_type: 'event',
+          entity_id: eventToDelete.parent_project_id,
+        });
+        setEvents(events.filter((e) => e.parent_project_id !== eventToDelete.parent_project_id));
+      } else {
+        const { error } = await supabase
+          .schema("me_dataspace")
+          .from("events")
+          .delete()
+          .eq("eventID", confirmDeleteId);
+
+        if (error) throw error;
+        toast.success("Project date deleted");
+        await logActivity({
+          action: 'DELETE_EVENT',
+          description: `Deleted project occurrence of: ${eventToDelete.title}`,
+          entity_type: 'event',
+          entity_id: confirmDeleteId,
+        });
+        setEvents(events.filter((e) => e.eventID !== confirmDeleteId));
+      }
     } catch (err) {
       console.error(err);
-      toast.error("Failed to delete event: " + err.message);
+      toast.error("Failed to delete project: " + err.message);
     }
     setConfirmDeleteId(null);
+    setDeleteProjectAll(false);
   };
 
   const handleEdit = (event) => {
@@ -120,10 +145,8 @@ const Events = () => {
     const fromDT = event.fromDateTime ? new Date(event.fromDateTime) : null;
     const toDT = event.toDateTime ? new Date(event.toDateTime) : null;
 
-    // reg_deadline may be a full ISO string or date only
     let reg_deadline = "";
     if (event.reg_deadline) {
-      // datetime-local input needs "YYYY-MM-DDTHH:mm"
       const d = new Date(event.reg_deadline);
       reg_deadline = `${toDateStr(d)}T${toTimeStr(d)}`;
     }
@@ -212,11 +235,9 @@ const Events = () => {
 
   const validateEditForm = () => {
     const errs = [];
-    const now = new Date();
-
-    if (!editFormData.title.trim()) errs.push("Event name is required.");
+    if (!editFormData.title.trim()) errs.push("Project name is required.");
     else if (editFormData.title.trim().length < 3)
-      errs.push("Event name must be at least 3 characters.");
+      errs.push("Project name must be at least 3 characters.");
 
     if (!editFormData.description.trim())
       errs.push("Short description is required.");
@@ -224,7 +245,7 @@ const Events = () => {
       errs.push("Description must be at least 10 characters.");
 
     if (editFormData.eventURL && !isValidURL(editFormData.eventURL))
-      errs.push("Event URL must start with http:// or https://.");
+      errs.push("Project URL must start with http:// or https://.");
 
     if (!editFormData.fromDate || !editFormData.fromTime)
       errs.push("Start date and time are required.");
@@ -246,9 +267,9 @@ const Events = () => {
       if (editFormData.reg_deadline) {
         const regDT = new Date(editFormData.reg_deadline);
         if (regDT >= startDT)
-          errs.push("Registration deadline must be before the event start.");
+          errs.push("Registration deadline must be before the project start.");
         if (regDT >= endDT)
-          errs.push("Registration deadline must be before the event end.");
+          errs.push("Registration deadline must be before the project end.");
       }
     }
 
@@ -264,8 +285,6 @@ const Events = () => {
       const val = parseInt(editFormData.max_participants);
       if (isNaN(val) || val < 1)
         errs.push("Max participants must be a positive number.");
-      else if (val > 100000)
-        errs.push("Max participants value seems too large.");
     }
 
     if (
@@ -329,27 +348,61 @@ const Events = () => {
         eventURL: editFormData.eventURL.trim() || null,
       };
 
-      const { error } = await supabase
-        .schema("me_dataspace")
-        .from("events")
-        .update(updates)
-        .eq("eventID", editingEvent.eventID);
+      const { error } = await (async () => {
+        if (editingEvent.is_project && editingEvent.parent_project_id && applyToAllOccurrences) {
+          const { fromDateTime, toDateTime, reg_deadline, ...commonUpdates } = updates;
+          const { error: bulkError } = await supabase
+            .schema("me_dataspace")
+            .from("events")
+            .update(commonUpdates)
+            .eq("parent_project_id", editingEvent.parent_project_id);
+          if (bulkError) return { error: bulkError };
+
+          const { error: selfError } = await supabase
+            .schema("me_dataspace")
+            .from("events")
+            .update({ fromDateTime, toDateTime, reg_deadline })
+            .eq("eventID", editingEvent.eventID);
+          return { error: selfError };
+        } else {
+          return await supabase
+            .schema("me_dataspace")
+            .from("events")
+            .update(updates)
+            .eq("eventID", editingEvent.eventID);
+        }
+      })();
 
       if (error) throw error;
 
-      setEvents(
-        events.map((e) =>
-          e.eventID === editingEvent.eventID ? { ...e, ...updates } : e
-        )
-      );
+      if (editingEvent.is_project && editingEvent.parent_project_id && applyToAllOccurrences) {
+        const { fromDateTime, toDateTime, reg_deadline, ...commonUpdates } = updates;
+        setEvents(
+          events.map((e) => {
+            if (e.parent_project_id === editingEvent.parent_project_id) {
+              if (e.eventID === editingEvent.eventID) {
+                return { ...e, ...updates };
+              }
+              return { ...e, ...commonUpdates };
+            }
+            return e;
+          })
+        );
+      } else {
+        setEvents(
+          events.map((e) =>
+            e.eventID === editingEvent.eventID ? { ...e, ...updates } : e
+          )
+        );
+      }
 
       setShowEditModal(false);
-      toast.success("Event updated");
-      await logActivity({ action: 'EDIT_EVENT', description: `Updated event: ${editFormData.title}`, entity_type: 'event', entity_id: editingEvent.eventID });
+      toast.success("Project updated");
+      await logActivity({ action: 'EDIT_EVENT', description: `Updated project: ${editFormData.title}`, entity_type: 'event', entity_id: editingEvent.eventID });
     } catch (err) {
       if (err.code === "23505" && err.message?.includes("eventURL"))
         setEditError(
-          "This Event URL is already used by another event. Please use a different URL.",
+          "This Project URL is already used by another project/event. Please use a different URL.",
         );
       else setEditError(err.message || "Failed to update");
     } finally {
@@ -359,7 +412,6 @@ const Events = () => {
 
 
 
-  // Admin-set status config
   const ADMIN_STATUSES = [
     { value: "published",  label: "Published",  color: "bg-green-100 text-green-700 border-green-200" },
     { value: "draft",      label: "Draft",       color: "bg-gray-100 text-gray-600 border-gray-200" },
@@ -417,41 +469,78 @@ const Events = () => {
         ? "text-yellow-500"
         : "text-gray-400";
 
-  const totalEvents = events.length;
-  const ongoingCount = events.filter(
-    (e) => getStatus(e.fromDateTime, e.toDateTime) === "Ongoing",
-  ).length;
-  const upcomingCount = events.filter(
-    (e) => getStatus(e.fromDateTime, e.toDateTime) === "Upcoming",
-  ).length;
-  const completedCount = events.filter(
-    (e) => getStatus(e.fromDateTime, e.toDateTime) === "Completed",
-  ).length;
+  // Filter based on admin status
   const filteredEvents = events.filter((e) => {
-    const timeStatus = getStatus(e.fromDateTime, e.toDateTime);
-    const passesTimeFilter = filter === "All" || timeStatus === filter;
     const passesAdminFilter = statusFilter === "All" || (e.admin_status || "published") === statusFilter;
-    return passesTimeFilter && passesAdminFilter;
+    return passesAdminFilter;
   });
+
+  // ── Project Grouping Logic ──
+  const projectGroups = {};
+  filteredEvents.forEach((event) => {
+    if (event.parent_project_id) {
+      if (!projectGroups[event.parent_project_id]) {
+        projectGroups[event.parent_project_id] = [];
+      }
+      projectGroups[event.parent_project_id].push(event);
+    }
+  });
+
+  const getProjectStatus = (occurrences) => {
+    const now = new Date();
+    const start = new Date(occurrences[0].fromDateTime);
+    const end = new Date(occurrences[occurrences.length - 1].toDateTime);
+    if (start > now) return "Upcoming";
+    if (end < now) return "Completed";
+    return "Ongoing";
+  };
+
+  const groupedProjects = Object.keys(projectGroups).map((pId) => {
+    const occurrences = projectGroups[pId];
+    occurrences.sort((a, b) => new Date(a.fromDateTime) - new Date(b.fromDateTime));
+    return {
+      parent_project_id: pId,
+      data: occurrences[0],
+      occurrences,
+    };
+  });
+
+  // Stats calculation based on all projects
+  const totalProjectsCount = groupedProjects.length;
+  const ongoingProjectsCount = groupedProjects.filter(p => getProjectStatus(p.occurrences) === "Ongoing").length;
+  const upcomingProjectsCount = groupedProjects.filter(p => getProjectStatus(p.occurrences) === "Upcoming").length;
+  const completedProjectsCount = groupedProjects.filter(p => getProjectStatus(p.occurrences) === "Completed").length;
+
+  // Filter time-based status
+  const finalGroupedProjects = groupedProjects.filter((item) => {
+    const projStatus = getProjectStatus(item.occurrences);
+    return filter === "All" || projStatus === filter;
+  });
+
+  finalGroupedProjects.sort((a, b) => new Date(a.data.fromDateTime) - new Date(b.data.fromDateTime));
+
+  const toggleProjectExpanded = (pId) => {
+    setExpandedProjects((prev) =>
+      prev.includes(pId) ? prev.filter((id) => id !== pId) : [...prev, pId]
+    );
+  };
+
   const inputCls =
     "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C97736]";
-
-  // Sort events by starting date
-  const sortedEvents = [...filteredEvents].sort((a, b) => new Date(a.fromDateTime) - new Date(b.fromDateTime));
 
   return (
     <div className="p-6 bg-[#F7F2EC] min-h-screen">
       {/* Header Row */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Events Management</h1>
-          <p className="text-gray-500 text-sm">Create, edit, and manage standard one or two-day events.</p>
+          <h1 className="text-2xl font-bold text-gray-800">Projects Management</h1>
+          <p className="text-gray-500 text-sm">Create, edit, and manage multi-day prolonged programs.</p>
         </div>
         <button
-          onClick={() => navigate("/admin/newevent")}
+          onClick={() => navigate("/admin/newproject")}
           className="bg-[#C1622A] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#a8521f] transition-all duration-200 shadow-md flex items-center gap-2"
         >
-          Add Event
+          <FaPlus size={12} /> Add Project
         </button>
       </div>
 
@@ -459,13 +548,13 @@ const Events = () => {
         isOpen={!!confirmDeleteId}
         onClose={() => setConfirmDeleteId(null)}
         onConfirm={confirmDelete}
-        title="Delete Event"
-        message="Are you sure you want to delete this event? This action cannot be undone."
+        title="Delete Project"
+        message="Are you sure you want to delete this project occurrence? This action cannot be undone."
       />
 
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-          <p className="font-medium">Error loading events</p>
+          <p className="font-medium">Error loading projects</p>
           <p className="text-sm">{error}</p>
           <button
             onClick={fetchEvents}
@@ -491,19 +580,19 @@ const Events = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5">
           {[
             {
-              label: "Total Events",
-              count: totalEvents,
+              label: "Total Projects",
+              count: totalProjectsCount,
               color: "border-orange-400",
             },
-            { label: "Ongoing", count: ongoingCount, color: "border-blue-400" },
+            { label: "Ongoing", count: ongoingProjectsCount, color: "border-blue-400" },
             {
               label: "Upcoming",
-              count: upcomingCount,
+              count: upcomingProjectsCount,
               color: "border-green-400",
             },
             {
               label: "Completed",
-              count: completedCount,
+              count: completedProjectsCount,
               color: "border-purple-400",
             },
           ].map(({ label, count, color }) => (
@@ -518,10 +607,9 @@ const Events = () => {
         </div>
       )}
 
-      {/* Filter Tabs: Time-based + Admin Status */}
+      {/* Filter Tabs */}
       {!loading && (
         <div className="flex flex-col gap-2 mt-5">
-          {/* Time-based tabs */}
           <div className="flex gap-2 bg-white rounded-xl px-4 py-2 border border-gray-100 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <span className="text-xs text-gray-400 self-center mr-1 font-medium">Schedule:</span>
             {["All", "Ongoing", "Upcoming", "Completed"].map((f) => (
@@ -534,7 +622,6 @@ const Events = () => {
               </button>
             ))}
           </div>
-          {/* Admin status filter */}
           <div className="flex gap-2 bg-white rounded-xl px-4 py-2 border border-gray-100 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <span className="text-xs text-gray-400 self-center mr-1 font-medium">Status:</span>
             {["All", ...ADMIN_STATUSES.map(s => s.value)].map((s) => (
@@ -552,83 +639,63 @@ const Events = () => {
             ))}
           </div>
         </div>
-      )}      {!loading && sortedEvents.length === 0 && (
+      )}
+
+      {!loading && finalGroupedProjects.length === 0 && (
         <div className="bg-white rounded-xl p-12 text-center border border-gray-200 mt-5">
           <p className="text-gray-500">
-            No {filter !== "All" ? filter.toLowerCase() + " " : ""}events found
+            No {filter !== "All" ? filter.toLowerCase() + " " : ""}projects found
           </p>
         </div>
       )}
 
-      {/* 2-column card grid */}
-      {!loading && sortedEvents.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5 overflow-y-auto max-h-[60vh] pr-1">
-          {sortedEvents.map((event) => {
-            const status = getStatus(event.fromDateTime, event.toDateTime);
-            const volunteerCount = volunteerCounts[event.eventID] || 0;
+      {/* Grid listing */}
+      {!loading && finalGroupedProjects.length > 0 && (
+        <div className="grid grid-cols-1 gap-5 mt-5 overflow-y-auto max-h-[60vh] pr-1">
+          {finalGroupedProjects.map((item) => {
+            const isExpanded = expandedProjects.includes(item.parent_project_id);
+            const overallStatus = getProjectStatus(item.occurrences);
             return (
-              <div
-                key={event.eventID}
-                onClick={() => navigate(`/admin/events/${event.eventID}/volunteers`)}
-                className="bg-white rounded-xl border border-gray-200 overflow-hidden cursor-pointer hover:border-gray-300 hover:shadow-md transition-all duration-200"
-              >
-                <div className="flex items-center justify-between px-4 pt-4 pb-2">
+              <div key={item.parent_project_id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-orange-50/20 border-b border-gray-100">
                   <div className="flex items-center gap-3">
-                    <div className="flex flex-col items-center justify-center bg-[#A64200] rounded-lg w-12 h-12 flex-shrink-0">
-                      <span className="text-lg font-bold text-white leading-none">
-                        {getDay(event.fromDateTime)}
-                      </span>
-                      <span className="text-[10px] font-semibold text-white uppercase">
-                        {getMonth(event.fromDateTime)}
+                    <div className="flex flex-col items-center justify-center bg-[#C97736] rounded-lg w-12 h-12 flex-shrink-0">
+                      <span className="text-xs font-bold text-white uppercase leading-none">PRJ</span>
+                      <span className="text-[9px] font-bold text-white mt-1 uppercase">
+                        {item.occurrences.length} DAYS
                       </span>
                     </div>
                     <div>
-                      <h2 className="font-bold text-gray-800 text-base leading-tight">
-                        {event.title}
-                      </h2>
-                      <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
-                        <FaClock size={10} />
-                        <span>{formatTime(event.fromDateTime)}</span>
+                      <div className="flex gap-2 items-center mb-1">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-orange-600 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full inline-block">
+                          Prolonged Project
+                        </span>
+                        <span className={`text-xs font-semibold flex items-center gap-1 ${statusStyle(overallStatus)}`}>
+                          <span className="w-1.5 h-1.5 rounded-full bg-current inline-block"></span>
+                          {overallStatus}
+                        </span>
                       </div>
+                      <h2 className="font-bold text-gray-800 text-base leading-tight">
+                        {item.data.title}
+                      </h2>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1.5">
-                    <span className={`text-xs font-semibold flex items-center gap-1 ${statusStyle(status)}`}>
-                      <span className="w-1.5 h-1.5 rounded-full bg-current inline-block"></span>
-                      {status}
-                    </span>
-                    <div className="relative">
-                      {statusUpdating[event.eventID] ? (
-                        <span className="text-xs text-gray-400 flex items-center gap-1"><FaSpinner className="animate-spin" size={10} /> Saving...</span>
-                      ) : (
-                        <select
-                          value={event.admin_status || "published"}
-                          onChange={(e) => { e.stopPropagation(); handleUpdateAdminStatus(event.eventID, e.target.value); }}
-                          onClick={(e) => e.stopPropagation()}
-                          className={`text-xs font-bold px-2 py-0.5 rounded-full border cursor-pointer appearance-none pr-5 ${getAdminStatusStyle(event.admin_status || "published")}`}
-                          title="Set admin status"
-                        >
-                          {ADMIN_STATUSES.map(s => (
-                            <option key={s.value} value={s.value}>{s.label}</option>
-                          ))}
-                        </select>
-                      )}
-                    </div>
-                    <span className="flex items-center gap-1 text-xs text-gray-400">
-                      <FaUsers size={10} />
-                      {volunteerCount}{event.max_volunteers ? `/${event.max_volunteers}` : ""}{" "}volunteers
-                    </span>
-                  </div>
+                  
+                  <button
+                    onClick={() => toggleProjectExpanded(item.parent_project_id)}
+                    className="px-4 py-2 border border-gray-200 hover:border-[#C97736] text-gray-700 hover:text-[#C97736] text-xs font-semibold rounded-lg bg-white shadow-sm transition"
+                  >
+                    {isExpanded ? "Hide Dates" : `View Dates (${item.occurrences.length})`}
+                  </button>
                 </div>
 
-                <div className="flex gap-3 px-4 pb-3">
-                  {event.bannerURL ? (
+                <div className="flex gap-3 p-4 bg-[#FAF8F5]/30">
+                  {item.data.bannerURL ? (
                     <img
-                      src={event.bannerURL}
-                      alt={event.title}
-                      className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                      src={item.data.bannerURL}
+                      alt={item.data.title}
+                      className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border"
                       loading="lazy"
-                      decoding="async"
                     />
                   ) : (
                     <div className="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center text-gray-300 text-xs">
@@ -636,37 +703,87 @@ const Events = () => {
                     </div>
                   )}
                   <p className="text-sm text-gray-500 leading-relaxed line-clamp-4 flex-1">
-                    {event.description}
+                    {item.data.description}
                   </p>
                 </div>
 
-                <div className="flex border-t border-gray-100">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleEdit(event); }}
-                    className="flex-1 py-2.5 text-sm text-gray-600 hover:bg-gray-50 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5"
-                    title="Edit"
-                  >
-                    <FaEdit size={14} />
-                    <span className="hidden md:inline">Edit</span>
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(event.eventID); }}
-                    className="flex-1 py-2.5 text-sm text-red-600 hover:bg-red-50 font-medium transition border-r border-gray-100 flex items-center justify-center gap-1.5"
-                    title="Delete"
-                  >
-                    <FaTrash size={12} />
-                    <span className="hidden md:inline">Delete</span>
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); navigate(`/admin/events/${event.eventID}/volunteers`); }}
-                    className="flex-grow py-2.5 text-sm text-white bg-[#C97736] hover:bg-[#a85f27] font-medium transition flex items-center justify-center gap-1.5 px-2"
-                    title="View Volunteers"
-                  >
-                    <FaUsers size={14} />
-                    <span className="hidden md:inline">View Volunteers</span>
-                    <span className="inline md:hidden">View</span>
-                  </button>
-                </div>
+                {isExpanded && (
+                  <div className="border-t border-gray-100 divide-y divide-gray-100 bg-[#FAF9F6]/20">
+                    {item.occurrences.map((occ, idx) => {
+                      const occStatus = getStatus(occ.fromDateTime, occ.toDateTime);
+                      const volunteerCount = volunteerCounts[occ.eventID] || 0;
+                      return (
+                        <div
+                          key={occ.eventID}
+                          onClick={() => navigate(`/admin/events/${occ.eventID}/volunteers`)}
+                          className="flex flex-col md:grid md:grid-cols-[160px_1fr_110px_140px_220px] p-3 items-start md:items-center gap-3 text-sm text-gray-700 hover:bg-orange-50/20 cursor-pointer transition"
+                        >
+                          <div className="font-semibold text-gray-800">
+                            Day {idx + 1}: {new Date(occ.fromDateTime).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </div>
+                          <div className="text-xs text-gray-500 flex items-center gap-1">
+                            <FaClock size={10} />
+                            <span>{formatTime(occ.fromDateTime)} - {formatTime(occ.toDateTime)}</span>
+                          </div>
+                          <div>
+                            <span className={`text-xs font-semibold flex items-center gap-1 ${statusStyle(occStatus)}`}>
+                              <span className="w-1.5 h-1.5 rounded-full bg-current inline-block"></span>
+                              {occStatus}
+                            </span>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <div className="relative">
+                              {statusUpdating[occ.eventID] ? (
+                                <span className="text-xs text-gray-400 flex items-center gap-1"><FaSpinner className="animate-spin" size={10} /> Saving...</span>
+                              ) : (
+                                <select
+                                  value={occ.admin_status || "published"}
+                                  onChange={(e) => { e.stopPropagation(); handleUpdateAdminStatus(occ.eventID, e.target.value); }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border cursor-pointer appearance-none pr-5 ${getAdminStatusStyle(occ.admin_status || "published")}`}
+                                >
+                                  {ADMIN_STATUSES.map(s => (
+                                    <option key={s.value} value={s.value}>{s.label}</option>
+                                  ))}
+                                </select>
+                              )}
+                            </div>
+                            <span className="flex items-center gap-1 text-[11px] text-gray-400">
+                              <FaUsers size={9} />
+                              {volunteerCount}{occ.max_volunteers ? `/${occ.max_volunteers}` : ""} vols
+                            </span>
+                          </div>
+                          <div className="flex gap-1.5 w-full md:w-auto md:justify-end">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleEdit(occ); }}
+                              className="px-2 py-1 text-xs text-gray-600 border border-gray-200 hover:bg-gray-50 font-medium transition rounded-md flex items-center gap-1 bg-white"
+                              title="Edit"
+                            >
+                              <FaEdit size={10} />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(occ.eventID); }}
+                              className="px-2 py-1 text-xs text-red-600 border border-red-100 hover:bg-red-50 font-medium transition rounded-md flex items-center gap-1 bg-white"
+                              title="Delete"
+                            >
+                              <FaTrash size={9} />
+                              <span>Delete</span>
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); navigate(`/admin/events/${occ.eventID}/volunteers`); }}
+                              className="px-2 py-1 text-xs text-white bg-[#C97736] hover:bg-[#a85f27] font-medium transition rounded-md flex items-center gap-1"
+                              title="View Volunteers"
+                            >
+                              <FaUsers size={10} />
+                              <span>Vols</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -679,7 +796,7 @@ const Events = () => {
           <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] flex flex-col">
             <div className="flex justify-between items-center p-5 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-800">
-                Edit Event
+                Edit Project
               </h2>
               <button
                 onClick={() => setShowEditModal(false)}
@@ -738,7 +855,7 @@ const Events = () => {
               {/* Title */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Event Name *
+                  Project Name *
                 </label>
                 <input
                   name="title"
@@ -779,13 +896,13 @@ const Events = () => {
               {/* Event URL */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Event URL
+                  Project URL
                 </label>
                 <input
                   name="eventURL"
                   value={editFormData.eventURL}
                   onChange={handleEditInput}
-                  placeholder="https://example.com/event"
+                  placeholder="https://example.com/project"
                   className={inputCls}
                 />
               </div>
@@ -836,34 +953,6 @@ const Events = () => {
                 </div>
               </div>
 
-              {/* Venue + Map URL */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Venue / Location
-                  </label>
-                  <input
-                    name="venue"
-                    value={editFormData.venue}
-                    onChange={handleEditInput}
-                    placeholder="e.g. Community Hall"
-                    className={inputCls}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Map URL
-                  </label>
-                  <input
-                    name="venue_url"
-                    value={editFormData.venue_url}
-                    onChange={handleEditInput}
-                    placeholder="https://maps.google.com/..."
-                    className={inputCls}
-                  />
-                </div>
-              </div>
-
               {/* Registration Deadline */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -878,7 +967,34 @@ const Events = () => {
                 />
               </div>
 
-              {/* Max Participants + Max Volunteers */}
+              {/* Venue */}
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Venue
+                </label>
+                <input
+                  name="venue"
+                  value={editFormData.venue}
+                  onChange={handleEditInput}
+                  className={inputCls}
+                />
+              </div>
+
+              {/* Venue Map URL */}
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Venue Map URL
+                </label>
+                <input
+                  name="venue_url"
+                  value={editFormData.venue_url}
+                  onChange={handleEditInput}
+                  placeholder="https://maps.google.com/..."
+                  className={inputCls}
+                />
+              </div>
+
+              {/* Max Participants & Volunteers */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -906,15 +1022,15 @@ const Events = () => {
                 </div>
               </div>
 
-              {/* Food Provided */}
-              <div className="flex items-center gap-3">
+              {/* Food checkbox */}
+              <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  name="is_food_available"
                   id="is_food_available"
+                  name="is_food_available"
                   checked={editFormData.is_food_available}
                   onChange={handleEditInput}
-                  className="w-5 h-5 accent-[#C97736] cursor-pointer"
+                  className="w-4 h-4 accent-[#C97736] cursor-pointer"
                 />
                 <label
                   htmlFor="is_food_available"
@@ -947,23 +1063,16 @@ const Events = () => {
             <div className="flex gap-3 p-5 border-t border-gray-200 bg-gray-50">
               <button
                 onClick={() => setShowEditModal(false)}
-                disabled={editLoading}
-                className="flex-1 py-2 border border-gray-300 rounded-lg text-gray-600 text-sm hover:bg-gray-100"
+                className="flex-1 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
                 disabled={editLoading}
-                className="flex-1 py-2 bg-[#C97736] text-white rounded-lg text-sm hover:bg-[#a85f27] flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-[#C97736] text-white rounded-lg text-sm font-medium hover:bg-[#a85f27] transition disabled:opacity-50"
               >
-                {editLoading ? (
-                  <>
-                    <FaSpinner className="animate-spin" size={13} /> Saving...
-                  </>
-                ) : (
-                  "Save Changes"
-                )}
+                {editLoading ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>
@@ -972,14 +1081,7 @@ const Events = () => {
 
 
 
-      <ConfirmModal 
-        isOpen={!!confirmDeleteId && (!events.find(e => e.eventID === confirmDeleteId)?.is_project)}
-        title="Delete Event?"
-        message="Are you sure you want to delete this event? This action cannot be undone."
-        onConfirm={confirmDelete}
-        onCancel={() => setConfirmDeleteId(null)}
-      />
-
+      {/* Group occurrence delete confirmation modal */}
       {confirmDeleteId && events.find(e => e.eventID === confirmDeleteId)?.is_project && (
         <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4 animate-fade-in-fast">
           <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden p-6 animate-slide-up-fast">
@@ -1026,4 +1128,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default AdminProjects;

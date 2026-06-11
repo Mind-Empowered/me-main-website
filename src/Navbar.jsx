@@ -43,6 +43,7 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
   const [profileRole, setProfileRole] = React.useState(null);
   const [isProfilePopupOpen, setIsProfilePopupOpen] = React.useState(false);
   const [unreadCount, setUnreadCount] = React.useState(0);
+  const [authLoading, setAuthLoading] = React.useState(true);
   const profilePopupRef = React.useRef(null);
   const profileButtonRef = React.useRef(null);
   const notificationChannelRef = React.useRef(null);
@@ -100,12 +101,14 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
     const initializeAuthState = async () => {
       const { data } = await supabase.auth.getSession();
       await applySession(data?.session || null);
+      if (mounted) setAuthLoading(false);
     };
 
     initializeAuthState();
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       await applySession(session);
+      if (mounted) setAuthLoading(false);
     });
 
     return () => {
@@ -222,7 +225,9 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
             </button>
           )}
 
-          {profileUser ? (
+          {authLoading ? (
+            <div className="w-[145px] h-11" />
+          ) : profileUser ? (
             <>
               <div 
                 className="relative"
@@ -383,7 +388,11 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
             )}
 
             <div className="pt-2">
-              {profileUser ? (
+              {authLoading ? (
+                <div className="h-24 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#ff7612]"></div>
+                </div>
+              ) : profileUser ? (
                 <>
                   <Link
                     to={dashboardPath || '/signin'}

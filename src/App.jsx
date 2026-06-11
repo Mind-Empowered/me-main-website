@@ -35,9 +35,12 @@ import AdminLayout from "./components/adminDashboard/layout/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import Volunteers from "./pages/admin/Volunteers";
 import AdminEvents from "./pages/admin/AdminEvents";
+import AdminProjects from "./pages/admin/AdminProjects";
+import EventVolunteers from "./pages/admin/EventVolunteers";
 import NewsLetter from "./pages/admin/NewsLetter";
 import PhotoGallery from "./pages/admin/PhtotoGallery";
 import NewEvent from "./pages/admin/Newevent";
+import NewProject from "./pages/admin/Newproject";
 import Calendar from "./pages/admin/Calendar";
 import AdminSettings from "./pages/admin/AdminSettings";
 import ActivityLog from "./pages/admin/ActivityLog";
@@ -46,6 +49,7 @@ import NotificationsPage from "./pages/NotificationsPage";
 import { supabase } from "./services/supabase-client";
 import { Toaster } from 'react-hot-toast';
 import { VolunteerProfileSkeleton } from "./components/profile/ProfileSkeletons";
+import { checkAndSendReminders } from "./services/reminderService";
 
 
 // --- Accessibility Constants for maintainability ---
@@ -826,6 +830,9 @@ function App() {
   const [isInitialSkeletonVisible, setIsInitialSkeletonVisible] = useState(true);
 
   useEffect(() => {
+    // Check for tomorrow's events reminders
+    checkAndSendReminders();
+
     const timer = window.setTimeout(() => {
       setIsInitialSkeletonVisible(false);
     }, 1200);
@@ -938,9 +945,12 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="volunteers" element={<Volunteers />} />
               <Route path="events" element={<AdminEvents />} />
+              <Route path="events/:id/volunteers" element={<EventVolunteers />} />
+              <Route path="projects" element={<AdminProjects />} />
               <Route path="newsletter" element={<NewsLetter />} />
               <Route path="photogallery" element={<PhotoGallery />} />
               <Route path="newevent" element={<NewEvent />} />
+              <Route path="newproject" element={<NewProject />} />
               <Route path="calendar" element={<Calendar />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="activity" element={<ActivityLog />} />
