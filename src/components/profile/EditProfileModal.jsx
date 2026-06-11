@@ -29,6 +29,9 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
         firstName: "",
         lastName: "",
         phone: "",
+        dateOfBirth: "",
+        gender: "",
+        bloodGroup: "",
         permanentAddress: { building: "", street: "", area: "", city: "", state: "", pincode: "", country: "" },
         presentAddress: { building: "", street: "", area: "", city: "", state: "", pincode: "", country: "" },
         status: "",
@@ -51,6 +54,9 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
                 firstName: user.firstName || "",
                 lastName: user.lastName || "",
                 phone: user.phone || "",
+                dateOfBirth: user.dateOfBirth || "",
+                gender: user.gender || user.preferences?.gender || "",
+                bloodGroup: user.bloodGroup || user.emergencyInfo?.bloodGroup || "",
                 permanentAddress: user.address?.permanentAddress || {
                     building: "", street: "", area: "", city: "", state: "", pincode: "", country: ""
                 },
@@ -69,10 +75,10 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
                     availability: user.preferences?.availability || [],
                     preferredRoles: user.preferences?.preferredRoles || [],
                     skills: user.preferences?.skills || [],
-                    gender: user.preferences?.gender || "",
+                    gender: user.gender || user.preferences?.gender || "",
                     whatsapp: user.preferences?.whatsapp || "",
                 },
-                emergencyInfo: user.emergencyInfo || { contactName: "", contactPhone: "", bloodGroup: "", tShirtSize: "" },
+                emergencyInfo: user.emergencyInfo || { contactName: "", contactPhone: "", bloodGroup: user.bloodGroup || "", tShirtSize: "" },
             });
         }
     }, [user, isOpen]);
@@ -153,6 +159,9 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
                     firstName: formData.firstName,
                     lastName: formData.lastName,
                     phone: formData.phone,
+                    dateOfBirth: formData.dateOfBirth || null,
+                    gender: formData.gender || null,
+                    bloodGroup: formData.bloodGroup || null,
                     address: {
                         permanentAddress: formData.permanentAddress,
                         presentAddress: formData.presentAddress
@@ -166,8 +175,8 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
                         github: formData.github,
                         linkedin: formData.linkedin,
                     },
-                    preferences: formData.preferences,
-                    emergencyInfo: formData.emergencyInfo
+                    preferences: { ...formData.preferences, gender: formData.gender || null },
+                    emergencyInfo: { ...formData.emergencyInfo, bloodGroup: formData.bloodGroup || null }
                 })
                 .eq('emailID', user.emailID);
 
@@ -181,6 +190,9 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 phone: formData.phone,
+                dateOfBirth: formData.dateOfBirth || null,
+                gender: formData.gender || null,
+                bloodGroup: formData.bloodGroup || null,
                 address: {
                     permanentAddress: formData.permanentAddress,
                     presentAddress: formData.presentAddress
@@ -194,8 +206,8 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
                     github: formData.github,
                     linkedin: formData.linkedin,
                 },
-                preferences: formData.preferences,
-                emergencyInfo: formData.emergencyInfo
+                preferences: { ...formData.preferences, gender: formData.gender || null },
+                emergencyInfo: { ...formData.emergencyInfo, bloodGroup: formData.bloodGroup || null }
             });
             onClose();
         } catch (err) {
@@ -296,6 +308,50 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
                                     />
                                 </div>
                             </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+                                <div>
+                                    <label className="block text-xs font-bold text-[#8A7060] mb-1.5 uppercase">Date of Birth</label>
+                                    <input
+                                        type="date"
+                                        value={formData.dateOfBirth || ""}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#A64200]/50 focus:border-[#A64200] transition-colors font-medium text-gray-800"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-[#8A7060] mb-1.5 uppercase">Gender</label>
+                                    <select
+                                        value={formData.gender || ""}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))}
+                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#A64200]/50 focus:border-[#A64200] transition-colors font-medium text-gray-800"
+                                    >
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                        <option value="Prefer not to say">Prefer not to say</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-[#8A7060] mb-1.5 uppercase">Blood Group</label>
+                                    <select
+                                        value={formData.bloodGroup || ""}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, bloodGroup: e.target.value, emergencyInfo: { ...prev.emergencyInfo, bloodGroup: e.target.value } }))}
+                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#A64200]/50 focus:border-[#A64200] transition-colors font-medium text-gray-800"
+                                    >
+                                        <option value="">Select Blood Group</option>
+                                        <option value="o+ve">O+ve</option>
+                                        <option value="o-ve">O-ve</option>
+                                        <option value="a+ve">A+ve</option>
+                                        <option value="a-ve">A-ve</option>
+                                        <option value="b+ve">B+ve</option>
+                                        <option value="b-ve">B-ve</option>
+                                        <option value="ab+ve">AB+ve</option>
+                                        <option value="ab-ve">AB-ve</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -366,9 +422,10 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
                                         <div>
                                             <label className="block text-xs font-bold text-[#8A7060] mb-1.5 uppercase">Gender</label>
                                             <select
-                                                value={formData.preferences.gender || ""}
+                                                value={formData.gender || ""}
                                                 onChange={(e) => setFormData(prev => ({
                                                     ...prev,
+                                                    gender: e.target.value,
                                                     preferences: { ...prev.preferences, gender: e.target.value }
                                                 }))}
                                                 className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#A64200]/50 focus:border-[#A64200] transition-colors font-medium text-gray-800"
@@ -657,9 +714,10 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
                                             <label className="block text-xs font-bold text-[#8A7060] mb-1.5 uppercase">{language === 'ml' ? 'രക്ത ഗ്രൂപ്പ്' : 'Blood Group'}</label>
                                             <input
                                                 type="text"
-                                                value={formData.emergencyInfo.bloodGroup}
+                                                value={formData.bloodGroup || formData.emergencyInfo.bloodGroup}
                                                 onChange={(e) => setFormData(prev => ({
                                                     ...prev, 
+                                                    bloodGroup: e.target.value,
                                                     emergencyInfo: { ...prev.emergencyInfo, bloodGroup: e.target.value }
                                                 }))}
                                                 className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#A64200]/50 focus:border-[#A64200] transition-colors font-medium text-gray-800"

@@ -93,9 +93,6 @@ const SigninDesktop = ({ form, setForm, error, handleSubmit }) => {
                             </Link></p>
                         </div>
                     </div>
-                    {/* error message */}
-                    {error && <p className="text-red-400 text-sm">{error}</p>}
-                    {/* signin button */}
                     <div>
                         <button
                             onClick={handleSubmit}

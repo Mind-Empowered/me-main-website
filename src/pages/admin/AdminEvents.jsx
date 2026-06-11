@@ -10,6 +10,7 @@ import {
   FaSearch,
   FaTrash,
   FaEdit,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import { AdminStatsSkeleton, AdminTableSkeleton } from "../../components/adminDashboard/AdminSkeletons";
 import ConfirmModal from "../../components/adminDashboard/ConfirmModal";
@@ -70,8 +71,33 @@ const Events = () => {
         .or("is_project.eq.false,is_project.is.null")
         .order("fromDateTime", { ascending: true });
       if (error) throw error;
-      setEvents(data || []);
-      if (data) fetchVolunteerCounts(data);
+
+      // Auto-update completed events
+      const now = new Date();
+      const updatedEvents = (data || []).map((event) => {
+        const isCompleted = new Date(event.toDateTime) < now;
+        if (isCompleted && event.status === "published") {
+          // Update status in DB silently
+          supabase
+            .schema("me_dataspace")
+            .from("events")
+            .update({ status: "completed" })
+            .eq("eventID", event.eventID)
+            .then(() => {
+              logActivity({
+                action: "UPDATE_STATUS",
+                description: `Auto-marked event as completed: ${event.title}`,
+                entity_type: "event",
+                entity_id: event.eventID,
+              });
+            });
+          return { ...event, status: "completed" };
+        }
+        return event;
+      });
+
+      setEvents(updatedEvents);
+      if (updatedEvents) fetchVolunteerCounts(updatedEvents);
     } catch (err) {
       setError(err.message || "Failed to fetch events");
     } finally {
@@ -132,8 +158,12 @@ const Events = () => {
       title: event.title || "",
       description: event.description || "",
       agenda: event.agenda || "",
-      venue: event.venue || "",
-      venue_url: event.venue_url || "",
+      venues: event.venue
+        ? event.venue.split(" | ").map((v, i) => ({
+            venue: v,
+            mapUrl: (event.venue_url || "").split(" | ")[i] || "",
+          }))
+        : [{ venue: "", mapUrl: "" }],
       max_participants: event.max_participants ?? "",
       max_volunteers: event.max_volunteers ?? "",
       bannerURL: event.bannerURL || "",
@@ -156,6 +186,25 @@ const Events = () => {
       ...p,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleEditVenueChange = (index, field, value) => {
+    const updated = [...editFormData.venues];
+    updated[index][field] = value;
+    setEditFormData((p) => ({ ...p, venues: updated }));
+  };
+
+  const addEditVenue = () => {
+    if (editFormData.venues.length >= 5) return;
+    setEditFormData((p) => ({
+      ...p,
+      venues: [...p.venues, { venue: "", mapUrl: "" }],
+    }));
+  };
+
+  const removeEditVenue = (index) => {
+    const updated = editFormData.venues.filter((_, i) => i !== index);
+    setEditFormData((p) => ({ ...p, venues: updated }));
   };
 
   const handleBannerFileChange = (e) => {
@@ -252,13 +301,14 @@ const Events = () => {
       }
     }
 
-    if (editFormData.venue_url && !isValidURL(editFormData.venue_url))
-      errs.push("Map URL must start with http:// or https://.");
-    else if (
-      editFormData.venue_url &&
-      !isValidGoogleMapsURL(editFormData.venue_url)
-    )
-      errs.push("Map URL must be a valid Google Maps link.");
+    (editFormData.venues || []).forEach((v, i) => {
+      if (v.mapUrl && !isValidURL(v.mapUrl))
+        errs.push(
+          `Venue ${i + 1}: Map URL must start with http:// or https://.`,
+        );
+      else if (v.mapUrl && !isValidGoogleMapsURL(v.mapUrl))
+        errs.push(`Venue ${i + 1}: Map URL must be a valid Google Maps link.`);
+    });
 
     if (editFormData.max_participants !== "") {
       const val = parseInt(editFormData.max_participants);
@@ -309,8 +359,16 @@ const Events = () => {
         title: editFormData.title.trim(),
         description: editFormData.description.trim(),
         agenda: editFormData.agenda.trim() || null,
-        venue: editFormData.venue.trim() || null,
-        venue_url: editFormData.venue_url.trim() || null,
+        venue:
+          editFormData.venues
+            .map((v) => v.venue.trim())
+            .filter(Boolean)
+            .join(" | ") || null,
+        venue_url:
+          editFormData.venues
+            .map((v) => v.mapUrl.trim())
+            .filter(Boolean)
+            .join(" | ") || null,
         max_participants:
           editFormData.max_participants !== ""
             ? parseInt(editFormData.max_participants)
@@ -357,8 +415,6 @@ const Events = () => {
     }
   };
 
-
-
   // Admin-set status config
   const ADMIN_STATUSES = [
     { value: "published",  label: "Published",  color: "bg-green-100 text-green-700 border-green-200" },
@@ -377,10 +433,10 @@ const Events = () => {
       const { error } = await supabase
         .schema("me_dataspace")
         .from("events")
-        .update({ admin_status: newStatus })
+        .update({ status: newStatus })
         .eq("eventID", eventID);
       if (error) throw error;
-      setEvents(prev => prev.map(e => e.eventID === eventID ? { ...e, admin_status: newStatus } : e));
+      setEvents(prev => prev.map(e => e.eventID === eventID ? { ...e, status: newStatus } : e));
       toast.success("Status updated");
     } catch (err) {
       toast.error("Failed to update status: " + err.message);
@@ -430,7 +486,7 @@ const Events = () => {
   const filteredEvents = events.filter((e) => {
     const timeStatus = getStatus(e.fromDateTime, e.toDateTime);
     const passesTimeFilter = filter === "All" || timeStatus === filter;
-    const passesAdminFilter = statusFilter === "All" || (e.admin_status || "published") === statusFilter;
+    const passesAdminFilter = statusFilter === "All" || (e.status || "published") === statusFilter;
     return passesTimeFilter && passesAdminFilter;
   });
   const inputCls =
@@ -456,12 +512,55 @@ const Events = () => {
       </div>
 
       <ConfirmModal
-        isOpen={!!confirmDeleteId}
+        isOpen={!!confirmDeleteId && (!events.find(e => e.eventID === confirmDeleteId)?.is_project)}
         onClose={() => setConfirmDeleteId(null)}
         onConfirm={confirmDelete}
         title="Delete Event"
         message="Are you sure you want to delete this event? This action cannot be undone."
       />
+
+      {confirmDeleteId && events.find(e => e.eventID === confirmDeleteId)?.is_project && (
+        <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4 animate-fade-in-fast">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden p-6 animate-slide-up-fast">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FaExclamationTriangle className="text-red-500 text-2xl" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Delete Project Date?</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Are you sure you want to delete this occurrence: <span className="font-semibold text-gray-800">{new Date(events.find(e => e.eventID === confirmDeleteId).fromDateTime).toLocaleDateString()}</span>?
+              </p>
+              
+              <div className="flex items-center gap-2 justify-center mb-6 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                <input
+                  type="checkbox"
+                  id="deleteProjectAll"
+                  checked={deleteProjectAll}
+                  onChange={(e) => setDeleteProjectAll(e.target.checked)}
+                  className="w-4 h-4 accent-red-600 cursor-pointer"
+                />
+                <label htmlFor="deleteProjectAll" className="text-xs text-gray-700 font-semibold select-none cursor-pointer">
+                  Delete all dates of this project
+                </label>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => { setConfirmDeleteId(null); setDeleteProjectAll(false); }}
+                className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete}
+                className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition shadow-sm"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
@@ -552,7 +651,9 @@ const Events = () => {
             ))}
           </div>
         </div>
-      )}      {!loading && sortedEvents.length === 0 && (
+      )}
+
+      {!loading && filteredEvents.length === 0 && (
         <div className="bg-white rounded-xl p-12 text-center border border-gray-200 mt-5">
           <p className="text-gray-500">
             No {filter !== "All" ? filter.toLowerCase() + " " : ""}events found
@@ -561,7 +662,7 @@ const Events = () => {
       )}
 
       {/* 2-column card grid */}
-      {!loading && sortedEvents.length > 0 && (
+      {!loading && filteredEvents.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5 overflow-y-auto max-h-[60vh] pr-1">
           {sortedEvents.map((event) => {
             const status = getStatus(event.fromDateTime, event.toDateTime);
@@ -602,10 +703,10 @@ const Events = () => {
                         <span className="text-xs text-gray-400 flex items-center gap-1"><FaSpinner className="animate-spin" size={10} /> Saving...</span>
                       ) : (
                         <select
-                          value={event.admin_status || "published"}
+                          value={event.status || "published"}
                           onChange={(e) => { e.stopPropagation(); handleUpdateAdminStatus(event.eventID, e.target.value); }}
                           onClick={(e) => e.stopPropagation()}
-                          className={`text-xs font-bold px-2 py-0.5 rounded-full border cursor-pointer appearance-none pr-5 ${getAdminStatusStyle(event.admin_status || "published")}`}
+                          className={`text-xs font-bold px-2 py-0.5 rounded-full border cursor-pointer appearance-none pr-5 ${getAdminStatusStyle(event.status || "published")}`}
                           title="Set admin status"
                         >
                           {ADMIN_STATUSES.map(s => (
@@ -673,7 +774,7 @@ const Events = () => {
         </div>
       )}
 
-      {/* ── Edit Modal ── */}
+      {/* —— Edit Modal —— */}
       {showEditModal && editingEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] flex flex-col">
@@ -701,7 +802,7 @@ const Events = () => {
                       key={i}
                       className="text-red-600 text-xs flex items-start gap-1.5"
                     >
-                      <span className="flex-shrink-0 mt-0.5">•</span>
+                      <span className="flex-shrink-0 mt-0.5">—</span>
                       {e}
                     </li>
                   ))}
@@ -836,31 +937,54 @@ const Events = () => {
                 </div>
               </div>
 
-              {/* Venue + Map URL */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Venue / Location
+              {/* Venue(s) */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-xs font-medium text-gray-600">
+                    Venue / Location *
                   </label>
-                  <input
-                    name="venue"
-                    value={editFormData.venue}
-                    onChange={handleEditInput}
-                    placeholder="e.g. Community Hall"
-                    className={inputCls}
-                  />
+                  {editFormData.venues?.length < 5 && (
+                    <button
+                      type="button"
+                      onClick={addEditVenue}
+                      className="text-[#C1622A] text-xs font-semibold hover:underline"
+                    >
+                      + Add Location
+                    </button>
+                  )}
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Map URL
-                  </label>
-                  <input
-                    name="venue_url"
-                    value={editFormData.venue_url}
-                    onChange={handleEditInput}
-                    placeholder="https://maps.google.com/..."
-                    className={inputCls}
-                  />
+                <div className="space-y-2">
+                  {editFormData.venues?.map((v, idx) => (
+                    <div key={idx} className="flex gap-2 items-center bg-gray-50 p-2 rounded-lg border border-gray-100">
+                      <div className="flex-1 space-y-2">
+                        <input
+                          placeholder={`Venue ${idx + 1} Name`}
+                          value={v.venue}
+                          onChange={(e) =>
+                            handleEditVenueChange(idx, "venue", e.target.value)
+                          }
+                          className={inputCls}
+                        />
+                        <input
+                          placeholder={`Venue ${idx + 1} Map URL`}
+                          value={v.mapUrl}
+                          onChange={(e) =>
+                            handleEditVenueChange(idx, "mapUrl", e.target.value)
+                          }
+                          className={inputCls}
+                        />
+                      </div>
+                      {editFormData.venues.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeEditVenue(idx)}
+                          className="text-red-500 hover:text-red-700 text-xs p-1"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -969,8 +1093,6 @@ const Events = () => {
           </div>
         </div>
       )}
-
-
 
       <ConfirmModal 
         isOpen={!!confirmDeleteId && (!events.find(e => e.eventID === confirmDeleteId)?.is_project)}

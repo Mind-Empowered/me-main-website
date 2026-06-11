@@ -171,7 +171,7 @@ const Volunteers = () => {
        let query = supabase
         .schema("me_dataspace")
         .from("users")
-        .select("firstName, lastName, emailID, city, state, country, bloodGroup, dateOfBirth, created_at, preferences, address, emergencyInfo")
+        .select("firstName, lastName, emailID, city, state, country, gender, bloodGroup, dateOfBirth, created_at, preferences, address, emergencyInfo")
         .eq("role", "VOLUNTEER")
         .order("created_at", { ascending: false });
 
@@ -201,7 +201,7 @@ const Volunteers = () => {
         v.country || v.address?.permanentAddress?.country || v.address?.presentAddress?.country || "",
         v.bloodGroup || v.emergencyInfo?.bloodGroup || "",
         v.dateOfBirth || "",
-        v.preferences?.gender || "",
+        v.gender || v.preferences?.gender || "",
         v.preferences?.whatsapp || "",
         v.preferences?.skills ? v.preferences.skills.join("; ") : "",
         v.created_at ? new Date(v.created_at).toLocaleDateString("en-GB") : "",
@@ -260,9 +260,17 @@ const Volunteers = () => {
     setEditingVolunteer(null);
   };
 
-  const handleUserUpdated = () => {
-    fetchVolunteers();
-  };
+ const handleUserUpdated = async (updatedData) => {
+  
+  await logActivity({
+    action: 'EDIT_VOLUNTEER',
+    description: `Updated volunteer profile: ${editingVolunteer?.firstName} ${editingVolunteer?.lastName}`,
+    entity_type: 'volunteer',
+    entity_id: editingVolunteer?.userID
+  });
+  
+  fetchVolunteers();
+};
 
   return (
     <div className="p-6 bg-[#F7F2EC] min-h-screen">
@@ -413,7 +421,7 @@ const Volunteers = () => {
                             volunteer.country || volunteer.address?.permanentAddress?.country || volunteer.address?.presentAddress?.country
                           ].filter(Boolean).join(", ") || "Not specified"}
                         </p>
-                        {volunteer.preferences?.gender && <p className="text-gray-800 mb-1"><span className="font-medium">Gender:</span> {volunteer.preferences.gender}</p>}
+                        {(volunteer.gender || volunteer.preferences?.gender) && <p className="text-gray-800 mb-1"><span className="font-medium">Gender:</span> {volunteer.gender || volunteer.preferences?.gender}</p>}
                         {volunteer.preferences?.whatsapp && <p className="text-gray-800 mb-1"><span className="font-medium">WhatsApp:</span> {volunteer.preferences.whatsapp}</p>}
                         {volunteer.preferences?.languages?.length > 0 && <p className="text-gray-800 mb-1"><span className="font-medium">Languages:</span> {volunteer.preferences.languages.join(", ")}</p>}
                         {volunteer.preferences?.skills?.length > 0 && <p className="text-gray-800 mt-2"><span className="font-medium">Skills:</span> {volunteer.preferences.skills.join(", ")}</p>}

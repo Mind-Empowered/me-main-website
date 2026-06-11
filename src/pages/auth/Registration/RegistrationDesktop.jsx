@@ -91,6 +91,16 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 
 	// Step 5 Validation - Profile Completion
 	const validateStep5 = () => {
+		if (!form.dateOfBirth) return 'Date of birth is required';
+		if (!form.gender) return 'Gender is required';
+		if (!form.bloodGroup?.trim()) return 'Blood group is required';
+		if (!form.emergencyInfo?.contactName?.trim()) return 'Emergency contact name is required';
+		if (!form.emergencyInfo?.contactPhone?.trim()) return 'Emergency contact phone is required';
+		if (!form.emergencyInfo?.tShirtSize?.trim()) return 'T-shirt size is required';
+
+		const emergencyPhoneDigitsOnly = form.emergencyInfo.contactPhone.replace(/\D/g, '');
+		if (emergencyPhoneDigitsOnly.length < 10) return 'Emergency contact phone must have at least 10 digits';
+
 		if (!photoFile) return 'Please upload a profile photo';
 
 		if (form.github?.trim()) {
@@ -325,9 +335,6 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 								</button>
 							</div>
 						</div>
-
-						{localError && <p className="text-red-400 text-sm font-semibold">{localError}</p>}
-
 						<button
 							onClick={handleNext}
 							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none"
@@ -461,9 +468,6 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 								</div>
 							</div>
 						</div>
-
-						{localError && <p className="text-red-400 text-sm font-semibold">{localError}</p>}
-
 						<button
 							onClick={handleNext}
 							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none"
@@ -610,9 +614,6 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 								</div>
 							</div>
 						</div>
-
-						{localError && <p className="text-red-400 text-sm font-semibold">{localError}</p>}
-
 						<button
 							onClick={handleNext}
 							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none"
@@ -704,9 +705,6 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 								/>
 							</div>
 						)}
-
-						{localError && <p className="text-red-400 text-sm font-semibold">{localError}</p>}
-
 						<button
 							onClick={handleNext}
 							className="w-full rounded-xl bg-[#7A3A00] px-4 py-2 hover:bg-[#8B3D00] text-white text-sm font-semibold tracking-wide uppercase transition-all duration-300 shadow-lg hover:scale-105 outline-none"
@@ -753,6 +751,104 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 						<div className="w-full text-sm text-[#7A6A5A] font-semibold flex-shrink-0">Step 5 of 5</div>
 
 						<div className="w-full flex flex-col gap-6 overflow-y-auto flex-1 pr-2">
+								{/* Personal & Emergency Info */}
+								<div className="w-full rounded-2xl border border-[#E0D4C4] bg-[#FCF9F4] p-4 sm:p-5 space-y-4">
+									<h2 className="text-[#1A0D00] font-semibold text-lg">Personal & Emergency Info</h2>
+									<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+										<div className="flex flex-col gap-2">
+											<label htmlFor="dateOfBirth" className="text-[#7A6A5A]">Date of Birth</label>
+											<input
+												type="date"
+												id="dateOfBirth"
+												value={form.dateOfBirth || ''}
+												onChange={(e) => setForm(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+												className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] outline-none focus:ring-2 focus:ring-orange-400"
+											/>
+										</div>
+										<div className="flex flex-col gap-2">
+											<label htmlFor="gender" className="text-[#7A6A5A]">Gender</label>
+											<select
+												id="gender"
+												value={form.gender || ''}
+												onChange={(e) => setForm(prev => ({ ...prev, gender: e.target.value }))}
+												className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 outline-none focus:ring-2 focus:ring-orange-400"
+											>
+												<option value="">Select gender</option>
+												<option value="Male">Male</option>
+												<option value="Female">Female</option>
+												<option value="Other">Other</option>
+												<option value="Prefer not to say">Prefer not to say</option>
+											</select>
+										</div>
+										<div className="flex flex-col gap-2 sm:col-span-2">
+											<label htmlFor="bloodGroup" className="text-[#7A6A5A]">Blood Group</label>
+											<select
+												id="bloodGroup"
+												value={form.bloodGroup || ''}
+												onChange={(e) => setForm(prev => ({
+													...prev,
+													bloodGroup: e.target.value,
+													emergencyInfo: { ...prev.emergencyInfo, bloodGroup: e.target.value }
+												}))}
+												className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 outline-none focus:ring-2 focus:ring-orange-400"
+											>
+												<option value="">Select blood group</option>
+												<option value="o+ve">O+ve</option>
+												<option value="o-ve">O-ve</option>
+												<option value="a+ve">A+ve</option>
+												<option value="a-ve">A-ve</option>
+												<option value="b+ve">B+ve</option>
+												<option value="b-ve">B-ve</option>
+												<option value="ab+ve">AB+ve</option>
+												<option value="ab-ve">AB-ve</option>
+											</select>
+										</div>
+									</div>
+									<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+										<div className="flex flex-col gap-2">
+											<label htmlFor="contactName" className="text-[#7A6A5A]">Emergency Contact Name</label>
+											<input
+												type="text"
+												id="contactName"
+												value={form.emergencyInfo?.contactName || ''}
+												onChange={(e) => setForm(prev => ({ ...prev, emergencyInfo: { ...prev.emergencyInfo, contactName: e.target.value } }))}
+												placeholder="Emergency contact name"
+												className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] outline-none focus:ring-2 focus:ring-orange-400"
+											/>
+										</div>
+										<div className="flex flex-col gap-2">
+											<label htmlFor="contactPhone" className="text-[#7A6A5A]">Emergency Contact Phone</label>
+											<input
+												type="text"
+												id="contactPhone"
+												value={form.emergencyInfo?.contactPhone || ''}
+												onChange={(e) => setForm(prev => ({ ...prev, emergencyInfo: { ...prev.emergencyInfo, contactPhone: e.target.value } }))}
+												placeholder="Emergency contact phone"
+												className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] outline-none focus:ring-2 focus:ring-orange-400"
+											/>
+										</div>
+									</div>
+									<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+										<div className="flex flex-col gap-2 sm:col-span-1">
+											<label htmlFor="tShirtSize" className="text-[#7A6A5A]">T-Shirt Size</label>
+											<select
+												id="tShirtSize"
+												value={form.emergencyInfo?.tShirtSize || ''}
+												onChange={(e) => setForm(prev => ({ ...prev, emergencyInfo: { ...prev.emergencyInfo, tShirtSize: e.target.value } }))}
+												className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 outline-none focus:ring-2 focus:ring-orange-400"
+											>
+												<option value="">Select size</option>
+												<option value="XS">XS</option>
+												<option value="S">S</option>
+												<option value="M">M</option>
+												<option value="L">L</option>
+												<option value="XL">XL</option>
+												<option value="XXL">XXL</option>
+											</select>
+										</div>
+									</div>
+								</div>
+
 							{/* Upload Section */}
 							<div className="w-full">
 								<label className="text-[#7A6A5A] font-semibold mb-3 block">Upload Your Photo</label>
@@ -845,8 +941,6 @@ const RegistrationDesktop = ({ form, setForm, error, handleSubmit, onRegisterSte
 									className="w-full rounded-xl bg-[#FAF6F1] border border-[#E0D4C4] px-4 py-2 placeholder-[#BBA898] text-[#1A0D00] outline-none resize-none focus:ring-2 focus:ring-orange-400 text-sm"
 								/>
 							</div>
-
-							{localError && <p className="text-red-400 text-xs sm:text-sm font-semibold">{localError}</p>}
 						</div>
 
 						{/* Register Button */}

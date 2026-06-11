@@ -229,7 +229,7 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
             <div className="w-[145px] h-11" />
           ) : profileUser ? (
             <>
-              <div 
+              <div
                 className="relative"
                 onMouseEnter={() => setIsProfilePopupOpen(true)}
                 onMouseLeave={() => setIsProfilePopupOpen(false)}
@@ -244,6 +244,8 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A9 9 0 0112 15c2.485 0 4.735 1.007 6.364 2.636M15 11a3 3 0 11-6 0 3 3 0 016 0zm6 1a9 9 0 10-18 0 9 9 0 0018 0z" />
                   </svg>
                 </button>
+
+               
 
                 {isProfilePopupOpen && (
                   <div ref={profilePopupRef} className="absolute right-0 top-full z-[80] mt-3 w-80 overflow-hidden rounded-3xl border border-[#ff7612]/15 bg-white/95 shadow-[0_30px_80px_-20px_rgba(70,23,17,0.35)] backdrop-blur-2xl">
@@ -272,17 +274,26 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
                   </div>
                 )}
               </div>
+               <button
+                  onClick={handleLogout}
+                  aria-label="Logout"
+                  title="Logout"
+                  className={`flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 shadow-md ${scrolled ? 'border-red-200 bg-white text-red-400 hover:text-red-600 hover:border-red-400 hover:scale-105' : 'border-white/20 bg-white/10 text-white/80 hover:bg-white/15 hover:text-white hover:scale-105'}`}
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                </button>
 
             </>
           ) : (
             <div className="flex items-center gap-3">
               <Link
                 to="/signin"
-                className={`px-5 py-2.5 rounded-full font-bold text-xs lg:text-sm tracking-[0.05em] uppercase transition-all duration-300 border shadow-sm ${
-                  scrolled
-                    ? 'text-[#461711] border-[#461711]/15 hover:border-[#ff7612] hover:text-[#ff7612] hover:bg-[#ff7612]/5'
-                    : 'text-white border-white/20 hover:border-white hover:bg-white/10'
-                }`}
+                className={`px-5 py-2.5 rounded-full font-bold text-xs lg:text-sm tracking-[0.05em] uppercase transition-all duration-300 border shadow-sm ${scrolled
+                  ? 'text-[#461711] border-[#461711]/15 hover:border-[#ff7612] hover:text-[#ff7612] hover:bg-[#ff7612]/5'
+                  : 'text-white border-white/20 hover:border-white hover:bg-white/10'
+                  }`}
               >
                 Sign In
               </Link>
