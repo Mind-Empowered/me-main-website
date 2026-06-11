@@ -17,12 +17,11 @@ const AddEvent = () => {
     startTime: "",
     endDate: "",
     endTime: "",
-    venue: "",
+    venues: [{ venue: "", mapUrl: "" }],
     maxParticipants: "",
     registrationDeadline: "",
     volunteersNeeded: "",
     food: false,
-    mapUrl: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -60,7 +59,21 @@ const AddEvent = () => {
     setBannerFile(file);
     setBannerPreview(URL.createObjectURL(file));
   };
+  const handleVenueChange = (index, field, value) => {
+    const updated = [...form.venues];
+    updated[index][field] = value;
+    setForm({ ...form, venues: updated });
+  };
 
+  const addVenue = () => {
+    if (form.venues.length >= 5) return;
+    setForm({ ...form, venues: [...form.venues, { venue: "", mapUrl: "" }] });
+  };
+
+  const removeVenue = (index) => {
+    const updated = form.venues.filter((_, i) => i !== index);
+    setForm({ ...form, venues: updated });
+  };
   const isValidURL = (url) => {
     if (!url) return true; // optional fields
     try {
@@ -173,12 +186,14 @@ const AddEvent = () => {
     }
 
     // Venue URL (Google Maps)
-    if (form.mapUrl && !isValidURL(form.mapUrl)) {
-      newErrors.mapUrl =
-        "Enter a valid URL (must start with http:// or https://).";
-    } else if (form.mapUrl && !isValidGoogleMapsURL(form.mapUrl)) {
-      newErrors.mapUrl = "Please enter a valid Google Maps URL.";
-    }
+    form.venues.forEach((v, i) => {
+      if (v.mapUrl && !isValidURL(v.mapUrl)) {
+        newErrors[`mapUrl_${i}`] =
+          "Enter a valid URL (must start with http:// or https://).";
+      } else if (v.mapUrl && !isValidGoogleMapsURL(v.mapUrl)) {
+        newErrors[`mapUrl_${i}`] = "Please enter a valid Google Maps URL.";
+      }
+    });
 
     // Max Participants
     if (form.maxParticipants) {
@@ -224,7 +239,7 @@ const AddEvent = () => {
 
       let bannerURL = null;
       if (bannerFile) {
-        const safeName = bannerFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+        const safeName = bannerFile.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
         const fileName = `banner_${Date.now()}_${safeName}`;
         const { error: uploadError } = await supabase.storage
           .from("events")
@@ -234,7 +249,7 @@ const AddEvent = () => {
         bannerURL = data.publicUrl;
       }
 
-      const { error } = await supabase
+      const { data: insertedData, error } = await supabase
         .schema("me_dataspace")
         .from("events")
         .insert({
@@ -244,7 +259,11 @@ const AddEvent = () => {
           eventURL: form.eventURL.trim() || null,
           fromDateTime,
           toDateTime,
-          venue: form.venue.trim() || null,
+          venue:
+            form.venues
+              .map((v) => v.venue.trim())
+              .filter(Boolean)
+              .join(" | ") || null,
           max_participants: form.maxParticipants
             ? parseInt(form.maxParticipants)
             : null,
@@ -257,18 +276,34 @@ const AddEvent = () => {
           bannerURL,
           bannerAltText: form.bannerAltText.trim() || form.title.trim(),
           is_food_available: form.food,
-          venue_url: form.mapUrl.trim() || null,
-          enabled: status === "publish",
-        });
+          venue_url:
+            form.venues
+              .map((v) => v.mapUrl.trim())
+              .filter(Boolean)
+              .join(" | ") || null,
+          status: status === "publish" ? "published" : "draft",
+        })
+        .select();
 
       setLoading(false);
 
       if (!error) {
-        toast.success("Event created successfully!");
+        const { logActivity } = await import("../../services/activityLog");
+        await logActivity({
+          action: "CREATE_EVENT",
+          description: `Created new event: ${form.title.trim()}${status === "publish" ? " (published)" : " (draft)"}`,
+          entity_type: "event",
+          entity_id: insertedData?.[0]?.eventID,
+        });
+
+        toast.success(
+          status === "publish"
+            ? "Event published successfully!"
+            : "Event saved as draft!",
+        );
         navigate("/admin/events");
       } else {
         console.error(error);
-        // Handle unique constraint on eventURL
         if (error.code === "23505" && error.message?.includes("eventURL")) {
           setStep(1);
           toast.error("This Event URL is already used by another event.");
@@ -446,8 +481,11 @@ const AddEvent = () => {
                     alt="Banner preview"
                     className="w-full h-40 object-cover rounded-lg border border-gray-200"
                   />
-                  <button 
-                    onClick={() => { setBannerFile(null); setBannerPreview(null); }}
+                  <button
+                    onClick={() => {
+                      setBannerFile(null);
+                      setBannerPreview(null);
+                    }}
                     className="absolute top-6 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition shadow"
                     title="Remove banner"
                   >
@@ -529,36 +567,63 @@ const AddEvent = () => {
               </div>
 
               {/* Venue + Map URL */}
-              <div className="grid grid-cols-2 gap-4 mb-1">
-                <div>
-                  <label className="text-xs text-gray-500">
-                    Venue / Location{" "}
-                    <span className="text-gray-300">optional</span>
-                  </label>
-                  <input
-                    name="venue"
-                    value={form.venue}
-                    onChange={handleChange}
-                    placeholder="e.g. Community Hall, Kochi"
-                    className={inputCls("venue")}
-                  />
-                  <ErrMsg field="venue" />
+              {form.venues.map((v, i) => (
+                <div
+                  key={i}
+                  className="grid grid-cols-2 gap-4 mb-2 items-start"
+                >
+                  <div>
+                    <label className="text-xs text-gray-500">
+                      Venue / Location{" "}
+                      <span className="text-gray-300">optional</span>
+                    </label>
+                    <input
+                      value={v.venue}
+                      onChange={(e) =>
+                        handleVenueChange(i, "venue", e.target.value)
+                      }
+                      placeholder="e.g. Community Hall, Kochi"
+                      className={inputCls(`venue_${i}`)}
+                    />
+                  </div>
+                  <div className="flex gap-2 items-end">
+                    <div className="flex-1">
+                      <label className="text-xs text-gray-500">
+                        Map URL <span className="text-gray-300">optional</span>
+                      </label>
+                      <input
+                        value={v.mapUrl}
+                        onChange={(e) =>
+                          handleVenueChange(i, "mapUrl", e.target.value)
+                        }
+                        placeholder="https://maps.google.com/..."
+                        className={inputCls(`mapUrl_${i}`)}
+                      />
+                      {errors[`mapUrl_${i}`] && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors[`mapUrl_${i}`]}
+                        </p>
+                      )}
+                    </div>
+                    {form.venues.length > 1 && (
+                      <button
+                        onClick={() => removeVenue(i)}
+                        className="mb-2 text-red-400 hover:text-red-600"
+                      >
+                        <FaTimes />
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <label className="text-xs text-gray-500">
-                    Map URL <span className="text-gray-300">optional</span>
-                  </label>
-                  <input
-                    name="mapUrl"
-                    value={form.mapUrl}
-                    onChange={handleChange}
-                    placeholder="https://maps.google.com/..."
-                    className={inputCls("mapUrl")}
-                  />
-                  <ErrMsg field="mapUrl" />
-                </div>
-              </div>
-
+              ))}
+              {form.venues.length < 5 && (
+                <button
+                  onClick={addVenue}
+                  className="text-sm text-[#C1622A] hover:underline mt-1 mb-3"
+                >
+                  + Add another venue
+                </button>
+              )}
               {/* Registration Deadline */}
               <label className="text-xs text-gray-500 mt-3 block">
                 Registration Deadline{" "}

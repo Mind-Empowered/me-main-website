@@ -181,10 +181,10 @@ const FullProfileDetails = ({ user, onEditClick }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Preferences Details */}
                     <div className="space-y-4">
-                        {user.preferences?.gender && (
+                        {(user.gender || user.preferences?.gender) && (
                             <p className="text-gray-700">
                                 <span className="font-semibold text-gray-500 uppercase text-xs tracking-wider block mb-1">Gender</span> 
-                                <span className="text-lg font-medium">{user.preferences.gender}</span>
+                                <span className="text-lg font-medium">{user.gender || user.preferences?.gender || ""}</span>
                             </p>
                         )}
                         {user.preferences?.whatsapp && (
