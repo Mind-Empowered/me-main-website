@@ -30,9 +30,39 @@ const AddVolunteerModal = ({ onClose, onSuccess }) => {
             password: "MindEmpowered@2025",
             options: {
                 data: {
-                    firstName: form.firstName,
-                    lastName: form.lastName,
-                    role: "VOLUNTEER",
+                    firstName: form.firstName.trim(),
+                    lastName: form.lastName.trim(),
+                    phone: null,
+                    address: {
+                        permanentAddress: {
+                            building: '',
+                            street: '',
+                            area: '',
+                            city: '',
+                            state: '',
+                            pincode: '',
+                            country: ''
+                        },
+                        presentAddress: {
+                            building: '',
+                            street: '',
+                            area: '',
+                            city: '',
+                            state: '',
+                            pincode: '',
+                            country: ''
+                        }
+                    },
+                    is_working: form.status === 'FALSE',
+                    workspace_name: '',
+                    socials: {
+                        github: null,
+                        linkedin: null,
+    					instagram: null
+                    },
+                    photo: '',
+                    bio: null,
+                    role: "VOLUNTEER"
                 }
             }
         });
