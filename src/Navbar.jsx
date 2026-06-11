@@ -111,7 +111,8 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
     initializeAuthState();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'INITIAL_SESSION') return;
       await applySession(session);
       if (mounted) setAuthLoading(false);
     });
