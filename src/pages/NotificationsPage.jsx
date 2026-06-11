@@ -150,8 +150,8 @@ const NotificationsPage = () => {
 
 	// ─── Actions ──────────────────────────────────────────
 	const handleMarkAsRead = async (notificationId) => {
-		if (!user?.email) return;
-		const success = await markAsRead(notificationId, user.email);
+		if (!user?.emailID) return;
+		const success = await markAsRead(notificationId, user.emailID);
 		if (success) {
 			setNotifications((prev) =>
 				prev.map((n) => (n.id === notificationId ? { ...n, is_read: true } : n))
@@ -161,9 +161,9 @@ const NotificationsPage = () => {
 
 	const handleMarkAllAsRead = async (e) => {
 		e.stopPropagation();
-		if (!user?.email || markingAll) return;
+		if (!user?.emailID || markingAll) return;
 		setMarkingAll(true);
-		const success = await markAllAsRead(user.email);
+		const success = await markAllAsRead(user.emailID);
 		if (success) {
 			setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
 			toast.success("All notifications marked as read");
