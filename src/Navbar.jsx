@@ -55,14 +55,19 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
   React.useEffect(() => {
     let mounted = true;
+    let currentCheckId = 0;
 
     const applySession = async (session) => {
+      currentCheckId++;
+      const checkId = currentCheckId;
+
       if (!session?.user) {
-        if (mounted) {
+        if (mounted && checkId === currentCheckId) {
           setDashboardPath(null);
           setProfileUser(null);
           setProfileRole(null);
           setIsProfilePopupOpen(false);
+          setUnreadCount(0);
         }
         return;
       }
@@ -70,7 +75,7 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
       const role = await resolveUserRole(session.user);
       const nextPath = ROLE_HOME_PATHS[role] || "/signin";
 
-      if (mounted) {
+      if (mounted && checkId === currentCheckId) {
         setDashboardPath(nextPath);
         setProfileUser(session.user);
         setProfileRole(role);
@@ -78,7 +83,7 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
         // Fetch unread count for volunteers and subscribe to realtime
         if (role === 'VOLUNTEER' && session.user.email) {
           fetchUnreadCount(session.user.email).then((count) => {
-            if (mounted) setUnreadCount(count);
+            if (mounted && checkId === currentCheckId) setUnreadCount(count);
           });
 
           // Clean up previous subscription
@@ -270,21 +275,24 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
                         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#ff7612]">Role</p>
                         <p className="mt-1 text-sm font-semibold text-[#5d4037]">{profileRoleLabel}</p>
                       </div>
+                      <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
+                        <button
+                          onClick={() => { navigate(dashboardPath || '/signin'); setIsProfilePopupOpen(false); }}
+                          className="w-full text-center px-4 py-2 text-xs uppercase tracking-[0.05em] font-black rounded-xl border border-[#461711]/15 hover:border-[#ff7612] hover:text-[#ff7612] hover:bg-[#ff7612]/5 transition-all duration-300"
+                        >
+                          Go to Dashboard
+                        </button>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-center px-4 py-2 text-xs uppercase tracking-[0.05em] font-black rounded-xl bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-700 transition-all duration-300"
+                        >
+                          Logout
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
-               <button
-                  onClick={handleLogout}
-                  aria-label="Logout"
-                  title="Logout"
-                  className={`flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 shadow-md ${scrolled ? 'border-red-200 bg-white text-red-400 hover:text-red-600 hover:border-red-400 hover:scale-105' : 'border-white/20 bg-white/10 text-white/80 hover:bg-white/15 hover:text-white hover:scale-105'}`}
-                >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                </button>
-
             </>
           ) : (
             <div className="flex items-center gap-3">
