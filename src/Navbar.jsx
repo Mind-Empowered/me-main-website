@@ -4,6 +4,11 @@ import { supabase } from './services/supabase-client';
 import { ROLE_HOME_PATHS, resolveUserRole } from './services/authRoles';
 import CalendarPopup from './components/CalendarPopup';
 import NewsletterPopup from './components/NewsletterPopup';
+import {
+  fetchUnreadCount,
+  subscribeToNotifications,
+  unsubscribeFromNotifications,
+} from './services/notificationService';
 
 const NavLink = ({ item, scrollToSection, scrolled, isMobile = false }) => {
   const desktopClasses = `relative font-bold text-xs lg:text-sm tracking-[0.1em] uppercase transition-all duration-300 py-2.5 px-4 rounded-full group overflow-hidden ${scrolled
@@ -37,8 +42,10 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
   const [profileUser, setProfileUser] = React.useState(null);
   const [profileRole, setProfileRole] = React.useState(null);
   const [isProfilePopupOpen, setIsProfilePopupOpen] = React.useState(false);
+  const [unreadCount, setUnreadCount] = React.useState(0);
   const profilePopupRef = React.useRef(null);
   const profileButtonRef = React.useRef(null);
+  const notificationChannelRef = React.useRef(null);
 
   const handleScrollToSection = (ref) => {
     scrollToSection(ref);
@@ -66,6 +73,27 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
         setDashboardPath(nextPath);
         setProfileUser(session.user);
         setProfileRole(role);
+
+        // Fetch unread count for volunteers and subscribe to realtime
+        if (role === 'VOLUNTEER' && session.user.email) {
+          fetchUnreadCount(session.user.email).then((count) => {
+            if (mounted) setUnreadCount(count);
+          });
+
+          // Clean up previous subscription
+          if (notificationChannelRef.current) {
+            unsubscribeFromNotifications(notificationChannelRef.current);
+          }
+
+          // Subscribe to real-time notifications
+          notificationChannelRef.current = subscribeToNotifications((newNotification) => {
+            if (newNotification.target === 'all' || newNotification.target === session.user.email) {
+              setUnreadCount((prev) => prev + 1);
+            }
+          });
+        } else {
+          setUnreadCount(0);
+        }
       }
     };
 
@@ -83,6 +111,10 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
     return () => {
       mounted = false;
       listener?.subscription?.unsubscribe();
+      if (notificationChannelRef.current) {
+        unsubscribeFromNotifications(notificationChannelRef.current);
+        notificationChannelRef.current = null;
+      }
     };
   }, []);
 
@@ -167,6 +199,28 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
           {/* Newsletter */}
           <NewsletterPopup scrolled={scrolled} />
+
+          {/* Notification Bell — only for logged-in volunteers */}
+          {profileUser && profileRole === 'VOLUNTEER' && (
+            <button
+              onClick={() => navigate('/notifications')}
+              aria-label="View notifications"
+              className={`relative flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 shadow-md ${
+                scrolled
+                  ? 'border-[#ff7612]/35 bg-white text-[#461711] hover:scale-105'
+                  : 'border-white/20 bg-white/10 text-white hover:bg-white/15 hover:scale-105'
+              }`}
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-red-500 text-white text-[11px] font-black shadow-lg ring-2 ring-white animate-bounce-gentle">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {profileUser ? (
             <>
@@ -302,6 +356,31 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
               </svg>
               <span>{language === 'en' ? 'Newsletter' : 'വാർത്താക്കുറിപ്പ്'}</span>
             </button>
+
+            {/* Mobile Notification Bell — only for logged-in volunteers */}
+            {profileUser && profileRole === 'VOLUNTEER' && (
+              <button
+                onClick={() => { navigate('/notifications'); setIsMobileMenuOpen(false); }}
+                className="flex items-center gap-3 w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300"
+              >
+                <div className="relative">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[16px] h-4 px-0.5 rounded-full bg-red-500 text-white text-[9px] font-black">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </div>
+                <span>Notifications</span>
+                {unreadCount > 0 && (
+                  <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-red-500 text-white font-bold">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             <div className="pt-2">
               {profileUser ? (
