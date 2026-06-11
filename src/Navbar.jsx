@@ -61,44 +61,56 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
       currentCheckId++;
       const checkId = currentCheckId;
 
-      if (!session?.user) {
-        if (mounted && checkId === currentCheckId) {
-          setDashboardPath(null);
-          setProfileUser(null);
-          setProfileRole(null);
-          setIsProfilePopupOpen(false);
-          setUnreadCount(0);
-        }
-        return;
-      }
-
-      const role = await resolveUserRole(session.user);
-      const nextPath = ROLE_HOME_PATHS[role] || "/signin";
-
-      if (mounted && checkId === currentCheckId) {
-        setDashboardPath(nextPath);
-        setProfileUser(session.user);
-        setProfileRole(role);
-
-        // Fetch unread count for volunteers and subscribe to realtime
-        if (role === 'VOLUNTEER' && session.user.email) {
-          fetchUnreadCount(session.user.email).then((count) => {
-            if (mounted && checkId === currentCheckId) setUnreadCount(count);
-          });
-
-          // Clean up previous subscription
-          if (notificationChannelRef.current) {
-            unsubscribeFromNotifications(notificationChannelRef.current);
+      try {
+        if (!session?.user) {
+          if (mounted && checkId === currentCheckId) {
+            setDashboardPath(null);
+            setProfileUser(null);
+            setProfileRole(null);
+            setIsProfilePopupOpen(false);
+            setUnreadCount(0);
           }
+          return;
+        }
 
-          // Subscribe to real-time notifications
-          notificationChannelRef.current = subscribeToNotifications((newNotification) => {
-            if (newNotification.target === 'all' || newNotification.target === session.user.email) {
-              setUnreadCount((prev) => prev + 1);
+        const role = await resolveUserRole(session.user);
+        const nextPath = ROLE_HOME_PATHS[role] || "/signin";
+
+        if (mounted && checkId === currentCheckId) {
+          setDashboardPath(nextPath);
+          setProfileUser(session.user);
+          setProfileRole(role);
+
+          // Fetch unread count for volunteers and subscribe to realtime
+          if (role === 'VOLUNTEER' && session.user.email) {
+            fetchUnreadCount(session.user.email).then((count) => {
+              if (mounted && checkId === currentCheckId) setUnreadCount(count);
+            }).catch((err) => console.error("Error fetching unread count:", err));
+
+            // Clean up previous subscription
+            if (notificationChannelRef.current) {
+              unsubscribeFromNotifications(notificationChannelRef.current);
             }
-          });
-        } else {
-          setUnreadCount(0);
+
+            // Subscribe to real-time notifications
+            try {
+              notificationChannelRef.current = subscribeToNotifications((newNotification) => {
+                if (newNotification.target === 'all' || newNotification.target === session.user.email) {
+                  setUnreadCount((prev) => prev + 1);
+                }
+              });
+            } catch (realtimeErr) {
+              console.error("Realtime subscription failed:", realtimeErr);
+            }
+          } else {
+            setUnreadCount(0);
+          }
+        }
+      } catch (err) {
+        console.error("Error in applySession:", err);
+      } finally {
+        if (mounted && checkId === currentCheckId) {
+          setAuthLoading(false);
         }
       }
     };
@@ -106,7 +118,6 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
     const initializeAuthState = async () => {
       const { data } = await supabase.auth.getSession();
       await applySession(data?.session || null);
-      if (mounted) setAuthLoading(false);
     };
 
     initializeAuthState();
@@ -114,7 +125,6 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
     const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'INITIAL_SESSION') return;
       await applySession(session);
-      if (mounted) setAuthLoading(false);
     });
 
     return () => {
