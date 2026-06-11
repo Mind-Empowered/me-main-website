@@ -277,6 +277,15 @@ const EventVolunteers = () => {
   const attendedCount = registeredVolunteers.filter((v) => v.attended).length;
   const registeredOnlyCount = totalCount - attendedCount;
 
+  const isEventFuture = (() => {
+    if (!event) return true;
+    const eventDate = new Date(event.fromDateTime);
+    eventDate.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return eventDate > today;
+  })();
+
   return (
     <div className="p-6 bg-[#F7F2EC] min-h-screen">
       {/* Back to Events Navigation */}
@@ -463,6 +472,7 @@ const EventVolunteers = () => {
                         </span>
                       ) : (
                         <button
+                          disabled={isEventFuture}
                           onClick={() =>
                             handleToggleAttendance(
                               vol.participationId,
@@ -470,8 +480,11 @@ const EventVolunteers = () => {
                               `${vol.firstName} ${vol.lastName}`
                             )
                           }
+                          title={isEventFuture ? "Attendance can only be marked on or after the event date" : ""}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
-                            vol.attended
+                            isEventFuture
+                              ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed opacity-60"
+                              : vol.attended
                               ? "bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
                               : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
                           }`}
@@ -552,8 +565,13 @@ const EventVolunteers = () => {
 
                       <button
                         onClick={() => handleAddWalkin(u)}
-                        disabled={walkinAdding[u.userID]}
-                        className="bg-[#C1622A] hover:bg-[#a8521f] text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg transition-colors flex-shrink-0 disabled:opacity-50"
+                        disabled={walkinAdding[u.userID] || isEventFuture}
+                        title={isEventFuture ? "Walk-ins can only be added on or after the event date" : ""}
+                        className={`text-[10px] font-bold px-2.5 py-1.5 rounded-lg transition-colors flex-shrink-0 border ${
+                          isEventFuture
+                            ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed opacity-60"
+                            : "bg-[#C1622A] hover:bg-[#a8521f] text-white border-transparent disabled:opacity-50"
+                        }`}
                       >
                         {walkinAdding[u.userID] ? (
                           <FaSpinner className="animate-spin" />
