@@ -941,7 +941,7 @@ function App() {
             <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
             <Route path="/volunteer-profile" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<VolunteerProfileSkeleton />}><VolunteerProfile /></ProtectedRoute>  } />
             <Route path="/notifications" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<div className="flex items-center justify-center min-h-screen bg-[#F5EDE0]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A64200]"></div></div>}><NotificationsPage /></ProtectedRoute> } />
-            <Route path="/admin" element={<ProtectedRoute allowedRoles={["ADMIN"]}><AdminLayout /></ProtectedRoute>}>
+            <Route path="/admin" element={<AdminLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="volunteers" element={<Volunteers />} />
               <Route path="events" element={<AdminEvents />} />
