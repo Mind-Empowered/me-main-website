@@ -27,6 +27,7 @@ import {
 const Dashboard = () => {
   const quickActions = [
     { label: "Add Event", icon: FaCalendarPlus, path: "/admin/newevent" },
+    { label: "Projects", icon: FaCalendarAlt, path: "/admin/projects" },
     { label: "Upload Photo", icon: FaImage, action: () => setShowUpload(true) },
     {
       label: "Add Volunteer",
@@ -141,7 +142,7 @@ const Dashboard = () => {
     <>
       <div className="p-4">
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
           {quickActions.map(({ label, icon: Icon, path, action }) => (
             <button
               key={label}
