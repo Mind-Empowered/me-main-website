@@ -23,7 +23,7 @@ const Hero = ({ language, openDonateModal, openVolunteerModal }) => {
             </div>
 
             {/* Buttons fixed at the bottom area */}
-            <div className="absolute bottom-20 left-0 right-0 flex flex-col sm:flex-row items-center justify-center gap-4 px-4 animate-fade-in-up-delay-2">
+            <div className="absolute bottom-20 left-0 right-0 flex items-center justify-center px-4 animate-fade-in-up-delay-2">
                 <button
                     onClick={openDonateModal}
                     className="group relative w-full sm:w-auto px-10 py-4 bg-[#461711] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl hover:bg-[#ff7612] transition-all duration-500 hover:-translate-y-1 overflow-hidden"
@@ -33,14 +33,6 @@ const Hero = ({ language, openDonateModal, openVolunteerModal }) => {
                         Donate Now
                     </span>
                     <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                </button>
-
-                <button
-                    onClick={openVolunteerModal}
-                    className="group w-full sm:w-auto px-10 py-4 bg-white/30 backdrop-blur-md text-[#461711] border-2 border-[#461711]/20 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl hover:bg-white hover:border-transparent transition-all duration-500 hover:-translate-y-1 flex items-center justify-center gap-2"
-                >
-                    <svg className="w-4 h-4 text-[#ff7612]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1z" /></svg>
-                    Volunteer Now
                 </button>
             </div>
         </div>

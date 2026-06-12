@@ -314,10 +314,12 @@ export const translations = {
         backToOverview: { en: 'Back to Overview', ml: 'അവലോകനത്തിലേക്ക് മടങ്ങുക' },
         skills: { en: 'Skills', ml: 'കഴിവുകൾ' },
         noSkills: { en: 'No skills added yet', ml: 'കഴിവുകളൊന്നും ചേർത്തിട്ടില്ല' },
-        participatedEvents: { en: 'Participated Events', ml: 'പങ്കെടുത്ത ഇവന്റുകൾ' },
+        participated: { en: 'Participated', ml: 'പങ്കെടുത്തവ' },
         noEvents: { en: 'No events', ml: 'ഇവന്റുകളിലൊന്നും പങ്കെടുത്തിട്ടില്ല' },
-        upcomingEvents: { en: 'Upcoming Events', ml: 'വരാനിരിക്കുന്ന ഇവന്റുകൾ' },
+        upcoming: { en: 'Upcoming', ml: 'വരാനിരിക്കുന്നവ' },
         register: { en: 'Register', ml: 'രജിസ്റ്റർ ചെയ്യുക' },
+        participatedFor: { en: 'Participated for', ml: 'പങ്കെടുത്തത്' },
+        daysCount: { en: 'day(s)', ml: 'ദിവസം' },
         status: { en: 'Status', ml: 'അവസ്ഥ' }
     }
 };

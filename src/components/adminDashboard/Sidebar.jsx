@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaThLarge, FaImages, FaCalendarAlt, FaEnvelope, FaUsers, FaSignOutAlt, FaBars, FaTimes, FaHome, FaCog, FaLanguage, FaMusic, FaHistory, FaBell } from "react-icons/fa";
+import { FaThLarge, FaImages, FaCalendarAlt, FaCalendarDay, FaTasks, FaEnvelope, FaUsers, FaSignOutAlt, FaBars, FaTimes, FaHome, FaCog, FaLanguage, FaMusic, FaHistory, FaBell } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "../../services/supabase-client";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -42,8 +42,13 @@ const Sidebar = ({ onCloseMobile }) => {
                 },
                 {
                     label: "Events",
-                    icon: <FaCalendarAlt />,
+                    icon: <FaCalendarDay />,
                     path: "/admin/events",
+                },
+                {
+                    label: "Projects",
+                    icon: <FaTasks />,
+                    path: "/admin/projects",
                 },
                 {
                     label: "News Letter",
@@ -80,18 +85,18 @@ const Sidebar = ({ onCloseMobile }) => {
     ];
 
     return (
-        <aside className={`${isExpanded ? "w-64" : "w-[80px]"} h-screen bg-[#2C1A0E] py-6 px-4 flex flex-col gap-6 text-white transition-all duration-300 relative shrink-0`}>
+        <aside className={`${isExpanded ? "w-64" : "w-[80px]"} h-screen bg-[#2C1A0E] py-4 px-3 flex flex-col gap-4 text-white transition-all duration-300 relative shrink-0`}>
             {/* Header / Logo */}
             <div className={`flex items-center ${isExpanded ? 'justify-between' : 'justify-center'} px-2`}>
                 {isExpanded && (
                     <NavLink 
                         to="/admin/dashboard" 
                         onClick={() => { if (onCloseMobile) onCloseMobile(); }}
-                        className="flex items-center gap-3 overflow-hidden shrink-0"
+                        className="flex items-center gap-2.5 overflow-hidden shrink-0"
                     >
-                        <img src="/brand/logo.jpeg" alt="logo" className="w-10 h-10 rounded-full shrink-0" />
+                        <img src="/brand/logo.jpeg" alt="logo" className="w-8 h-8 rounded-full shrink-0" />
                         <div className="whitespace-nowrap">
-                            <p className="text-[#E8954A] font-bold text-sm">Admin Panel</p>
+                            <p className="text-[#E8954A] font-bold text-xs">Admin Panel</p>
                         </div>
                     </NavLink>
                 )}
@@ -112,11 +117,11 @@ const Sidebar = ({ onCloseMobile }) => {
             <hr className="border-[#462a17]"></hr>
             
             {/* menu items */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-6 scrollbar-hide">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 scrollbar-hide">
                 {menu.map((section, index) => (
-                    <div key={index} className="flex flex-col gap-2">
-                        {isExpanded && <h3 className="text-xs uppercase text-gray-500 font-semibold px-2 tracking-wider">{section.title}</h3>}
-                        <ul className="flex flex-col gap-1">
+                    <div key={index} className="flex flex-col gap-1.5">
+                        {isExpanded && <h3 className="text-[10px] uppercase text-gray-500 font-semibold px-2 tracking-wider">{section.title}</h3>}
+                        <ul className="flex flex-col gap-0.5">
                             {section.items.map((item, itemIndex) => (
                                 <NavLink 
                                     key={itemIndex} 
@@ -124,14 +129,14 @@ const Sidebar = ({ onCloseMobile }) => {
                                     onClick={() => { if (onCloseMobile) onCloseMobile(); }}
                                     title={!isExpanded ? item.label : ""} 
                                     className={({ isActive }) =>
-                                        `flex items-center ${isExpanded ? 'justify-start px-4' : 'justify-center'} gap-4 py-3 rounded-lg transition shrink-0 ${isActive
+                                        `flex items-center ${isExpanded ? 'justify-start px-3' : 'justify-center'} gap-3 py-2 rounded-lg transition shrink-0 ${isActive
                                             ? "bg-[#C1622A] text-white"
                                             : "hover:bg-[#C1622A]/20 text-gray-400 hover:text-white"
                                         }`
                                     }
                                 >
-                                    <span className="text-lg shrink-0">{item.icon}</span>
-                                    {isExpanded && <span className="whitespace-nowrap text-sm font-medium">{item.label}</span>}
+                                    <span className="text-base shrink-0">{item.icon}</span>
+                                    {isExpanded && <span className="whitespace-nowrap text-[13px] font-semibold">{item.label}</span>}
                                 </NavLink>
                             ))}
                         </ul>
@@ -140,35 +145,35 @@ const Sidebar = ({ onCloseMobile }) => {
             </div>
 
             {/* bottom actions */}
-            <div className="mt-auto flex flex-col gap-2 border-t border-[#462a17] pt-4">
+            <div className="mt-auto flex flex-col gap-1 border-t border-[#462a17] pt-3">
                 <NavLink 
                     to="/admin/settings"
                     onClick={() => { if (onCloseMobile) onCloseMobile(); }}
                     title={!isExpanded ? "Settings" : ""}
                     className={({ isActive }) => 
-                        `flex items-center ${isExpanded ? 'justify-start px-4' : 'justify-center'} gap-3 py-3 rounded-lg w-full transition shrink-0 ${isActive ? "bg-[#C1622A] text-white" : "text-gray-300 hover:bg-[#C1622A]/20 hover:text-white"}`
+                        `flex items-center ${isExpanded ? 'justify-start px-3' : 'justify-center'} gap-3 py-2 rounded-lg w-full transition shrink-0 ${isActive ? "bg-[#C1622A] text-white" : "text-gray-300 hover:bg-[#C1622A]/20 hover:text-white"}`
                     }
                 >
-                    <FaCog className="text-lg shrink-0" />
-                    {isExpanded && <span className="whitespace-nowrap font-medium text-sm">Settings</span>}
+                    <FaCog className="text-base shrink-0" />
+                    {isExpanded && <span className="whitespace-nowrap font-semibold text-[13px]">Settings</span>}
                 </NavLink>
 
                 <button 
                     onClick={handleBackToHome}
                     title={!isExpanded ? "Back to Home" : ""}
-                    className={`flex items-center ${isExpanded ? 'justify-start px-4' : 'justify-center'} gap-3 py-3 rounded-lg w-full text-gray-300 hover:bg-[#C1622A]/20 hover:text-white transition shrink-0`}
+                    className={`flex items-center ${isExpanded ? 'justify-start px-3' : 'justify-center'} gap-3 py-2 rounded-lg w-full text-gray-300 hover:bg-[#C1622A]/20 hover:text-white transition shrink-0`}
                 >
-                    <FaHome className="text-lg shrink-0" />
-                    {isExpanded && <span className="whitespace-nowrap font-medium text-sm">Back to Home</span>}
+                    <FaHome className="text-base shrink-0" />
+                    {isExpanded && <span className="whitespace-nowrap font-semibold text-[13px]">Back to Home</span>}
                 </button>
 
                 <button 
                     onClick={handleLogout}
                     title={!isExpanded ? "Logout" : ""}
-                    className={`flex items-center ${isExpanded ? 'justify-start px-4' : 'justify-center'} gap-3 py-3 rounded-lg w-full bg-[#C1622A] text-white hover:bg-[#a8521f] transition shrink-0`}
+                    className={`flex items-center ${isExpanded ? 'justify-start px-3' : 'justify-center'} gap-3 py-2 rounded-lg w-full bg-[#C1622A] text-white hover:bg-[#a8521f] transition shrink-0`}
                 >
-                    <FaSignOutAlt className="text-lg shrink-0" />
-                    {isExpanded && <span className="whitespace-nowrap font-medium text-sm">Logout</span>}
+                    <FaSignOutAlt className="text-base shrink-0" />
+                    {isExpanded && <span className="whitespace-nowrap font-semibold text-[13px]">Logout</span>}
                 </button>
             </div>
         </aside>
