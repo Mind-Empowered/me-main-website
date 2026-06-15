@@ -44,6 +44,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import ActivityLog from "./pages/admin/ActivityLog";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import NotificationsPage from "./pages/NotificationsPage";
+import NotFound from "./pages/NotFound";
 import { supabase } from "./services/supabase-client";
 import { Toaster } from 'react-hot-toast';
 import { VolunteerProfileSkeleton } from "./components/profile/ProfileSkeletons";
@@ -954,6 +955,8 @@ function App() {
               <Route path="activity" element={<ActivityLog />} />
               <Route path="notifications" element={<AdminNotifications />} />
             </Route>
+            {/* Catch-all 404 Route */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </div>
