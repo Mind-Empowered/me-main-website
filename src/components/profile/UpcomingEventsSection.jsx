@@ -32,16 +32,18 @@ const UpcomingEventsSection = () => {
         } = await supabase.auth.getUser();
 
         let currentUserId = null;
+        let fetchedUserData = null;
         if (user) {
           // Get user details
           const { data: userData } = await supabase
             .schema("me_dataspace")
             .from("users")
-            .select("userID, emailID, firstName, lastName")
+            .select("userID, emailID, firstName, lastName, gender")
             .eq("emailID", user.email)
             .single();
 
           if (userData) {
+            fetchedUserData = userData;
             setDbUser(userData);
             currentUserId = userData.userID;
 
@@ -70,7 +72,14 @@ const UpcomingEventsSection = () => {
         if (error) {
           console.error("Error fetching events:", error);
         } else {
-          setEvents(data || []);
+          // Filter out female-only events if the user is not female
+          const filteredEvents = (data || []).filter((event) => {
+            if (event.female_only) {
+              return fetchedUserData?.gender?.toLowerCase() === "female";
+            }
+            return true;
+          });
+          setEvents(filteredEvents);
         }
       } catch (err) {
         console.error("Exception loading profile events:", err);

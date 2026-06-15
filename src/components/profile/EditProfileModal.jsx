@@ -119,10 +119,10 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
 
     const handleSave = async () => {
         const wordCount = formData.bio.trim().split(/\s+/).filter(w => w.length > 0).length;
-        if (wordCount > 0 && wordCount < 20) {
-            alert("About section must be at least 20 words.");
-            return;
-        }
+        // if (wordCount > 0 && wordCount < 20) {
+        //     alert("About section must be at least 20 words.");
+        //     return;
+        // }
         if (wordCount > 150) {
             alert("About section cannot exceed 150 words.");
             return;
@@ -749,8 +749,8 @@ const EditProfileModal = ({ user, isOpen, onClose, onUserUpdate }) => {
                             <h3 className="text-sm font-extrabold text-[#A64200] uppercase tracking-wider">
                                 {translations.profile.about[language]}
                             </h3>
-                            <span className={`text-xs font-bold ${bioWordCount > 150 || (bioWordCount > 0 && bioWordCount < 20) ? 'text-red-500' : 'text-gray-400'}`}>
-                                {bioWordCount} / 150 words (Min: 20)
+                            <span className={`text-xs font-bold ${bioWordCount > 150 || bioWordCount > 0  ? 'text-red-500' : 'text-gray-400'}`}>
+                                {bioWordCount} / 150 words max
                             </span>
                         </div>
                         <textarea
