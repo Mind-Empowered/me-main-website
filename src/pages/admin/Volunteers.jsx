@@ -16,6 +16,7 @@ const Volunteers = () => {
   const [editingVolunteer, setEditingVolunteer] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [exportLoading, setExportLoading] = useState(false);
+  const [viewingPhotoUrl, setViewingPhotoUrl] = useState(null);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,6 +42,19 @@ const Volunteers = () => {
   useEffect(() => {
     setPage(0);
   }, [selectedEventFilter]);
+
+  // Escape key listener for photo modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && viewingPhotoUrl) {
+        setViewingPhotoUrl(null);
+      }
+    };
+    if (viewingPhotoUrl) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [viewingPhotoUrl]);
 
   // Fetch all events for the filter dropdown (once)
   useEffect(() => {
@@ -388,7 +402,14 @@ const Volunteers = () => {
                   <div className="flex items-center justify-between sm:justify-start gap-3 min-w-0 flex-1 lg:flex-none">
                     <div className="flex items-center gap-3 min-w-0">
                       {volunteer.photo ? (
-                        <img src={volunteer.photo} alt="profile" className="w-10 h-10 rounded-full object-cover flex-shrink-0" loading="lazy" decoding="async" />
+                        <img 
+                          src={volunteer.photo} 
+                          alt="profile" 
+                          className="w-10 h-10 rounded-full object-cover flex-shrink-0 cursor-pointer hover:opacity-80 transition hover:ring-2 hover:ring-[#C1622A] hover:ring-offset-1" 
+                          onClick={(e) => { e.stopPropagation(); setViewingPhotoUrl(volunteer.photo); }}
+                          loading="lazy" 
+                          decoding="async" 
+                        />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0"><FaUser className="text-gray-400" /></div>
                       )}
@@ -504,6 +525,21 @@ const Volunteers = () => {
         onConfirm={confirmDelete}
         onCancel={() => setConfirmDeleteId(null)}
       />
+
+      {/* Full Size Photo Modal */}
+      {viewingPhotoUrl && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in" 
+          onClick={() => setViewingPhotoUrl(null)}
+        >
+          <img 
+            src={viewingPhotoUrl} 
+            alt="Volunteer Full Size" 
+            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl" 
+            onClick={(e) => e.stopPropagation()} 
+          />
+        </div>
+      )}
     </div>
   );
 };
