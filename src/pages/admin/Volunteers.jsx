@@ -205,7 +205,7 @@ const Volunteers = () => {
         ? allEvents.find(e => e.eventID === selectedEventFilter)?.title || "event"
         : "all";
 
-      const headers = ["First Name", "Last Name", "Email", "Phone", "WhatsApp", "Gender", "Date of Birth", "Blood Group", "T-Shirt Size", "Status", "Workspace", "Address (Present)", "Address (Permanent)", "Emergency Contact Name", "Emergency Contact Phone", "Instagram", "GitHub", "LinkedIn", "Availability", "Preferred Roles", "Volunteer Skills", "Bio", "Joined On"];
+      const headers = ["First Name", "Last Name", "Email", "Phone", "WhatsApp", "Gender", "Date of Birth", "Blood Group", "T-Shirt Size", "Status", "Workspace", "Address (Present)", "Address (Permanent)", "Emergency Contact Name", "Emergency Contact Phone", "Instagram", "GitHub", "LinkedIn", "Availability", "Preferred Roles", "Volunteer Skills", "Bio", "Joined On", "Events Cancelled"];
       const rows = (data || []).map(v => {
         const present = v.address?.presentAddress ? [v.address.presentAddress.building, v.address.presentAddress.street, v.address.presentAddress.area, v.address.presentAddress.city, v.address.presentAddress.state, v.address.presentAddress.country, v.address.presentAddress.pincode].filter(Boolean).join(", ") : "";
         const permanent = v.address?.permanentAddress ? [v.address.permanentAddress.building, v.address.permanentAddress.street, v.address.permanentAddress.area, v.address.permanentAddress.city, v.address.permanentAddress.state, v.address.permanentAddress.country, v.address.permanentAddress.pincode].filter(Boolean).join(", ") : "";
@@ -233,6 +233,7 @@ const Volunteers = () => {
           v.preferences?.skills ? v.preferences.skills.join("; ") : "",
           v.bio || "",
           v.created_at ? new Date(v.created_at).toLocaleDateString("en-GB") : "",
+          v.preferences?.cancelCount || 0,
         ];
       });
 
@@ -385,10 +386,11 @@ const Volunteers = () => {
       {!loading && volunteers.length > 0 && (
         <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
           {/* Header */}
-          <div className="hidden lg:grid grid-cols-4 bg-[#EFE7DD] text-[#6B4B2A] text-sm font-semibold p-4">
+          <div className="hidden lg:grid grid-cols-5 bg-[#EFE7DD] text-[#6B4B2A] text-sm font-semibold p-4">
             <p>Member</p>
             <p>Email</p>
             <p>Events Attended</p>
+            <p className="text-center">Cancellations</p>
             <p className="text-center">Actions</p>
           </div>
 
@@ -396,7 +398,7 @@ const Volunteers = () => {
             {volunteers.map((volunteer) => (
               <div key={volunteer.userID} className="border-t border-gray-100 flex flex-col">
                 <div 
-                  className="flex flex-col sm:flex-row sm:items-center lg:grid lg:grid-cols-4 lg:items-center p-4 gap-3 lg:gap-4 cursor-pointer hover:bg-gray-50 transition" 
+                  className="flex flex-col sm:flex-row sm:items-center lg:grid lg:grid-cols-5 lg:items-center p-4 gap-3 lg:gap-4 cursor-pointer hover:bg-gray-50 transition" 
                   onClick={() => toggleRow(volunteer.userID)}
                 >
                   <div className="flex items-center justify-between sm:justify-start gap-3 min-w-0 flex-1 lg:flex-none">
@@ -432,6 +434,15 @@ const Volunteers = () => {
                       ))
                     ) : (
                       <span className="text-gray-400 text-xs lg:text-sm">No events attended</span>
+                    )}
+                  </div>
+                  <div className="hidden lg:flex items-center justify-center">
+                    {volunteer.preferences?.cancelCount > 0 ? (
+                      <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">
+                        {volunteer.preferences.cancelCount} Cancelled
+                      </span>
+                    ) : (
+                      <span className="text-gray-400 text-xs font-medium">0</span>
                     )}
                   </div>
                   <div className="hidden sm:flex items-center lg:justify-center gap-3 mt-1 sm:mt-0">
@@ -473,6 +484,7 @@ const Volunteers = () => {
                         {volunteer.preferences?.availability?.length > 0 && <p className="text-gray-800 mb-1 mt-2"><span className="font-medium">Availability:</span> {volunteer.preferences.availability.join(", ")}</p>}
                         {volunteer.preferences?.preferredRoles?.length > 0 && <p className="text-gray-800 mb-1 mt-2"><span className="font-medium">Preferred Roles:</span> {volunteer.preferences.preferredRoles.join(", ")}</p>}
                         {volunteer.preferences?.skills?.length > 0 && <p className="text-gray-800 mt-2"><span className="font-medium">Skills:</span> {volunteer.preferences.skills.join(", ")}</p>}
+                        {volunteer.preferences?.cancelCount > 0 && <p className="text-red-600 mt-2 font-semibold"><span className="font-bold">Events Cancelled:</span> {volunteer.preferences.cancelCount}</p>}
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">Vital Info</h4>
