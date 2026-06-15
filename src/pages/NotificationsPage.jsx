@@ -23,6 +23,7 @@ import {
   FaEnvelopeOpen,
   FaChevronDown,
   FaChevronUp,
+  FaTrash,
 } from "react-icons/fa";
 
 // ─── Notification type config ─────────────────────────────
@@ -183,14 +184,23 @@ const NotificationsPage = () => {
 
         // Fetch notifications
         const data = await fetchNotifications(authUser.email);
-        setNotifications(data || []);
+        
+        // Filter out cleared notifications locally
+        const clearedTimestamp = localStorage.getItem(`cleared_notifications_${authUser.email}`);
+        let visibleNotifications = data || [];
+        if (clearedTimestamp) {
+          visibleNotifications = visibleNotifications.filter(n => new Date(n.created_at).getTime() > parseInt(clearedTimestamp, 10));
+        }
+
+        setNotifications(visibleNotifications);
         setLoading(false);
 
         // Subscribe to real-time notifications
         channel = subscribeToNotifications((newNotification) => {
           if (
             newNotification.target === "all" ||
-            newNotification.target === authUser.email
+            newNotification.target === authUser.email ||
+            (newNotification.target === "all_female" && userData?.gender?.toLowerCase() === "female")
           ) {
             setNotifications((prev) => [
               { ...newNotification, is_read: false },
@@ -211,7 +221,7 @@ const NotificationsPage = () => {
     };
   }, [navigate]);
 
-  // ─── Actions ──────────────────────────────────────────
+  // Actions
   const handleMarkAsRead = async (notificationId) => {
     if (!user?.emailID) return;
     const success = await markAsRead(notificationId, user.emailID);
@@ -234,6 +244,16 @@ const NotificationsPage = () => {
       toast.success("All notifications marked as read");
     }
     setMarkingAll(false);
+  };
+
+  const handleClearAll = (e) => {
+    e.stopPropagation();
+    if (!user?.emailID) return;
+    if (window.confirm("Are you sure you want to clear all notifications?")) {
+      localStorage.setItem(`cleared_notifications_${user.emailID}`, Date.now().toString());
+      setNotifications([]);
+      toast.success("All notifications cleared");
+    }
   };
 
   const handleNotificationClick = (notification) => {
@@ -315,16 +335,27 @@ const NotificationsPage = () => {
                 </div>
               </div>
 
-              {unreadCount > 0 && (
-                <button
-                  onClick={handleMarkAllAsRead}
-                  disabled={markingAll}
-                  className="px-5 py-2.5 bg-white text-[#7A3A00] border border-[#7A3A00] rounded-full hover:bg-[#FAF7F2] active:scale-95 transition font-semibold text-xs shadow-sm flex items-center gap-1.5 self-stretch sm:self-auto justify-center"
-                >
-                  <FaCheckDouble size={12} />
-                  {markingAll ? "Marking..." : "Mark all as read"}
-                </button>
-              )}
+              <div className="flex items-center gap-2 self-stretch sm:self-auto">
+                {unreadCount > 0 && (
+                  <button
+                    onClick={handleMarkAllAsRead}
+                    disabled={markingAll}
+                    className="flex-1 sm:flex-none px-4 py-2.5 bg-white text-[#7A3A00] border border-[#7A3A00] rounded-full hover:bg-[#FAF7F2] active:scale-95 transition font-semibold text-xs shadow-sm flex items-center justify-center gap-1.5"
+                  >
+                    <FaCheckDouble size={12} />
+                    {markingAll ? "Marking..." : "Mark all as read"}
+                  </button>
+                )}
+                {notifications.length > 0 && (
+                  <button
+                    onClick={handleClearAll}
+                    className="flex-1 sm:flex-none px-4 py-2.5 bg-white text-red-600 border border-red-200 rounded-full hover:bg-red-50 hover:border-red-300 active:scale-95 transition font-semibold text-xs shadow-sm flex items-center justify-center gap-1.5"
+                  >
+                    <FaTrash size={12} />
+                    Clear all
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Premium Filter Pills */}

@@ -313,7 +313,7 @@ const AddEvent = () => {
             body: `A new event "${form.title.trim()}" has been scheduled for ${eventDate}. Register now to participate!`,
             type: "event_reminder",
             priority: "normal",
-            target: "all",
+            target: form.female_only ? "all_female" : "all",
             metadata: { event_id: insertedData?.[0]?.eventID, event_date: form.startDate },
             createdBy: user?.email || "Admin",
           });
