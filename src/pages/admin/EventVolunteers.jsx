@@ -479,9 +479,9 @@ const EventVolunteers = () => {
                         <p className="text-[10px] text-gray-400 mt-0.5">
                           Registered: {new Date(vol.registeredAt).toLocaleDateString()}
                         </p>
-                        {vol.cancelled && vol.cancelReason && (
+                        {vol.cancelled && (
                           <div className="mt-2 p-2 bg-red-50 rounded border border-red-100 text-xs text-red-800">
-                            <span className="font-bold">Reason for cancellation:</span> {vol.cancelReason}
+                            <span className="font-bold">Reason for cancellation:</span> {vol.cancelReason || "No reason provided."}
                           </div>
                         )}
                       </div>
