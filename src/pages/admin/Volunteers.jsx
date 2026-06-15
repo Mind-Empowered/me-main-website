@@ -171,7 +171,7 @@ const Volunteers = () => {
        let query = supabase
         .schema("me_dataspace")
         .from("users")
-        .select("firstName, lastName, emailID, city, state, country, gender, bloodGroup, dateOfBirth, created_at, preferences, address, emergencyInfo")
+        .select("firstName, lastName, emailID, phone, city, state, country, gender, bloodGroup, dateOfBirth, created_at, preferences, address, emergencyInfo, is_working, workspace_name, socials")
         .eq("role", "VOLUNTEER")
         .order("created_at", { ascending: false });
 
@@ -191,21 +191,36 @@ const Volunteers = () => {
         ? allEvents.find(e => e.eventID === selectedEventFilter)?.title || "event"
         : "all";
 
-      const headers = ["First Name", "Last Name", "Email", "City", "State", "Country", "Blood Group", "Date of Birth", "Gender", "WhatsApp", "Volunteer Skills", "Joined On"];
-      const rows = (data || []).map(v => [
-        v.firstName || "",
-        v.lastName || "",
-        v.emailID || "",
-        v.city || v.address?.permanentAddress?.city || v.address?.presentAddress?.city || "",
-        v.state || v.address?.permanentAddress?.state || v.address?.presentAddress?.state || "",
-        v.country || v.address?.permanentAddress?.country || v.address?.presentAddress?.country || "",
-        v.bloodGroup || v.emergencyInfo?.bloodGroup || "",
-        v.dateOfBirth || "",
-        v.gender || v.preferences?.gender || "",
-        v.preferences?.whatsapp || "",
-        v.preferences?.skills ? v.preferences.skills.join("; ") : "",
-        v.created_at ? new Date(v.created_at).toLocaleDateString("en-GB") : "",
-      ]);
+      const headers = ["First Name", "Last Name", "Email", "Phone", "WhatsApp", "Gender", "Date of Birth", "Blood Group", "T-Shirt Size", "Status", "Workspace", "Address (Present)", "Address (Permanent)", "Emergency Contact Name", "Emergency Contact Phone", "Instagram", "GitHub", "LinkedIn", "Availability", "Preferred Roles", "Volunteer Skills", "Bio", "Joined On"];
+      const rows = (data || []).map(v => {
+        const present = v.address?.presentAddress ? [v.address.presentAddress.building, v.address.presentAddress.street, v.address.presentAddress.area, v.address.presentAddress.city, v.address.presentAddress.state, v.address.presentAddress.country, v.address.presentAddress.pincode].filter(Boolean).join(", ") : "";
+        const permanent = v.address?.permanentAddress ? [v.address.permanentAddress.building, v.address.permanentAddress.street, v.address.permanentAddress.area, v.address.permanentAddress.city, v.address.permanentAddress.state, v.address.permanentAddress.country, v.address.permanentAddress.pincode].filter(Boolean).join(", ") : "";
+        return [
+          v.firstName || "",
+          v.lastName || "",
+          v.emailID || "",
+          v.phone || "",
+          v.preferences?.whatsapp || "",
+          v.gender || v.preferences?.gender || "",
+          v.dateOfBirth || "",
+          v.bloodGroup || v.emergencyInfo?.bloodGroup || "",
+          v.emergencyInfo?.tShirtSize || "",
+          v.is_working !== undefined ? (v.is_working ? "Working" : "Student") : "",
+          v.workspace_name || "",
+          present,
+          permanent,
+          v.emergencyInfo?.contactName || "",
+          v.emergencyInfo?.contactPhone || v.emergencyInfo?.contactNumber || "",
+          v.socials?.instagram || "",
+          v.socials?.github || "",
+          v.socials?.linkedin || "",
+          v.preferences?.availability ? v.preferences.availability.join("; ") : "",
+          v.preferences?.preferredRoles ? v.preferences.preferredRoles.join("; ") : "",
+          v.preferences?.skills ? v.preferences.skills.join("; ") : "",
+          v.bio || "",
+          v.created_at ? new Date(v.created_at).toLocaleDateString("en-GB") : "",
+        ];
+      });
 
       const csvContent = [headers, ...rows]
         .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
@@ -409,10 +424,21 @@ const Volunteers = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       <div>
                         <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">About</h4>
-                        <p className="text-gray-800 leading-relaxed">{volunteer.bio || "No bio provided."}</p>
+                        <p className="text-gray-800 leading-relaxed mb-4">{volunteer.bio || "No bio provided."}</p>
+                        {volunteer.socials && (volunteer.socials.instagram || volunteer.socials.github || volunteer.socials.linkedin) && (
+                          <div>
+                            <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">Social Links</h4>
+                            {volunteer.socials.instagram && <p className="text-gray-800 mb-1"><span className="font-medium">Instagram:</span> <a href={volunteer.socials.instagram.startsWith('http') ? volunteer.socials.instagram : `https://instagram.com/${volunteer.socials.instagram}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{volunteer.socials.instagram}</a></p>}
+                            {volunteer.socials.github && <p className="text-gray-800 mb-1"><span className="font-medium">GitHub:</span> <a href={volunteer.socials.github.startsWith('http') ? volunteer.socials.github : `https://github.com/${volunteer.socials.github}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{volunteer.socials.github}</a></p>}
+                            {volunteer.socials.linkedin && <p className="text-gray-800 mb-1"><span className="font-medium">LinkedIn:</span> <a href={volunteer.socials.linkedin.startsWith('http') ? volunteer.socials.linkedin : `https://linkedin.com/in/${volunteer.socials.linkedin}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{volunteer.socials.linkedin}</a></p>}
+                          </div>
+                        )}
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">Details</h4>
+                        {volunteer.phone && <p className="text-gray-800 mb-1"><span className="font-medium">Phone:</span> {volunteer.phone}</p>}
+                        {volunteer.preferences?.whatsapp && <p className="text-gray-800 mb-1"><span className="font-medium">WhatsApp:</span> {volunteer.preferences.whatsapp}</p>}
+                        {(volunteer.gender || volunteer.preferences?.gender) && <p className="text-gray-800 mb-1"><span className="font-medium">Gender:</span> {volunteer.gender || volunteer.preferences?.gender}</p>}
                         <p className="text-gray-800 mb-1">
                           <span className="font-medium">Location:</span>{" "}
                           {[
@@ -421,18 +447,20 @@ const Volunteers = () => {
                             volunteer.country || volunteer.address?.permanentAddress?.country || volunteer.address?.presentAddress?.country
                           ].filter(Boolean).join(", ") || "Not specified"}
                         </p>
-                        {(volunteer.gender || volunteer.preferences?.gender) && <p className="text-gray-800 mb-1"><span className="font-medium">Gender:</span> {volunteer.gender || volunteer.preferences?.gender}</p>}
-                        {volunteer.preferences?.whatsapp && <p className="text-gray-800 mb-1"><span className="font-medium">WhatsApp:</span> {volunteer.preferences.whatsapp}</p>}
-                        {volunteer.preferences?.languages?.length > 0 && <p className="text-gray-800 mb-1"><span className="font-medium">Languages:</span> {volunteer.preferences.languages.join(", ")}</p>}
+                        {(volunteer.is_working !== undefined) && <p className="text-gray-800 mb-1 mt-2"><span className="font-medium">Status:</span> {volunteer.is_working ? "Working Professional" : "Student"} {volunteer.workspace_name ? `(${volunteer.workspace_name})` : ""}</p>}
+                        {volunteer.preferences?.languages?.length > 0 && <p className="text-gray-800 mb-1 mt-2"><span className="font-medium">Languages:</span> {volunteer.preferences.languages.join(", ")}</p>}
+                        {volunteer.preferences?.availability?.length > 0 && <p className="text-gray-800 mb-1 mt-2"><span className="font-medium">Availability:</span> {volunteer.preferences.availability.join(", ")}</p>}
+                        {volunteer.preferences?.preferredRoles?.length > 0 && <p className="text-gray-800 mb-1 mt-2"><span className="font-medium">Preferred Roles:</span> {volunteer.preferences.preferredRoles.join(", ")}</p>}
                         {volunteer.preferences?.skills?.length > 0 && <p className="text-gray-800 mt-2"><span className="font-medium">Skills:</span> {volunteer.preferences.skills.join(", ")}</p>}
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">Vital Info</h4>
+                        <p className="text-gray-800 mb-1"><span className="font-medium">DOB:</span> {volunteer.dateOfBirth || "N/A"}</p>
                         <p className="text-gray-800 mb-1">
                           <span className="font-medium">Blood Group:</span>{" "}
                           {volunteer.bloodGroup || volunteer.emergencyInfo?.bloodGroup || "N/A"}
                         </p>
-                        <p className="text-gray-800 mb-1"><span className="font-medium">DOB:</span> {volunteer.dateOfBirth || "N/A"}</p>
+                        {volunteer.emergencyInfo?.tShirtSize && <p className="text-gray-800 mb-1"><span className="font-medium">T-Shirt Size:</span> {volunteer.emergencyInfo.tShirtSize}</p>}
                         {volunteer.emergencyInfo && (
                           <div className="mt-2 p-3 bg-red-50 rounded-lg border border-red-100">
                             <p className="text-red-800 font-semibold mb-1 text-xs uppercase">Emergency Contact</p>

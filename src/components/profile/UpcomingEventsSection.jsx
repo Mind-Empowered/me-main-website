@@ -19,7 +19,7 @@ const UpcomingEventsSection = () => {
   const [registerStatus, setRegisterStatus] = useState({}); // { eventId: 'success' | 'error' | 'already' }
   const [currentPage, setCurrentPage] = useState(0);
   const [filterType, setFilterType] = useState("all"); // "all" | "you"
-  const EVENTS_PER_PAGE = 5;
+  const EVENTS_PER_PAGE = 3;
 
   useEffect(() => {
     const initData = async () => {
