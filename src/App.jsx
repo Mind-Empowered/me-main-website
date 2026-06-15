@@ -1,6 +1,5 @@
 import "./App.css";
 import { useRef, useState, useEffect } from "react";
-
 import { FaWheelchair, FaArrowUp } from 'react-icons/fa';
 import Draggable from 'react-draggable';
 import Navbar from "./Navbar"; // Corrected import path
@@ -22,7 +21,6 @@ import {
   SponsorModal,
 } from "./components";
 import { translations } from "./translations";
-
 import { useLanguage } from "./contexts/LanguageContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./pages/auth/Registration/Register";
