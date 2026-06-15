@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUpload, FaTimes } from "react-icons/fa";
 import { supabase } from "../../services/supabase-client";
+import { sendNotification } from "../../services/notificationService";
 import toast from "react-hot-toast";
 
 const AddEvent = () => {
@@ -297,6 +298,26 @@ const AddEvent = () => {
           entity_type: "event",
           entity_id: insertedData?.[0]?.eventID,
         });
+
+        if (status === "publish") {
+          const eventDate = new Date(form.startDate).toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          await sendNotification({
+            title: `New Event: ${form.title.trim()}`,
+            body: `A new event "${form.title.trim()}" has been scheduled for ${eventDate}. Register now to participate!`,
+            type: "event_reminder",
+            priority: "normal",
+            target: "all",
+            metadata: { event_id: insertedData?.[0]?.eventID, event_date: form.startDate },
+            createdBy: user?.email || "Admin",
+          });
+        }
 
         toast.success(
           status === "publish"

@@ -364,7 +364,10 @@ const AddProject = () => {
           type: "broadcast",
           priority: "normal",
           target: "all",
-          metadata: { parent_project_id: parentProjectId },
+          metadata: {
+            parent_project_id: parentProjectId,
+            project_date: selectedDates[0], // e.g. "2025-07-10"
+          },
           createdBy: user?.email || "Admin",
         });
       }
