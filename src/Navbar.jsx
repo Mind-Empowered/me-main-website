@@ -4,6 +4,11 @@ import { supabase } from './services/supabase-client';
 import { ROLE_HOME_PATHS, resolveUserRole } from './services/authRoles';
 import CalendarPopup from './components/CalendarPopup';
 import NewsletterPopup from './components/NewsletterPopup';
+import {
+  fetchUnreadCount,
+  subscribeToNotifications,
+  unsubscribeFromNotifications,
+} from './services/notificationService';
 
 const NavLink = ({ item, scrollToSection, scrolled, isMobile = false }) => {
   const desktopClasses = `relative font-bold text-xs lg:text-sm tracking-[0.1em] uppercase transition-all duration-300 py-2.5 px-4 rounded-full group overflow-hidden ${scrolled
@@ -37,8 +42,11 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
   const [profileUser, setProfileUser] = React.useState(null);
   const [profileRole, setProfileRole] = React.useState(null);
   const [isProfilePopupOpen, setIsProfilePopupOpen] = React.useState(false);
+  const [unreadCount, setUnreadCount] = React.useState(0);
+  const [authLoading, setAuthLoading] = React.useState(true);
   const profilePopupRef = React.useRef(null);
   const profileButtonRef = React.useRef(null);
+  const notificationChannelRef = React.useRef(null);
 
   const handleScrollToSection = (ref) => {
     scrollToSection(ref);
@@ -47,25 +55,63 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
   React.useEffect(() => {
     let mounted = true;
+    let currentCheckId = 0;
 
     const applySession = async (session) => {
-      if (!session?.user) {
-        if (mounted) {
-          setDashboardPath(null);
-          setProfileUser(null);
-          setProfileRole(null);
-          setIsProfilePopupOpen(false);
+      currentCheckId++;
+      const checkId = currentCheckId;
+
+      try {
+        if (!session?.user) {
+          if (mounted && checkId === currentCheckId) {
+            setDashboardPath(null);
+            setProfileUser(null);
+            setProfileRole(null);
+            setIsProfilePopupOpen(false);
+            setUnreadCount(0);
+          }
+          return;
         }
-        return;
-      }
 
-      const role = await resolveUserRole(session.user);
-      const nextPath = ROLE_HOME_PATHS[role] || "/signin";
+        const role = await resolveUserRole(session.user);
+        const nextPath = ROLE_HOME_PATHS[role] || "/signin";
 
-      if (mounted) {
-        setDashboardPath(nextPath);
-        setProfileUser(session.user);
-        setProfileRole(role);
+        if (mounted && checkId === currentCheckId) {
+          setDashboardPath(nextPath);
+          setProfileUser(session.user);
+          setProfileRole(role);
+
+          // Fetch unread count for volunteers and subscribe to realtime
+          if (role === 'VOLUNTEER' && session.user.email) {
+            fetchUnreadCount(session.user.email).then((count) => {
+              if (mounted && checkId === currentCheckId) setUnreadCount(count);
+            }).catch((err) => console.error("Error fetching unread count:", err));
+
+            // Clean up previous subscription
+            if (notificationChannelRef.current) {
+              unsubscribeFromNotifications(notificationChannelRef.current);
+            }
+
+            // Subscribe to real-time notifications
+            try {
+              notificationChannelRef.current = subscribeToNotifications((newNotification) => {
+                if (newNotification.target === 'all' || newNotification.target === session.user.email) {
+                  setUnreadCount((prev) => prev + 1);
+                }
+              });
+            } catch (realtimeErr) {
+              console.error("Realtime subscription failed:", realtimeErr);
+            }
+          } else {
+            setUnreadCount(0);
+          }
+        }
+      } catch (err) {
+        console.error("Error in applySession:", err);
+      } finally {
+        if (mounted && checkId === currentCheckId) {
+          setAuthLoading(false);
+        }
       }
     };
 
@@ -76,13 +122,18 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
 
     initializeAuthState();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'INITIAL_SESSION') return;
       await applySession(session);
     });
 
     return () => {
       mounted = false;
       listener?.subscription?.unsubscribe();
+      if (notificationChannelRef.current) {
+        unsubscribeFromNotifications(notificationChannelRef.current);
+        notificationChannelRef.current = null;
+      }
     };
   }, []);
 
@@ -168,7 +219,31 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
           {/* Newsletter */}
           <NewsletterPopup scrolled={scrolled} />
 
-          {profileUser ? (
+          {/* Notification Bell — only for logged-in volunteers */}
+          {profileUser && profileRole === 'VOLUNTEER' && (
+            <button
+              onClick={() => navigate('/notifications')}
+              aria-label="View notifications"
+              className={`relative flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 shadow-md ${
+                scrolled
+                  ? 'border-[#ff7612]/35 bg-white text-[#461711] hover:scale-105'
+                  : 'border-white/20 bg-white/10 text-white hover:bg-white/15 hover:scale-105'
+              }`}
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-red-500 text-white text-[11px] font-black shadow-lg ring-2 ring-white animate-bounce-gentle">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </button>
+          )}
+
+          {authLoading ? (
+            <div className="w-[145px] h-11" />
+          ) : profileUser ? (
             <>
               <div
                 className="relative"
@@ -211,21 +286,24 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
                         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#ff7612]">Role</p>
                         <p className="mt-1 text-sm font-semibold text-[#5d4037]">{profileRoleLabel}</p>
                       </div>
+                      <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
+                        <button
+                          onClick={() => { navigate(dashboardPath || '/signin'); setIsProfilePopupOpen(false); }}
+                          className="w-full text-center px-4 py-2 text-xs uppercase tracking-[0.05em] font-black rounded-xl border border-[#461711]/15 hover:border-[#ff7612] hover:text-[#ff7612] hover:bg-[#ff7612]/5 transition-all duration-300"
+                        >
+                          Go to Dashboard
+                        </button>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-center px-4 py-2 text-xs uppercase tracking-[0.05em] font-black rounded-xl bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-700 transition-all duration-300"
+                        >
+                          Logout
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
-               <button
-                  onClick={handleLogout}
-                  aria-label="Logout"
-                  title="Logout"
-                  className={`flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 shadow-md ${scrolled ? 'border-red-200 bg-white text-red-400 hover:text-red-600 hover:border-red-400 hover:scale-105' : 'border-white/20 bg-white/10 text-white/80 hover:bg-white/15 hover:text-white hover:scale-105'}`}
-                >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                </button>
-
             </>
           ) : (
             <div className="flex items-center gap-3">
@@ -314,8 +392,37 @@ const Navbar = ({ navItems, scrollToSection, scrolled, language, openLanguageMod
               <span>{language === 'en' ? 'Newsletter' : 'വാർത്താക്കുറിപ്പ്'}</span>
             </button>
 
+            {/* Mobile Notification Bell — only for logged-in volunteers */}
+            {profileUser && profileRole === 'VOLUNTEER' && (
+              <button
+                onClick={() => { navigate('/notifications'); setIsMobileMenuOpen(false); }}
+                className="flex items-center gap-3 w-full text-left px-4 py-3 text-[#461711] rounded-lg font-semibold text-lg transition-all duration-300"
+              >
+                <div className="relative">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[16px] h-4 px-0.5 rounded-full bg-red-500 text-white text-[9px] font-black">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </div>
+                <span>Notifications</span>
+                {unreadCount > 0 && (
+                  <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-red-500 text-white font-bold">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            )}
+
             <div className="pt-2">
-              {profileUser ? (
+              {authLoading ? (
+                <div className="h-24 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#ff7612]"></div>
+                </div>
+              ) : profileUser ? (
                 <>
                   <Link
                     to={dashboardPath || '/signin'}
