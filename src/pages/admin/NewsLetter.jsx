@@ -16,10 +16,21 @@ import { AdminNewsletterSkeleton } from "../../components/adminDashboard/AdminSk
 import ConfirmModal from "../../components/adminDashboard/ConfirmModal";
 import { Toaster, toast } from "react-hot-toast";
 import { logActivity } from "../../services/activityLog";
+import { sendNotification } from "../../services/notificationService";
 
 const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 const Newsletter = () => {
@@ -51,7 +62,9 @@ const Newsletter = () => {
     }
   };
 
-  useEffect(() => { fetchNewsletters(); }, []);
+  useEffect(() => {
+    fetchNewsletters();
+  }, []);
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
@@ -65,67 +78,83 @@ const Newsletter = () => {
     setPreview(null);
     setForm({ month: "", year: "" });
   };
-const handleUpload = async () => {
-  if (!file) return toast.error("Choose a newsletter image first");
-  const monthNum = parseInt(form.month);
-  const yearNum = parseInt(form.year);
-  if (!form.month || isNaN(monthNum) || monthNum < 1 || monthNum > 12)
-    return toast.error("Please enter a valid month (1–12)");
-  if (!form.year || isNaN(yearNum) || yearNum < 2000 || yearNum > 2100)
-    return toast.error("Please enter a valid year");
+  const handleUpload = async () => {
+    if (!file) return toast.error("Choose a newsletter image first");
+    const monthNum = parseInt(form.month);
+    const yearNum = parseInt(form.year);
+    if (!form.month || isNaN(monthNum) || monthNum < 1 || monthNum > 12)
+      return toast.error("Please enter a valid month (1–12)");
+    if (!form.year || isNaN(yearNum) || yearNum < 2000 || yearNum > 2100)
+      return toast.error("Please enter a valid year");
 
-  try {
-    setUploading(true);
-    setShowPreviewModal(false);
+    try {
+      setUploading(true);
+      setShowPreviewModal(false);
 
-    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-    const fileName = `${Date.now()}_${safeName}`;
+      const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
+      const fileName = `${Date.now()}_${safeName}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("newsletters")
-      .upload(fileName, file);
-    if (uploadError) throw uploadError;
+      const { error: uploadError } = await supabase.storage
+        .from("newsletters")
+        .upload(fileName, file);
+      if (uploadError) throw uploadError;
 
-    const { data: { publicUrl } } = supabase.storage
-      .from("newsletters")
-      .getPublicUrl(fileName);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("newsletters").getPublicUrl(fileName);
 
+      const { data: insertedData, error: dbError } = await supabase
+        .schema("me_dataspace")
+        .from("newsletters")
+        .insert([
+          {
+            newsletter_url: publicUrl,
+            published_at: new Date().toISOString(),
+            publish_month: monthNum,
+            publish_yr: yearNum,
+          },
+        ])
+        .select();
+      if (dbError) throw dbError;
 
-    const { data: insertedData, error: dbError } = await supabase
-      .schema("me_dataspace")
-      .from("newsletters")
-      .insert([{
-        newsletter_url: publicUrl,
-        published_at: new Date().toISOString(),
-        publish_month: monthNum,
-        publish_yr: yearNum,
-      }])
-      .select(); 
-    if (dbError) throw dbError;
+      setFile(null);
+      setPreview(null);
+      setForm({ month: "", year: "" });
+      fetchNewsletters();
+      toast.success("Newsletter published!");
 
-    setFile(null);
-    setPreview(null);
-    setForm({ month: "", year: "" });
-    fetchNewsletters();
-    toast.success("Newsletter published!");
-    
-    await logActivity({
-      action: 'UPLOAD_NEWSLETTER',
-      description: `Uploaded newsletter for ${MONTHS[monthNum - 1]} ${yearNum}`,
-      entity_type: 'newsletter',
-      entity_id: insertedData?.[0]?.id  // ✅ THIS WORKS NOW
-    });
-  } catch (err) {
-    console.error(err);
-    toast.error("Upload failed: " + err.message);
-  } finally {
-    setUploading(false);
-  }
-};
+      await logActivity({
+        action: "UPLOAD_NEWSLETTER",
+        description: `Uploaded newsletter for ${MONTHS[monthNum - 1]} ${yearNum}`,
+        entity_type: "newsletter",
+        entity_id: insertedData?.[0]?.id,
+      });
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      await sendNotification({
+        title: `Newsletter: ${MONTHS[monthNum - 1]} ${yearNum}`,
+        body: `The ${MONTHS[monthNum - 1]} ${yearNum} newsletter is now available. Check it out in the newsletters section!`,
+        type: "newsletter",
+        priority: "normal",
+        target: "all",
+        metadata: { newsletter_id: insertedData?.[0]?.id },
+        createdBy: user?.email || "Admin",
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Upload failed: " + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const confirmDelete = async () => {
     if (!confirmDeleteId) return;
-    const newsletterToDelete = newsletters.find(n => n.id === confirmDeleteId);
+    const newsletterToDelete = newsletters.find(
+      (n) => n.id === confirmDeleteId,
+    );
     const { error } = await supabase
       .schema("me_dataspace")
       .from("newsletters")
@@ -135,11 +164,11 @@ const handleUpload = async () => {
     if (!error) {
       toast.success("Newsletter deleted");
       await logActivity({
-      action: 'DELETE_NEWSLETTER',
-      description: `Deleted newsletter: ${MONTHS[newsletterToDelete?.publish_month - 1]} ${newsletterToDelete?.publish_yr}`,
-      entity_type: 'newsletter',
-      entity_id: confirmDeleteId
-    });
+        action: "DELETE_NEWSLETTER",
+        description: `Deleted newsletter: ${MONTHS[newsletterToDelete?.publish_month - 1]} ${newsletterToDelete?.publish_yr}`,
+        entity_type: "newsletter",
+        entity_id: confirmDeleteId,
+      });
       fetchNewsletters();
     } else {
       toast.error("Failed to delete newsletter");
@@ -149,7 +178,10 @@ const handleUpload = async () => {
 
   const startEdit = (item) => {
     setEditingId(item.id);
-    setEditForm({ month: String(item.publish_month), year: String(item.publish_yr) });
+    setEditForm({
+      month: String(item.publish_month),
+      year: String(item.publish_yr),
+    });
   };
 
   const cancelEdit = () => {
@@ -167,7 +199,7 @@ const handleUpload = async () => {
 
     setEditSaving(true);
     try {
-       const oldNewsletter = newsletters.find(n => n.id === id);
+      const oldNewsletter = newsletters.find((n) => n.id === id);
       const { error } = await supabase
         .schema("me_dataspace")
         .from("newsletters")
@@ -176,12 +208,12 @@ const handleUpload = async () => {
       if (error) throw error;
 
       toast.success("Newsletter updated!");
-       await logActivity({
-      action: 'EDIT_NEWSLETTER',
-      description: `Updated newsletter from ${MONTHS[oldNewsletter?.publish_month - 1]} ${oldNewsletter?.publish_yr} to ${MONTHS[monthNum - 1]} ${yearNum}`,
-      entity_type: 'newsletter',
-      entity_id: id
-    });
+      await logActivity({
+        action: "EDIT_NEWSLETTER",
+        description: `Updated newsletter from ${MONTHS[oldNewsletter?.publish_month - 1]} ${oldNewsletter?.publish_yr} to ${MONTHS[monthNum - 1]} ${yearNum}`,
+        entity_type: "newsletter",
+        entity_id: id,
+      });
       setEditingId(null);
       fetchNewsletters();
     } catch (err) {
@@ -224,7 +256,9 @@ const handleUpload = async () => {
               <div className="flex justify-between">
                 <div>
                   <p className="text-gray-500 text-sm">Total Newsletters</p>
-                  <h2 className="text-4xl font-bold text-[#C1622A] mt-2">{newsletters.length}</h2>
+                  <h2 className="text-4xl font-bold text-[#C1622A] mt-2">
+                    {newsletters.length}
+                  </h2>
                 </div>
                 <FaEnvelope className="text-3xl text-[#C1622A]/40" />
               </div>
@@ -234,7 +268,13 @@ const handleUpload = async () => {
                 <div>
                   <p className="text-gray-500 text-sm">Uploaded This Month</p>
                   <h2 className="text-4xl font-bold text-[#C1622A] mt-2">
-                    {newsletters.filter(n => new Date(n.published_at).getMonth() === new Date().getMonth()).length}
+                    {
+                      newsletters.filter(
+                        (n) =>
+                          new Date(n.published_at).getMonth() ===
+                          new Date().getMonth(),
+                      ).length
+                    }
                   </h2>
                 </div>
                 <FaImage className="text-3xl text-[#C1622A]/40" />
@@ -246,19 +286,35 @@ const handleUpload = async () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {/* Upload Section */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-5 text-[#5A2E0C]">Upload Newsletter</h2>
+              <h2 className="text-xl font-semibold mb-5 text-[#5A2E0C]">
+                Upload Newsletter
+              </h2>
 
               <label className="border-2 border-dashed border-[#D8C7B5] rounded-2xl h-[225px] flex flex-col justify-center items-center cursor-pointer hover:border-[#C1622A] transition">
                 {preview ? (
-                  <img src={preview} alt="preview" className="h-full w-full object-cover rounded-2xl" loading="lazy" />
+                  <img
+                    src={preview}
+                    alt="preview"
+                    className="h-full w-full object-cover rounded-2xl"
+                    loading="lazy"
+                  />
                 ) : (
                   <>
                     <FaUpload className="text-5xl text-[#C1622A] mb-4" />
-                    <p className="text-lg font-medium text-gray-700">Click to upload newsletter</p>
-                    <p className="text-sm text-gray-400 mt-2">JPG PNG supported</p>
+                    <p className="text-lg font-medium text-gray-700">
+                      Click to upload newsletter
+                    </p>
+                    <p className="text-sm text-gray-400 mt-2">
+                      JPG PNG supported
+                    </p>
                   </>
                 )}
-                <input type="file" hidden accept="image/*" onChange={handleFileChange} />
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
               </label>
 
               {file && (
@@ -266,21 +322,33 @@ const handleUpload = async () => {
                   {/* Month/Year Inputs */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-500 mb-1">Month (1–12)</label>
+                      <label className="block text-xs font-semibold text-gray-500 mb-1">
+                        Month (1–12)
+                      </label>
                       <input
-                        type="number" name="month" min="1" max="12"
+                        type="number"
+                        name="month"
+                        min="1"
+                        max="12"
                         value={form.month}
-                        onChange={e => setForm({ ...form, month: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, month: e.target.value })
+                        }
                         placeholder="e.g. 6"
                         className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C1622A]/40"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-500 mb-1">Year</label>
+                      <label className="block text-xs font-semibold text-gray-500 mb-1">
+                        Year
+                      </label>
                       <input
-                        type="number" name="year"
+                        type="number"
+                        name="year"
                         value={form.year}
-                        onChange={e => setForm({ ...form, year: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, year: e.target.value })
+                        }
                         placeholder="e.g. 2025"
                         className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C1622A]/40"
                       />
@@ -290,8 +358,12 @@ const handleUpload = async () => {
                   {/* File info + actions */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <p className="font-medium text-gray-700 text-sm break-all">{file.name}</p>
-                      <p className="text-xs text-gray-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <p className="font-medium text-gray-700 text-sm break-all">
+                        {file.name}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <button
@@ -324,8 +396,12 @@ const handleUpload = async () => {
             {/* Recent Uploads */}
             <div className="bg-white rounded-2xl p-6 shadow-sm overflow-y-auto max-h-[70vh]">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-[#5A2E0C]">Recent Newsletters</h2>
-                <span className="text-sm text-gray-400">{newsletters.length} total</span>
+                <h2 className="text-xl font-semibold text-[#5A2E0C]">
+                  Recent Newsletters
+                </h2>
+                <span className="text-sm text-gray-400">
+                  {newsletters.length} total
+                </span>
               </div>
 
               <div className="space-y-4">
@@ -336,7 +412,10 @@ const handleUpload = async () => {
                   </div>
                 ) : (
                   newsletters.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition">
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-center border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition"
+                    >
                       <div className="flex items-center gap-4">
                         <div className="relative">
                           <img
@@ -360,19 +439,33 @@ const handleUpload = async () => {
                           {editingId === item.id ? (
                             /* ── Inline Edit Form ── */
                             <div className="space-y-2">
-                              <p className="text-xs font-semibold text-[#C1622A] mb-1">Edit Month / Year</p>
+                              <p className="text-xs font-semibold text-[#C1622A] mb-1">
+                                Edit Month / Year
+                              </p>
                               <div className="flex gap-2">
                                 <input
-                                  type="number" min="1" max="12"
+                                  type="number"
+                                  min="1"
+                                  max="12"
                                   value={editForm.month}
-                                  onChange={e => setEditForm(f => ({ ...f, month: e.target.value }))}
+                                  onChange={(e) =>
+                                    setEditForm((f) => ({
+                                      ...f,
+                                      month: e.target.value,
+                                    }))
+                                  }
                                   placeholder="Month"
                                   className="w-20 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C1622A]/40"
                                 />
                                 <input
                                   type="number"
                                   value={editForm.year}
-                                  onChange={e => setEditForm(f => ({ ...f, year: e.target.value }))}
+                                  onChange={(e) =>
+                                    setEditForm((f) => ({
+                                      ...f,
+                                      year: e.target.value,
+                                    }))
+                                  }
                                   placeholder="Year"
                                   className="w-24 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C1622A]/40"
                                 />
@@ -395,10 +488,15 @@ const handleUpload = async () => {
                             /* ── Display Mode ── */
                             <div>
                               <p className="font-semibold text-gray-800">
-                                {MONTHS[item.publish_month - 1] || item.publish_month} {item.publish_yr}
+                                {MONTHS[item.publish_month - 1] ||
+                                  item.publish_month}{" "}
+                                {item.publish_yr}
                               </p>
                               <p className="text-xs text-gray-400 mt-0.5">
-                                Published {new Date(item.published_at).toLocaleDateString("en-GB")}
+                                Published{" "}
+                                {new Date(item.published_at).toLocaleDateString(
+                                  "en-GB",
+                                )}
                               </p>
                             </div>
                           )}
@@ -419,7 +517,6 @@ const handleUpload = async () => {
                           >
                             <FaEye size={12} /> Preview
                           </button>
-
                         </div>
                       )}
                     </div>
@@ -438,9 +535,12 @@ const handleUpload = async () => {
             <div className="flex items-center gap-3">
               <FaEye className="text-white hidden sm:block" />
               <div>
-                <p className="text-white font-bold text-base sm:text-lg">Preview Newsletter</p>
+                <p className="text-white font-bold text-base sm:text-lg">
+                  Preview Newsletter
+                </p>
                 <p className="text-white/60 text-xs sm:text-sm truncate max-w-[250px] sm:max-w-none">
-                  {MONTHS[(parseInt(form.month) || 1) - 1]} {form.year} · {file?.name}
+                  {MONTHS[(parseInt(form.month) || 1) - 1]} {form.year} ·{" "}
+                  {file?.name}
                 </p>
               </div>
             </div>
@@ -489,7 +589,7 @@ const handleUpload = async () => {
             src={lightboxUrl}
             alt="Newsletter"
             className="max-w-full max-h-[85vh] rounded-xl sm:rounded-2xl shadow-2xl object-contain"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           />
         </div>
       )}
