@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../services/supabase-client";
 import { FaTimes, FaSpinner, FaChevronRight, FaChevronLeft, FaMapMarkerAlt, FaUtensils, FaClock } from "react-icons/fa";
 import { SectionSkeleton } from "./ProfileSkeletons";
@@ -9,9 +10,9 @@ import { sendNotification } from "../../services/notificationService";
 
 const UpcomingEventsSection = () => {
   const { language } = useLanguage();
+  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedEventId, setExpandedEventId] = useState(null);
   const [expandedProjects, setExpandedProjects] = useState([]);
   const [dbUser, setDbUser] = useState(null);
   const [userRegistrations, setUserRegistrations] = useState([]); // Array of registered eventID strings
@@ -264,26 +265,24 @@ const UpcomingEventsSection = () => {
                 if (item.type === "event") {
                   const event = item.data;
                   const isRegistered = userRegistrations.includes(event.eventID);
-                  const isExpanded = expandedEventId === event.eventID;
-
                   return (
                     <div
                       key={event.eventID}
-                      className="border rounded-lg p-3 hover:shadow-md transition cursor-pointer bg-white"
-                      onClick={() => setExpandedEventId(isExpanded ? null : event.eventID)}
+                      className="border rounded-lg p-3 hover:shadow-md transition cursor-pointer bg-white group"
+                      onClick={() => navigate(`/event/${event.eventID}`)}
                     >
                       <div className="flex gap-3">
                         {event.bannerURL && (
                           <img
                             src={event.bannerURL}
                             alt={event.bannerAltText || event.title}
-                            className="w-16 h-16 object-cover rounded"
+                            className="w-16 h-16 object-cover rounded group-hover:opacity-90 transition"
                             loading="lazy"
                           />
                         )}
                         <div className="flex-1 flex justify-between">
                           <div>
-                            <h3 className="text-base font-bold text-[#A64200]">
+                            <h3 className="text-base font-bold text-[#A64200] group-hover:text-[#7A3A00] transition">
                               {event.title}
                             </h3>
                             <div className="flex flex-wrap items-center gap-2 mt-1">
@@ -315,82 +314,20 @@ const UpcomingEventsSection = () => {
                               </div>
                             )}
                           </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRegisterAsVolunteer(event);
-                            }}
-                            disabled={registeringEventId === event.eventID || event.status === "cancelled"}
-                            className={`mt-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition self-start ${
-                              event.status === "cancelled"
-                                ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
-                                : isRegistered
-                                  ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                                  : "bg-[#A64200] text-white hover:bg-[#8a3600]"
-                            }`}
-                          >
-                            {registeringEventId === event.eventID ? (
-                              <FaSpinner className="animate-spin" size={12} />
-                            ) : isRegistered ? (
-                              "✓ Registered"
-                            ) : event.status === "cancelled" ? (
-                              "Cancelled"
-                            ) : (
-                              translations.profile.register[language]
+                          <div className="flex flex-col items-end justify-center">
+                            {isRegistered && (
+                              <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded border border-green-200 mb-2">
+                                ✓ Registered
+                              </span>
                             )}
-                          </button>
-                        </div>
-                      </div>
-
-                      {isExpanded && (
-                        <div className="mt-3 pt-3 border-t animate-fade-in text-xs text-gray-700 space-y-3" onClick={(e) => e.stopPropagation()}>
-                          {event.description && (
-                            <div>
-                              <h4 className="font-bold text-gray-800">Description</h4>
-                              <p className="mt-0.5 leading-relaxed">{event.description}</p>
-                            </div>
-                          )}
-                          
-                          {event.fullDetails && (
-                            <div>
-                              <h4 className="font-bold text-gray-800">Details</h4>
-                              <p className="whitespace-pre-wrap mt-0.5 leading-relaxed">{event.fullDetails}</p>
-                            </div>
-                          )}
-
-                          <div className="grid grid-cols-2 gap-3 bg-gray-50 p-2 rounded-lg border border-gray-100">
-                            <div>
-                              <span className="font-bold text-gray-500 text-[10px] uppercase">Venue</span>
-                              {event.venue ? (
-                                event.venue.split(" | ").map((v, i) => (
-                                  <div key={i} className="mt-0.5">
-                                    <p className="text-gray-800 font-semibold">{v}</p>
-                                    {event.venue_url?.split(" | ")[i] && (
-                                      <a
-                                        href={event.venue_url.split(" | ")[i]}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-[10px] text-[#A64200] hover:underline"
-                                      >
-                                        <FaMapMarkerAlt size={9} />
-                                        View on Map
-                                      </a>
-                                    )}
-                                  </div>
-                                ))
-                              ) : (
-                                <p className="text-gray-800 font-semibold">TBD</p>
-                              )}
-                            </div>
-                            <div>
-                              <span className="font-bold text-gray-500 text-[10px] uppercase">Duration</span>
-                              <p className="text-gray-800 font-semibold mt-0.5">
-                                {new Date(event.fromDateTime).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} - {new Date(event.toDateTime).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
-                              </p>
-                            </div>
+                            <button
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-gray-100 text-gray-700 group-hover:bg-[#A64200] group-hover:text-white"
+                            >
+                              View Details
+                            </button>
                           </div>
                         </div>
-                      )}
+                      </div>
                     </div>
                   );
                 } else {

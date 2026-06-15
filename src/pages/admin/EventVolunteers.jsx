@@ -72,7 +72,7 @@ const EventVolunteers = () => {
         .from("event_participation")
         .select("id, participant_id, created_at, registered_as")
         .eq("event_id", id)
-        .in("registered_as", ["registered", "volunteer", "attended"]);
+        .in("registered_as", ["registered", "volunteer", "attended", "cancelled"]);
 
       if (pErr) throw pErr;
 
@@ -85,18 +85,30 @@ const EventVolunteers = () => {
       const { data: users, error: uErr } = await supabase
         .schema("me_dataspace")
         .from("users")
-        .select("userID, firstName, lastName, emailID, photo")
+        .select("userID, firstName, lastName, emailID, photo, preferences")
         .in("userID", userIDs);
 
       if (uErr) throw uErr;
 
       const mappedVolunteers = participations.map((p) => {
         const user = (users || []).find((u) => u.userID === p.participant_id);
+        
+        // Find cancellation reason if applicable
+        let cancelReason = null;
+        if (p.registered_as === "cancelled" && user?.preferences?.cancellationHistory) {
+          const historyEntry = user.preferences.cancellationHistory.find(h => String(h.eventId) === String(id));
+          if (historyEntry) {
+            cancelReason = historyEntry.reason;
+          }
+        }
+
         return {
           participationId: p.id,
           registeredAt: p.created_at,
           registeredAs: p.registered_as,
           attended: p.registered_as === "attended",
+          cancelled: p.registered_as === "cancelled",
+          cancelReason,
           ...(user || { firstName: "Unknown", lastName: "", emailID: "—", userID: p.participant_id }),
         };
       });
@@ -267,15 +279,17 @@ const EventVolunteers = () => {
 
     // Tab filter
     if (!matchesSearch) return false;
-    if (filterTab === "Attended") return v.attended;
-    if (filterTab === "Registered") return !v.attended;
+    if (filterTab === "Attended") return v.attended && !v.cancelled;
+    if (filterTab === "Registered") return !v.attended && !v.cancelled;
+    if (filterTab === "Cancelled") return v.cancelled;
     return true;
   });
 
   // Stats
-  const totalCount = registeredVolunteers.length;
+  const totalCount = registeredVolunteers.filter((v) => !v.cancelled).length;
   const attendedCount = registeredVolunteers.filter((v) => v.attended).length;
   const registeredOnlyCount = totalCount - attendedCount;
+  const cancelledCount = registeredVolunteers.filter((v) => v.cancelled).length;
 
   const isEventFuture = (() => {
     if (!event) return true;
@@ -388,10 +402,14 @@ const EventVolunteers = () => {
                 <span className="text-2xl font-bold">{registeredOnlyCount}</span>
                 <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Registered</span>
               </div>
+              <div className="bg-red-50 text-red-700 px-4 py-2 rounded-xl border border-red-100 flex flex-col items-center">
+                <span className="text-2xl font-bold">{cancelledCount}</span>
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Cancelled</span>
+              </div>
             </div>
 
-            <div className="flex gap-1.5 bg-gray-100 p-1 rounded-xl">
-              {["All", "Attended", "Registered"].map((tab) => (
+            <div className="flex gap-1.5 bg-gray-100 p-1 rounded-xl flex-wrap justify-center sm:justify-start">
+              {["All", "Attended", "Registered", "Cancelled"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setFilterTab(tab)}
@@ -461,11 +479,20 @@ const EventVolunteers = () => {
                         <p className="text-[10px] text-gray-400 mt-0.5">
                           Registered: {new Date(vol.registeredAt).toLocaleDateString()}
                         </p>
+                        {vol.cancelled && vol.cancelReason && (
+                          <div className="mt-2 p-2 bg-red-50 rounded border border-red-100 text-xs text-red-800">
+                            <span className="font-bold">Reason for cancellation:</span> {vol.cancelReason}
+                          </div>
+                        )}
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      {attendanceUpdating[vol.participationId] ? (
+                      {vol.cancelled ? (
+                        <span className="text-xs font-bold text-red-600 bg-red-100 px-3 py-1.5 rounded-lg border border-red-200">
+                          Cancelled
+                        </span>
+                      ) : attendanceUpdating[vol.participationId] ? (
                         <span className="text-xs text-gray-400 flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
                           <FaSpinner className="animate-spin text-orange-500" size={10} />
                           Saving...

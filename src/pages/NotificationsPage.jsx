@@ -260,9 +260,15 @@ const NotificationsPage = () => {
     if (!notification.is_read) {
       handleMarkAsRead(notification.id);
     }
-    setExpandedId((prev) =>
-      prev === notification.id ? null : notification.id,
-    );
+
+    const eventId = notification.metadata?.event_id || notification.metadata?.eventID;
+    if (eventId) {
+      navigate(`/event/${eventId}`);
+    } else {
+      setExpandedId((prev) =>
+        prev === notification.id ? null : notification.id,
+      );
+    }
   };
 
   // ─── Filtering ────────────────────────────────────────
