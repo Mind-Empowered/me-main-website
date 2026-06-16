@@ -372,12 +372,23 @@ const UpcomingEventsSection = () => {
                             </p>
                           </div>
                           
-                          <button
-                            type="button"
-                            className="text-xs font-semibold text-[#A64200] hover:underline mt-1 focus:outline-none"
-                          >
-                            {isExpanded ? "Hide Dates" : "Show Dates"}
-                          </button>
+                          <div className="flex flex-col items-end gap-2 mt-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/project/${item.parent_project_id}`);
+                              }}
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-[#A64200] text-white hover:bg-[#8a3600]"
+                            >
+                              View Details
+                            </button>
+                            <button
+                              type="button"
+                              className="text-xs font-semibold text-[#A64200] hover:underline focus:outline-none"
+                            >
+                              {isExpanded ? "Hide Dates" : "Show Dates"}
+                            </button>
+                          </div>
                         </div>
                       </div>
 

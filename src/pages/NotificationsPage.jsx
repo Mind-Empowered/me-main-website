@@ -261,8 +261,12 @@ const NotificationsPage = () => {
       handleMarkAsRead(notification.id);
     }
 
+    const projectId = notification.metadata?.parent_project_id;
     const eventId = notification.metadata?.event_id || notification.metadata?.eventID;
-    if (eventId) {
+    
+    if (projectId) {
+      navigate(`/project/${projectId}`);
+    } else if (eventId) {
       navigate(`/event/${eventId}`);
     } else {
       setExpandedId((prev) =>

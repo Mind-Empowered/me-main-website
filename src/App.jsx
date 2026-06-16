@@ -46,6 +46,7 @@ import AdminNotifications from "./pages/admin/AdminNotifications";
 import NotificationsPage from "./pages/NotificationsPage";
 import NotFound from "./pages/NotFound";
 import EventDetailsPage from "./pages/EventDetailsPage";
+import ProjectDetailsPage from "./pages/ProjectDetailsPage";
 import { supabase } from "./services/supabase-client";
 import { Toaster } from 'react-hot-toast';
 import { VolunteerProfileSkeleton } from "./components/profile/ProfileSkeletons";
@@ -941,6 +942,7 @@ function App() {
             <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
             <Route path="/volunteer-profile" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<VolunteerProfileSkeleton />}><VolunteerProfile /></ProtectedRoute>  } />
             <Route path="/event/:id" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<div className="flex items-center justify-center min-h-screen bg-[#F5EDE0]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A64200]"></div></div>}><EventDetailsPage /></ProtectedRoute> } />
+            <Route path="/project/:id" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<div className="flex items-center justify-center min-h-screen bg-[#F5EDE0]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A64200]"></div></div>}><ProjectDetailsPage /></ProtectedRoute> } />
             <Route path="/notifications" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<div className="flex items-center justify-center min-h-screen bg-[#F5EDE0]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A64200]"></div></div>}><NotificationsPage /></ProtectedRoute> } />
             <Route path="/admin" element={<AdminLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
