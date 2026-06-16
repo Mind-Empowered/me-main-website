@@ -1,17 +1,34 @@
 import { supabase } from "./supabase-client";
 
+const getTargetQuery = async (userEmail) => {
+	const { data: user } = await supabase
+		.schema("me_dataspace")
+		.from("users")
+		.select("gender")
+		.eq("emailID", userEmail)
+		.single();
+		
+	let query = `target.eq.all,target.eq.${userEmail}`;
+	if (user?.gender?.toLowerCase() === "female") {
+		query += `,target.eq.all_female`;
+	}
+	return query;
+};
+
 /**
  * Fetch all notifications relevant to a specific user.
  * Returns notifications targeted to 'all' OR to this specific user's email.
  * Includes a computed `is_read` field based on the notification_reads table.
  */
 export const fetchNotifications = async (userEmail) => {
+	const targetQuery = await getTargetQuery(userEmail);
+
 	// 1. Get all notifications targeted to this user or 'all'
 	const { data: notifications, error: nError } = await supabase
 		.schema("me_dataspace")
 		.from("notifications")
 		.select("*")
-		.or(`target.eq.all,target.eq.${userEmail}`)
+		.or(targetQuery)
 		.order("created_at", { ascending: false });
 
 	if (nError) {
@@ -43,12 +60,14 @@ export const fetchNotifications = async (userEmail) => {
  * Fetch the count of unread notifications for a user.
  */
 export const fetchUnreadCount = async (userEmail) => {
+	const targetQuery = await getTargetQuery(userEmail);
+
 	// Get all notification IDs targeted to this user
 	const { data: notifications, error: nError } = await supabase
 		.schema("me_dataspace")
 		.from("notifications")
 		.select("id")
-		.or(`target.eq.all,target.eq.${userEmail}`);
+		.or(targetQuery);
 
 	if (nError || !notifications) return 0;
 
@@ -88,12 +107,14 @@ export const markAsRead = async (notificationId, userEmail) => {
  * Mark ALL unread notifications as read for a user.
  */
 export const markAllAsRead = async (userEmail) => {
+	const targetQuery = await getTargetQuery(userEmail);
+
 	// Get all notification IDs for this user
 	const { data: notifications, error: nError } = await supabase
 		.schema("me_dataspace")
 		.from("notifications")
 		.select("id")
-		.or(`target.eq.all,target.eq.${userEmail}`);
+		.or(targetQuery);
 
 	if (nError || !notifications?.length) return false;
 

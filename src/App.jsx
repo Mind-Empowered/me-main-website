@@ -1,6 +1,5 @@
 import "./App.css";
 import { useRef, useState, useEffect } from "react";
-
 import { FaWheelchair, FaArrowUp } from 'react-icons/fa';
 import Draggable from 'react-draggable';
 import Navbar from "./Navbar"; // Corrected import path
@@ -22,7 +21,6 @@ import {
   SponsorModal,
 } from "./components";
 import { translations } from "./translations";
-
 import { useLanguage } from "./contexts/LanguageContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./pages/auth/Registration/Register";
@@ -46,6 +44,9 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import ActivityLog from "./pages/admin/ActivityLog";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import NotificationsPage from "./pages/NotificationsPage";
+import NotFound from "./pages/NotFound";
+import EventDetailsPage from "./pages/EventDetailsPage";
+import ProjectDetailsPage from "./pages/ProjectDetailsPage";
 import { supabase } from "./services/supabase-client";
 import { Toaster } from 'react-hot-toast';
 import { VolunteerProfileSkeleton } from "./components/profile/ProfileSkeletons";
@@ -940,6 +941,8 @@ function App() {
             <Route path="/reset-password" element={<ResetPass />} />
             <Route path="/reset-password-step2" element={<ResetPass_S2 />} />
             <Route path="/volunteer-profile" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<VolunteerProfileSkeleton />}><VolunteerProfile /></ProtectedRoute>  } />
+            <Route path="/event/:id" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<div className="flex items-center justify-center min-h-screen bg-[#F5EDE0]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A64200]"></div></div>}><EventDetailsPage /></ProtectedRoute> } />
+            <Route path="/project/:id" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<div className="flex items-center justify-center min-h-screen bg-[#F5EDE0]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A64200]"></div></div>}><ProjectDetailsPage /></ProtectedRoute> } />
             <Route path="/notifications" element={ <ProtectedRoute allowedRoles={["VOLUNTEER"]} fallback={<div className="flex items-center justify-center min-h-screen bg-[#F5EDE0]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#A64200]"></div></div>}><NotificationsPage /></ProtectedRoute> } />
             <Route path="/admin" element={<AdminLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
@@ -956,6 +959,8 @@ function App() {
               <Route path="activity" element={<ActivityLog />} />
               <Route path="notifications" element={<AdminNotifications />} />
             </Route>
+            {/* Catch-all 404 Route */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </div>

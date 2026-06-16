@@ -174,6 +174,7 @@ const Events = () => {
       toDate: toDateStr(toDT),
       toTime: toTimeStr(toDT),
       is_food_available: event.is_food_available ?? false,
+      female_only: event.female_only ?? false,
       eventURL: event.eventURL || "",
     });
     setEditError(null);
@@ -384,6 +385,7 @@ const Events = () => {
         fromDateTime,
         toDateTime,
         is_food_available: editFormData.is_food_available,
+        female_only: editFormData.female_only,
         eventURL: editFormData.eventURL.trim() || null,
       };
 
@@ -1030,22 +1032,40 @@ const Events = () => {
                 </div>
               </div>
 
-              {/* Food Provided */}
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  name="is_food_available"
-                  id="is_food_available"
-                  checked={editFormData.is_food_available}
-                  onChange={handleEditInput}
-                  className="w-5 h-5 accent-[#C97736] cursor-pointer"
-                />
-                <label
-                  htmlFor="is_food_available"
-                  className="text-sm text-gray-600 cursor-pointer select-none"
-                >
-                  Food Provided
-                </label>
+              {/* Food Provided & Female Only */}
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    name="is_food_available"
+                    id="is_food_available"
+                    checked={editFormData.is_food_available}
+                    onChange={handleEditInput}
+                    className="w-5 h-5 accent-[#C97736] cursor-pointer"
+                  />
+                  <label
+                    htmlFor="is_food_available"
+                    className="text-sm text-gray-600 cursor-pointer select-none"
+                  >
+                    Food Provided
+                  </label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    name="female_only"
+                    id="female_only"
+                    checked={editFormData.female_only}
+                    onChange={handleEditInput}
+                    className="w-5 h-5 accent-[#C97736] cursor-pointer"
+                  />
+                  <label
+                    htmlFor="female_only"
+                    className="text-sm text-gray-600 cursor-pointer select-none"
+                  >
+                    Female Only
+                  </label>
+                </div>
               </div>
 
               {/* Projects: Apply changes to all dates */}

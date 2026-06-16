@@ -16,6 +16,7 @@ const Volunteers = () => {
   const [editingVolunteer, setEditingVolunteer] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [exportLoading, setExportLoading] = useState(false);
+  const [viewingPhotoUrl, setViewingPhotoUrl] = useState(null);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,6 +42,19 @@ const Volunteers = () => {
   useEffect(() => {
     setPage(0);
   }, [selectedEventFilter]);
+
+  // Escape key listener for photo modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && viewingPhotoUrl) {
+        setViewingPhotoUrl(null);
+      }
+    };
+    if (viewingPhotoUrl) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [viewingPhotoUrl]);
 
   // Fetch all events for the filter dropdown (once)
   useEffect(() => {
@@ -171,7 +185,7 @@ const Volunteers = () => {
        let query = supabase
         .schema("me_dataspace")
         .from("users")
-        .select("firstName, lastName, emailID, city, state, country, gender, bloodGroup, dateOfBirth, created_at, preferences, address, emergencyInfo")
+        .select("firstName, lastName, emailID, phone, city, state, country, gender, bloodGroup, dateOfBirth, created_at, preferences, address, emergencyInfo, is_working, workspace_name, socials")
         .eq("role", "VOLUNTEER")
         .order("created_at", { ascending: false });
 
@@ -191,21 +205,37 @@ const Volunteers = () => {
         ? allEvents.find(e => e.eventID === selectedEventFilter)?.title || "event"
         : "all";
 
-      const headers = ["First Name", "Last Name", "Email", "City", "State", "Country", "Blood Group", "Date of Birth", "Gender", "WhatsApp", "Volunteer Skills", "Joined On"];
-      const rows = (data || []).map(v => [
-        v.firstName || "",
-        v.lastName || "",
-        v.emailID || "",
-        v.city || v.address?.permanentAddress?.city || v.address?.presentAddress?.city || "",
-        v.state || v.address?.permanentAddress?.state || v.address?.presentAddress?.state || "",
-        v.country || v.address?.permanentAddress?.country || v.address?.presentAddress?.country || "",
-        v.bloodGroup || v.emergencyInfo?.bloodGroup || "",
-        v.dateOfBirth || "",
-        v.gender || v.preferences?.gender || "",
-        v.preferences?.whatsapp || "",
-        v.preferences?.skills ? v.preferences.skills.join("; ") : "",
-        v.created_at ? new Date(v.created_at).toLocaleDateString("en-GB") : "",
-      ]);
+      const headers = ["First Name", "Last Name", "Email", "Phone", "WhatsApp", "Gender", "Date of Birth", "Blood Group", "T-Shirt Size", "Status", "Workspace", "Address (Present)", "Address (Permanent)", "Emergency Contact Name", "Emergency Contact Phone", "Instagram", "GitHub", "LinkedIn", "Availability", "Preferred Roles", "Volunteer Skills", "Bio", "Joined On", "Events Cancelled"];
+      const rows = (data || []).map(v => {
+        const present = v.address?.presentAddress ? [v.address.presentAddress.building, v.address.presentAddress.street, v.address.presentAddress.area, v.address.presentAddress.city, v.address.presentAddress.state, v.address.presentAddress.country, v.address.presentAddress.pincode].filter(Boolean).join(", ") : "";
+        const permanent = v.address?.permanentAddress ? [v.address.permanentAddress.building, v.address.permanentAddress.street, v.address.permanentAddress.area, v.address.permanentAddress.city, v.address.permanentAddress.state, v.address.permanentAddress.country, v.address.permanentAddress.pincode].filter(Boolean).join(", ") : "";
+        return [
+          v.firstName || "",
+          v.lastName || "",
+          v.emailID || "",
+          v.phone || "",
+          v.preferences?.whatsapp || "",
+          v.gender || v.preferences?.gender || "",
+          v.dateOfBirth || "",
+          v.bloodGroup || v.emergencyInfo?.bloodGroup || "",
+          v.emergencyInfo?.tShirtSize || "",
+          v.is_working !== undefined ? (v.is_working ? "Working" : "Student") : "",
+          v.workspace_name || "",
+          present,
+          permanent,
+          v.emergencyInfo?.contactName || "",
+          v.emergencyInfo?.contactPhone || v.emergencyInfo?.contactNumber || "",
+          v.socials?.instagram || "",
+          v.socials?.github || "",
+          v.socials?.linkedin || "",
+          v.preferences?.availability ? v.preferences.availability.join("; ") : "",
+          v.preferences?.preferredRoles ? v.preferences.preferredRoles.join("; ") : "",
+          v.preferences?.skills ? v.preferences.skills.join("; ") : "",
+          v.bio || "",
+          v.created_at ? new Date(v.created_at).toLocaleDateString("en-GB") : "",
+          v.preferences?.cancelCount || 0,
+        ];
+      });
 
       const csvContent = [headers, ...rows]
         .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
@@ -356,10 +386,11 @@ const Volunteers = () => {
       {!loading && volunteers.length > 0 && (
         <div className="bg-white rounded-xl overflow-hidden border border-gray-200">
           {/* Header */}
-          <div className="hidden lg:grid grid-cols-4 bg-[#EFE7DD] text-[#6B4B2A] text-sm font-semibold p-4">
+          <div className="hidden lg:grid grid-cols-5 bg-[#EFE7DD] text-[#6B4B2A] text-sm font-semibold p-4">
             <p>Member</p>
             <p>Email</p>
             <p>Events Attended</p>
+            <p className="text-center">Cancellations</p>
             <p className="text-center">Actions</p>
           </div>
 
@@ -367,13 +398,20 @@ const Volunteers = () => {
             {volunteers.map((volunteer) => (
               <div key={volunteer.userID} className="border-t border-gray-100 flex flex-col">
                 <div 
-                  className="flex flex-col sm:flex-row sm:items-center lg:grid lg:grid-cols-4 lg:items-center p-4 gap-3 lg:gap-4 cursor-pointer hover:bg-gray-50 transition" 
+                  className="flex flex-col sm:flex-row sm:items-center lg:grid lg:grid-cols-5 lg:items-center p-4 gap-3 lg:gap-4 cursor-pointer hover:bg-gray-50 transition" 
                   onClick={() => toggleRow(volunteer.userID)}
                 >
                   <div className="flex items-center justify-between sm:justify-start gap-3 min-w-0 flex-1 lg:flex-none">
                     <div className="flex items-center gap-3 min-w-0">
                       {volunteer.photo ? (
-                        <img src={volunteer.photo} alt="profile" className="w-10 h-10 rounded-full object-cover flex-shrink-0" loading="lazy" decoding="async" />
+                        <img 
+                          src={volunteer.photo} 
+                          alt="profile" 
+                          className="w-10 h-10 rounded-full object-cover flex-shrink-0 cursor-pointer hover:opacity-80 transition hover:ring-2 hover:ring-[#C1622A] hover:ring-offset-1" 
+                          onClick={(e) => { e.stopPropagation(); setViewingPhotoUrl(volunteer.photo); }}
+                          loading="lazy" 
+                          decoding="async" 
+                        />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0"><FaUser className="text-gray-400" /></div>
                       )}
@@ -398,6 +436,15 @@ const Volunteers = () => {
                       <span className="text-gray-400 text-xs lg:text-sm">No events attended</span>
                     )}
                   </div>
+                  <div className="hidden lg:flex items-center justify-center">
+                    {volunteer.preferences?.cancelCount > 0 ? (
+                      <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">
+                        {volunteer.preferences.cancelCount} Cancelled
+                      </span>
+                    ) : (
+                      <span className="text-gray-400 text-xs font-medium">0</span>
+                    )}
+                  </div>
                   <div className="hidden sm:flex items-center lg:justify-center gap-3 mt-1 sm:mt-0">
                     <button onClick={(e) => { e.stopPropagation(); handleEdit(volunteer); }} className="border p-2.5 lg:p-2 rounded-xl lg:rounded-lg hover:bg-blue-100 transition text-blue-600 bg-white" title="Edit"><FaEdit size={14} /></button>
                     <button onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(volunteer.userID); }} className="bg-red-50 text-red-600 p-2.5 lg:p-2 rounded-xl lg:rounded-lg hover:bg-red-100 transition" title="Delete"><FaTrash size={14} /></button>
@@ -409,10 +456,21 @@ const Volunteers = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       <div>
                         <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">About</h4>
-                        <p className="text-gray-800 leading-relaxed">{volunteer.bio || "No bio provided."}</p>
+                        <p className="text-gray-800 leading-relaxed mb-4">{volunteer.bio || "No bio provided."}</p>
+                        {volunteer.socials && (volunteer.socials.instagram || volunteer.socials.github || volunteer.socials.linkedin) && (
+                          <div>
+                            <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">Social Links</h4>
+                            {volunteer.socials.instagram && <p className="text-gray-800 mb-1"><span className="font-medium">Instagram:</span> <a href={volunteer.socials.instagram.startsWith('http') ? volunteer.socials.instagram : `https://instagram.com/${volunteer.socials.instagram}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{volunteer.socials.instagram}</a></p>}
+                            {volunteer.socials.github && <p className="text-gray-800 mb-1"><span className="font-medium">GitHub:</span> <a href={volunteer.socials.github.startsWith('http') ? volunteer.socials.github : `https://github.com/${volunteer.socials.github}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{volunteer.socials.github}</a></p>}
+                            {volunteer.socials.linkedin && <p className="text-gray-800 mb-1"><span className="font-medium">LinkedIn:</span> <a href={volunteer.socials.linkedin.startsWith('http') ? volunteer.socials.linkedin : `https://linkedin.com/in/${volunteer.socials.linkedin}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{volunteer.socials.linkedin}</a></p>}
+                          </div>
+                        )}
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">Details</h4>
+                        {volunteer.phone && <p className="text-gray-800 mb-1"><span className="font-medium">Phone:</span> {volunteer.phone}</p>}
+                        {volunteer.preferences?.whatsapp && <p className="text-gray-800 mb-1"><span className="font-medium">WhatsApp:</span> {volunteer.preferences.whatsapp}</p>}
+                        {(volunteer.gender || volunteer.preferences?.gender) && <p className="text-gray-800 mb-1"><span className="font-medium">Gender:</span> {volunteer.gender || volunteer.preferences?.gender}</p>}
                         <p className="text-gray-800 mb-1">
                           <span className="font-medium">Location:</span>{" "}
                           {[
@@ -421,18 +479,21 @@ const Volunteers = () => {
                             volunteer.country || volunteer.address?.permanentAddress?.country || volunteer.address?.presentAddress?.country
                           ].filter(Boolean).join(", ") || "Not specified"}
                         </p>
-                        {(volunteer.gender || volunteer.preferences?.gender) && <p className="text-gray-800 mb-1"><span className="font-medium">Gender:</span> {volunteer.gender || volunteer.preferences?.gender}</p>}
-                        {volunteer.preferences?.whatsapp && <p className="text-gray-800 mb-1"><span className="font-medium">WhatsApp:</span> {volunteer.preferences.whatsapp}</p>}
-                        {volunteer.preferences?.languages?.length > 0 && <p className="text-gray-800 mb-1"><span className="font-medium">Languages:</span> {volunteer.preferences.languages.join(", ")}</p>}
+                        {(volunteer.is_working !== undefined) && <p className="text-gray-800 mb-1 mt-2"><span className="font-medium">Status:</span> {volunteer.is_working ? "Working Professional" : "Student"} {volunteer.workspace_name ? `(${volunteer.workspace_name})` : ""}</p>}
+                        {volunteer.preferences?.languages?.length > 0 && <p className="text-gray-800 mb-1 mt-2"><span className="font-medium">Languages:</span> {volunteer.preferences.languages.join(", ")}</p>}
+                        {volunteer.preferences?.availability?.length > 0 && <p className="text-gray-800 mb-1 mt-2"><span className="font-medium">Availability:</span> {volunteer.preferences.availability.join(", ")}</p>}
+                        {volunteer.preferences?.preferredRoles?.length > 0 && <p className="text-gray-800 mb-1 mt-2"><span className="font-medium">Preferred Roles:</span> {volunteer.preferences.preferredRoles.join(", ")}</p>}
                         {volunteer.preferences?.skills?.length > 0 && <p className="text-gray-800 mt-2"><span className="font-medium">Skills:</span> {volunteer.preferences.skills.join(", ")}</p>}
+                        {volunteer.preferences?.cancelCount > 0 && <p className="text-red-600 mt-2 font-semibold"><span className="font-bold">Events Cancelled:</span> {volunteer.preferences.cancelCount}</p>}
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">Vital Info</h4>
+                        <p className="text-gray-800 mb-1"><span className="font-medium">DOB:</span> {volunteer.dateOfBirth || "N/A"}</p>
                         <p className="text-gray-800 mb-1">
                           <span className="font-medium">Blood Group:</span>{" "}
                           {volunteer.bloodGroup || volunteer.emergencyInfo?.bloodGroup || "N/A"}
                         </p>
-                        <p className="text-gray-800 mb-1"><span className="font-medium">DOB:</span> {volunteer.dateOfBirth || "N/A"}</p>
+                        {volunteer.emergencyInfo?.tShirtSize && <p className="text-gray-800 mb-1"><span className="font-medium">T-Shirt Size:</span> {volunteer.emergencyInfo.tShirtSize}</p>}
                         {volunteer.emergencyInfo && (
                           <div className="mt-2 p-3 bg-red-50 rounded-lg border border-red-100">
                             <p className="text-red-800 font-semibold mb-1 text-xs uppercase">Emergency Contact</p>
@@ -476,6 +537,21 @@ const Volunteers = () => {
         onConfirm={confirmDelete}
         onCancel={() => setConfirmDeleteId(null)}
       />
+
+      {/* Full Size Photo Modal */}
+      {viewingPhotoUrl && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm animate-fade-in" 
+          onClick={() => setViewingPhotoUrl(null)}
+        >
+          <img 
+            src={viewingPhotoUrl} 
+            alt="Volunteer Full Size" 
+            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl" 
+            onClick={(e) => e.stopPropagation()} 
+          />
+        </div>
+      )}
     </div>
   );
 };
