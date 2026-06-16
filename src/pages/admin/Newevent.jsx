@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUpload, FaTimes } from "react-icons/fa";
 import { supabase } from "../../services/supabase-client";
+import { sendNotification } from "../../services/notificationService";
 import toast from "react-hot-toast";
 
 const AddEvent = () => {
@@ -22,6 +23,7 @@ const AddEvent = () => {
     registrationDeadline: "",
     volunteersNeeded: "",
     food: false,
+    female_only: false,
   });
 
   const [errors, setErrors] = useState({});
@@ -276,6 +278,7 @@ const AddEvent = () => {
           bannerURL,
           bannerAltText: form.bannerAltText.trim() || form.title.trim(),
           is_food_available: form.food,
+          female_only: form.female_only,
           venue_url:
             form.venues
               .map((v) => v.mapUrl.trim())
@@ -295,6 +298,26 @@ const AddEvent = () => {
           entity_type: "event",
           entity_id: insertedData?.[0]?.eventID,
         });
+
+        if (status === "publish") {
+          const eventDate = new Date(form.startDate).toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          await sendNotification({
+            title: `New Event: ${form.title.trim()}`,
+            body: `A new event "${form.title.trim()}" has been scheduled for ${eventDate}. Register now to participate!`,
+            type: "event_reminder",
+            priority: "normal",
+            target: form.female_only ? "all_female" : "all",
+            metadata: { event_id: insertedData?.[0]?.eventID, event_date: form.startDate },
+            createdBy: user?.email || "Admin",
+          });
+        }
 
         toast.success(
           status === "publish"
@@ -668,18 +691,32 @@ const AddEvent = () => {
                 </div>
               </div>
 
-              {/* Food checkbox */}
-              <div className="flex items-center gap-2 mt-4 mb-5">
-                <input
-                  type="checkbox"
-                  name="food"
-                  checked={form.food}
-                  onChange={handleChange}
-                  className="w-5 h-5 accent-[#C1622A] cursor-pointer"
-                />
-                <label className="text-sm text-gray-500 cursor-pointer select-none">
-                  Food Provided
-                </label>
+              {/* Food & Female Only checkboxes */}
+              <div className="flex items-center gap-6 mt-4 mb-5">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="food"
+                    checked={form.food}
+                    onChange={handleChange}
+                    className="w-5 h-5 accent-[#C1622A] cursor-pointer"
+                  />
+                  <label className="text-sm text-gray-500 cursor-pointer select-none">
+                    Food Provided
+                  </label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="female_only"
+                    checked={form.female_only}
+                    onChange={handleChange}
+                    className="w-5 h-5 accent-[#C1622A] cursor-pointer"
+                  />
+                  <label className="text-sm text-gray-500 cursor-pointer select-none">
+                    Female Only
+                  </label>
+                </div>
               </div>
 
               {/* Footer buttons */}
